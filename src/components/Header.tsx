@@ -56,9 +56,9 @@ const Header: React.FC = () => {
         <div className="flex items-center space-x-2">
           <a href="#" className="flex items-center space-x-2">
             <div className="bg-brand-purple w-8 h-8 rounded-md flex items-center justify-center">
-              <span className="text-white font-bold">UP</span>
+              <span className="text-white font-bold">Hi</span>
             </div>
-            <span className="font-bold text-xl">UpVotely</span>
+            <span className="font-bold text-xl">Hi</span>
           </a>
         </div>
 
