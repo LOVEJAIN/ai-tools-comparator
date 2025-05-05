@@ -2,6 +2,7 @@
 import React from 'react';
 import ItemCard from './ItemCard';
 import { useData } from '@/contexts/DataContext';
+import { ImageOff } from 'lucide-react';
 
 const ItemGrid: React.FC = () => {
   const { filteredItems } = useData();
