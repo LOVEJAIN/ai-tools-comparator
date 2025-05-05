@@ -1,13 +1,37 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
-const Index = () => {
+import React from 'react';
+import { DataProvider } from '@/contexts/DataContext';
+import Header from '@/components/Header';
+import CategoryFilter from '@/components/CategoryFilter';
+import ItemGrid from '@/components/ItemGrid';
+import FeaturedItems from '@/components/FeaturedItems';
+import AdminSection from '@/components/AdminSection';
+import Footer from '@/components/Footer';
+import SubmitBanner from '@/components/SubmitBanner';
+
+const Index: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <DataProvider>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        
+        <main className="flex-grow">
+          <FeaturedItems />
+          <CategoryFilter />
+          
+          <section className="py-4">
+            <div className="container px-4 mx-auto">
+              <ItemGrid />
+            </div>
+          </section>
+          
+          <SubmitBanner />
+          <AdminSection />
+        </main>
+        
+        <Footer />
       </div>
-    </div>
+    </DataProvider>
   );
 };
 
