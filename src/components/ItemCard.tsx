@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
 import { useData } from '@/contexts/DataContext';
 import { Star, ThumbsUp, ThumbsDown, MessageSquare, ImageOff } from 'lucide-react';
-import { Item, Review } from '@/types';
+import { Item } from '@/types';
 import ReviewList from './ReviewList';
 import ReviewForm from './ReviewForm';
+
+// Default fallback image for items
+const FALLBACK_IMAGE = '/placeholder.svg';
 
 interface ItemCardProps {
   item: Item;
@@ -42,8 +44,12 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
   };
 
   const handleImageError = () => {
+    console.log(`Failed to load image for ${item.title}`);
     setImageError(true);
   };
+
+  // Use the image path from the item or the fallback if there's an error
+  const imageSrc = imageError ? FALLBACK_IMAGE : item.imageUrl;
 
   return (
     <>
@@ -56,7 +62,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
         <div className="relative h-48 overflow-hidden bg-gray-100 flex justify-center items-center">
           {!imageError ? (
             <img 
-              src={item.imageUrl} 
+              src={imageSrc} 
               alt={item.title}
               className="object-cover w-full h-full"
               onError={handleImageError}
@@ -64,7 +70,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
           ) : (
             <div className="flex flex-col items-center justify-center text-gray-400">
               <ImageOff size={24} />
-              <span className="text-xs mt-1">Image unavailable</span>
+              <span className="text-xs mt-1">{item.title}</span>
             </div>
           )}
           {item.featured && (
