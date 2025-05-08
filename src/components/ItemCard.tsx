@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useData } from '@/contexts/DataContext';
-import { Star, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
+import { Star, ThumbsUp, ThumbsDown, MessageSquare, ImageOff } from 'lucide-react';
 import { Item, Review } from '@/types';
 import ReviewList from './ReviewList';
 import ReviewForm from './ReviewForm';
@@ -17,6 +17,7 @@ interface ItemCardProps {
 const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
   const { voteItem, trackItemClick, reviews, user } = useData();
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
   
   const itemReviews = reviews.filter(review => review.itemId === item.id);
   
@@ -40,6 +41,10 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
     setIsReviewDialogOpen(true);
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <>
       <Card 
@@ -48,12 +53,20 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
         }`}
         onClick={handleItemClick}
       >
-        <div className="relative h-48 overflow-hidden">
-          <img 
-            src={item.imageUrl} 
-            alt={item.title}
-            className="object-cover w-full h-full"
-          />
+        <div className="relative h-48 overflow-hidden bg-gray-100 flex justify-center items-center">
+          {!imageError ? (
+            <img 
+              src={item.imageUrl} 
+              alt={item.title}
+              className="object-cover w-full h-full"
+              onError={handleImageError}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center text-gray-400">
+              <ImageOff size={24} />
+              <span className="text-xs mt-1">Image unavailable</span>
+            </div>
+          )}
           {item.featured && (
             <div className="absolute top-2 right-2 bg-brand-purple text-white px-2 py-1 text-xs rounded-full">
               Featured

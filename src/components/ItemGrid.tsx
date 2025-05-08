@@ -10,7 +10,8 @@ const ItemGrid: React.FC = () => {
   // If no filtered items, show message
   if (filteredItems.length === 0) {
     return (
-      <div className="flex justify-center items-center h-40 w-full">
+      <div className="flex flex-col justify-center items-center h-60 w-full">
+        <ImageOff size={32} className="text-gray-400 mb-2" />
         <p className="text-gray-500">No items found in this category.</p>
       </div>
     );
