@@ -57,7 +57,7 @@ const ProductComparison: React.FC = () => {
                 <SelectValue placeholder="Choose a category" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map(category => (
+                {categories.map((category: string) => (
                   <SelectItem key={category} value={category}>{category}</SelectItem>
                 ))}
               </SelectContent>
