@@ -4,7 +4,7 @@ import { useData } from '@/contexts/DataContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { ImageOff, RefreshCw, Compare } from 'lucide-react';
+import { ImageOff, RefreshCw, ArrowsLeftRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const ProductComparison: React.FC = () => {
@@ -29,10 +29,10 @@ const ProductComparison: React.FC = () => {
 
   // List of features to compare
   const comparisonFeatures = [
-    { name: 'Rating', key: 'rating', format: (val) => val?.toFixed(1) || 'N/A' },
-    { name: 'Reviews', key: 'reviewsCount', format: (val) => val || '0' },
-    { name: 'Votes', key: 'votes', format: (val) => val || '0' },
-    { name: 'Featured', key: 'featured', format: (val) => val ? 'Yes' : 'No' }
+    { name: 'Rating', key: 'rating', format: (val: any) => val?.toFixed(1) || 'N/A' },
+    { name: 'Reviews', key: 'reviewsCount', format: (val: any) => val || '0' },
+    { name: 'Votes', key: 'votes', format: (val: any) => val || '0' },
+    { name: 'Featured', key: 'featured', format: (val: boolean) => val ? 'Yes' : 'No' }
   ];
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -43,7 +43,7 @@ const ProductComparison: React.FC = () => {
     <Card className="h-full overflow-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Compare className="h-5 w-5" />
+          <ArrowsLeftRight className="h-5 w-5" />
           Product Comparison
         </CardTitle>
       </CardHeader>
