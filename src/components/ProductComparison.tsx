@@ -4,7 +4,7 @@ import { useData } from '@/contexts/DataContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { ImageOff, RefreshCw, ArrowsLeftRight } from 'lucide-react';
+import { ImageOff, RefreshCw, ArrowLeftRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const ProductComparison: React.FC = () => {
@@ -43,7 +43,7 @@ const ProductComparison: React.FC = () => {
     <Card className="h-full overflow-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <ArrowsLeftRight className="h-5 w-5" />
+          <ArrowLeftRight className="h-5 w-5" />
           Product Comparison
         </CardTitle>
       </CardHeader>
