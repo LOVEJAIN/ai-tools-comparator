@@ -1,199 +1,118 @@
-
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useData } from "@/contexts/DataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useData } from '@/contexts/DataContext';
-import { Search, User, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Header: React.FC = () => {
-  const { user, logout } = useData();
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const { login, register } = useData();
+  const { user, login, logout, register } = useData();
+  const navigate = useNavigate();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [form, setForm] = useState({
+    username: '',
+    email: '',
+    password: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
-    setIsLoginOpen(false);
-    resetForm();
+    login(form.email, form.password);
+    setIsDialogOpen(false);
+    setForm({ username: '', email: '', password: '' });
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
-    register(username, email, password);
-    setIsRegisterOpen(false);
-    resetForm();
-  };
-
-  const resetForm = () => {
-    setEmail('');
-    setPassword('');
-    setUsername('');
-  };
-
-  const handleLogout = () => {
-    logout();
+    register(form.username, form.email, form.password);
+    setIsDialogOpen(false);
+    setForm({ username: '', email: '', password: '' });
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white border-b shadow-sm">
-      <div className="container flex items-center justify-between h-16 px-4 mx-auto">
-        <div className="flex items-center space-x-2">
-          <a href="#" className="flex items-center space-x-2">
-            <div className="bg-brand-purple w-8 h-8 rounded-md flex items-center justify-center">
-              <span className="text-white font-bold">Hi</span>
-            </div>
-            <span className="font-bold text-xl">Hi</span>
-          </a>
-        </div>
-
-        <div className="relative hidden md:flex items-center w-full max-w-md mx-12">
-          <Search className="absolute left-2.5 h-4 w-4 text-gray-500" />
-          <Input
-            type="search"
-            placeholder="Search for items..."
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        <div className="flex items-center space-x-4">
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative rounded-full" size="icon">
-                  <Avatar>
-                    <AvatarFallback className="bg-brand-purple text-white">
-                      {user.username.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>{user.username}</span>
-                </DropdownMenuItem>
-                {user.isAdmin && (
-                  <DropdownMenuItem>
-                    <a href="#analytics" className="flex w-full">
-                      Admin Analytics
-                    </a>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+    <header className="border-b bg-background">
+      <div className="container flex h-16 items-center px-4 justify-between">
+        <Link to="/" className="text-2xl font-bold">AI Tools Explorer</Link>
+        <div className="flex items-center gap-4">
+          {user && user.isAdmin && (
+            <button
+              className="px-3 py-1 rounded bg-primary text-white text-sm font-medium hover:bg-primary/90 transition"
+              onClick={() => navigate("/admin")}
+            >
+              Dashboard
+            </button>
+          )}
+          {!user ? (
+            <>
+              <Button className="px-3 py-1 rounded bg-primary text-white text-sm font-medium hover:bg-primary/90 transition" onClick={() => { setIsDialogOpen(true); setIsSignUp(false); }}>
+                Log in
+              </Button>
+              <Button variant="outline" className="px-3 py-1 text-sm font-medium" onClick={() => { setIsDialogOpen(true); setIsSignUp(true); }}>
+                Sign up
+              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="sm:max-w-[400px]">
+                  <DialogHeader>
+                    <DialogTitle>{isSignUp ? 'Sign Up' : 'Log In'}</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-4 pt-2">
+                    {isSignUp && (
+                      <Input
+                        name="username"
+                        placeholder="Username"
+                        value={form.username}
+                        onChange={handleChange}
+                        required
+                      />
+                    )}
+                    <Input
+                      name="email"
+                      type="email"
+                      placeholder="Email"
+                      value={form.email}
+                      onChange={handleChange}
+                      required
+                    />
+                    <Input
+                      name="password"
+                      type="password"
+                      placeholder="Password"
+                      value={form.password}
+                      onChange={handleChange}
+                      required
+                    />
+                    <Button type="submit" className="w-full bg-primary text-white hover:bg-primary/90 transition">
+                      {isSignUp ? 'Sign Up' : 'Log In'}
+                    </Button>
+                    <div className="text-xs text-center mt-2">
+                      {isSignUp ? (
+                        <span>Already have an account? <button type="button" className="underline" onClick={() => setIsSignUp(false)}>Log in</button></span>
+                      ) : (
+                        <span>Don&apos;t have an account? <button type="button" className="underline" onClick={() => setIsSignUp(true)}>Sign up</button></span>
+                      )}
+                    </div>
+                  </form>
+                  <div className="text-xs text-muted-foreground mt-2">
+                    <div>Dummy Admin: <b>admin@example.com / password</b></div>
+                    <div>Dummy User: <b>user@example.com / password</b></div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </>
           ) : (
-            <div className="flex items-center space-x-2">
-              <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="ghost">Log in</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Log in to your account</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleLogin} className="space-y-4 pt-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="you@example.com"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                      <div className="text-xs text-muted-foreground">
-                        Try with: admin@example.com / password
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                    </div>
-                    <Button type="submit" className="w-full bg-brand-purple hover:bg-brand-purple/90">
-                      Log in
-                    </Button>
-                  </form>
-                </DialogContent>
-              </Dialog>
-
-              <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-brand-purple hover:bg-brand-purple/90">Sign up</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Create an account</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleRegister} className="space-y-4 pt-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
-                      <Input
-                        id="username"
-                        placeholder="johndoe"
-                        required
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-email">Email</Label>
-                      <Input
-                        id="register-email"
-                        type="email"
-                        placeholder="you@example.com"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-password">Password</Label>
-                      <Input
-                        id="register-password"
-                        type="password"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                    </div>
-                    <Button type="submit" className="w-full bg-brand-purple hover:bg-brand-purple/90">
-                      Sign up
-                    </Button>
-                  </form>
-                </DialogContent>
-              </Dialog>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">{user.username || user.email}</span>
+              <button
+                className="px-2 py-1 rounded bg-muted text-xs font-medium hover:bg-accent transition"
+                onClick={logout}
+              >
+                Sign out
+              </button>
             </div>
           )}
         </div>
