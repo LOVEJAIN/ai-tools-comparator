@@ -9,6 +9,8 @@ import { useData } from "@/contexts/DataContext";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Admin from "./Admin";
 import Header from "@/components/Header";
+import ItemCard from "@/components/ItemCard";
+import CategoryFilter from "@/components/CategoryFilter";
 
 function StarRating({ value, onChange, readOnly = false }: { value: number; onChange?: (v: number) => void; readOnly?: boolean }) {
   return (
@@ -30,36 +32,48 @@ function StarRating({ value, onChange, readOnly = false }: { value: number; onCh
 function Index() {
   const [aiTools, setAiTools] = useState<AITool[]>(initialAiTools);
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
+  const { user, categories, activeCategory, setActiveCategory } = useData();
   const [tool1, setTool1] = useState<string>("");
   const [tool2, setTool2] = useState<string>("");
   const [showSuccess, setShowSuccess] = useState(false);
-  const { user } = useData();
   const [toolClicks, setToolClicks] = useState<{ [id: string]: number }>({});
   const [reviews, setReviews] = useState<{ [toolId: string]: { user: string; rating: number; text: string }[] }>({});
   const navigate = useNavigate();
 
   // Unique categories for filter dropdown
-  const categories = useMemo(() => Array.from(new Set(aiTools.map(t => t.category))), [aiTools]);
+  const uniqueCategories = categories;
 
   // Tools in selected category
-  const toolsInCategory = useMemo(() => aiTools.filter(t => t.category === category), [aiTools, category]);
+  const toolsInCategory = useMemo(() => activeCategory === 'all' ? aiTools : aiTools.filter(t => t.category === activeCategory), [aiTools, activeCategory]);
 
   // Filtered tools for grid
   const filteredTools = useMemo(() => {
     return aiTools.filter(tool => {
       const matchesSearch = tool.name.toLowerCase().includes(search.toLowerCase());
-      const matchesCategory = category ? tool.category === category : true;
+      const matchesCategory = activeCategory === 'all' ? true : tool.category === activeCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [search, category, aiTools]);
+  }, [search, activeCategory, aiTools]);
 
-  // Featured tools (top 6 by rating/reviewCount)
+  // Featured tools: top-rated or featured item per category
   const featuredTools = useMemo(() => {
-    return [...aiTools]
-      .sort((a, b) => b.rating - a.rating || b.reviewCount - a.reviewCount)
-      .slice(0, 6);
-  }, [aiTools]);
+    return categories.map(category => {
+      // Find featured item first, else highest rating
+      const itemsInCategory = aiTools.filter(t => t.category === category.id);
+      let featured = itemsInCategory.find(t => (t as any).featured);
+      if (!featured && itemsInCategory.length > 0) {
+        featured = [...itemsInCategory].sort((a, b) => b.rating - a.rating || b.reviewCount - a.reviewCount)[0];
+      }
+      return featured ? {
+        ...featured,
+        title: featured.name,
+        votes: 0,
+        reviewsCount: featured.reviewCount,
+        createdAt: '2024-01-01T00:00:00.000Z',
+        imageUrl: featured.imageUrl || '',
+      } : null;
+    }).filter(Boolean);
+  }, [categories, aiTools]);
 
   // Comparison objects
   const toolObj1 = toolsInCategory.find(t => t.id === tool1) || null;
@@ -162,29 +176,17 @@ function Index() {
   const totalClicks = Object.values(toolClicks).reduce((a, b) => a + b, 0);
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header searchValue={search} onSearchChange={setSearch} />
       <main className="container p-4 overflow-x-hidden">
+        <CategoryFilter />
         {/* Featured AI Tools Section */}
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-4">Featured AI Tools</h2>
           <div className="flex gap-4 overflow-x-auto pb-2">
             {featuredTools.map(tool => (
-              <Card key={tool.id} className="min-w-[260px] max-w-[260px] flex-shrink-0 shadow-md hover:shadow-lg transition-shadow border-primary border-2">
-                <CardContent className="p-4 flex flex-col items-center text-center">
-                  {tool.imageUrl && (
-                    <img src={tool.imageUrl} alt={tool.name} className="w-12 h-12 object-contain mb-2" />
-                  )}
-                  <h3 className="font-semibold text-base mb-1">{tool.name}</h3>
-                  <div className="flex items-center justify-center gap-1 mb-1">
-                    <span className="text-yellow-500">★</span>
-                    <span className="font-medium text-sm">{tool.rating.toFixed(1)}</span>
-                    <span className="text-xs text-muted-foreground">({tool.reviewCount} reviews)</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{tool.description}</p>
-                  <span className="text-xs text-muted-foreground mb-2">{tool.category}</span>
-                  <a href={tool.url} target="_blank" rel="noopener noreferrer" className="mt-2 px-3 py-1 rounded bg-primary text-white text-xs font-medium hover:bg-primary/90 transition">Visit</a>
-                </CardContent>
-              </Card>
+              <div key={tool.id} className="w-[260px] flex-shrink-0">
+                <ItemCard item={tool} />
+              </div>
             ))}
           </div>
         </section>
@@ -200,17 +202,17 @@ function Index() {
                 <div className="mb-2">
                   <label className="block text-sm font-medium mb-1">Category</label>
                   <select
-                    value={category}
+                    value={activeCategory}
                     onChange={e => {
-                      setCategory(e.target.value);
+                      setActiveCategory(e.target.value);
                       setTool1("");
                       setTool2("");
                     }}
                     className="border rounded px-2 py-1 w-full"
                   >
                     <option value="">Select Category</option>
-                    {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
+                    {uniqueCategories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
                 </div>
@@ -220,7 +222,7 @@ function Index() {
                     value={tool1}
                     onChange={e => setTool1(e.target.value)}
                     className="border rounded px-2 py-1 w-full"
-                    disabled={!category}
+                    disabled={!activeCategory}
                   >
                     <option value="">Select Tool 1</option>
                     {toolsInCategory.map(tool => (
@@ -234,7 +236,7 @@ function Index() {
                     value={tool2}
                     onChange={e => setTool2(e.target.value)}
                     className="border rounded px-2 py-1 w-full"
-                    disabled={!category}
+                    disabled={!activeCategory}
                   >
                     <option value="">Select Tool 2</option>
                     {toolsInCategory.map(tool => (
@@ -301,55 +303,21 @@ function Index() {
                 <CardTitle>AI Tools</CardTitle>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col">
-                <div className="flex gap-2 mb-4">
-                  <input
-                    type="text"
-                    placeholder="Search tools..."
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    className="border rounded px-2 py-1 flex-1"
-                  />
-                  <select
-                    value={category}
-                    onChange={e => setCategory(e.target.value)}
-                    className="border rounded px-2 py-1"
-                  >
-                    <option value="">All Categories</option>
-                    {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
                 <ScrollArea className="flex-1">
                   <div className="grid grid-cols-2 gap-4">
                     {filteredTools.slice(0, 50).map((tool) => (
-                      <Card key={tool.id} className="h-full hover:bg-accent transition-colors cursor-pointer">
-                        <CardContent className="p-4">
-                          <div className="flex items-center space-x-4">
-                            {tool.imageUrl && (
-                              <img
-                                src={tool.imageUrl}
-                                alt={tool.name}
-                                className="w-12 h-12 object-contain"
-                              />
-                            )}
-                            <div>
-                              <h3 className="font-semibold">{tool.name}</h3>
-                              <div className="flex items-center gap-1 mb-1">
-                                <span className="text-yellow-500">★</span>
-                                <span className="font-medium text-sm">{tool.rating.toFixed(1)}</span>
-                                <span className="text-xs text-muted-foreground">({tool.reviewCount} reviews)</span>
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                {tool.description}
-                              </p>
-                              <span className="text-xs text-muted-foreground">
-                                {tool.category}
-                              </span>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <div key={tool.id} className="w-[260px] flex-shrink-0">
+                        <ItemCard
+                          item={{
+                            ...tool,
+                            title: tool.name,
+                            votes: 0,
+                            reviewsCount: tool.reviewCount,
+                            createdAt: '2024-01-01T00:00:00.000Z',
+                            imageUrl: tool.imageUrl || '',
+                          }}
+                        />
+                      </div>
                     ))}
                   </div>
                 </ScrollArea>
@@ -437,8 +405,8 @@ function Index() {
               required
             >
               <option value="">Select Category*</option>
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+              {uniqueCategories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}
             </select>
             <input

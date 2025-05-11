@@ -5,7 +5,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange }) => {
   const { user, login, logout, register } = useData();
   const navigate = useNavigate();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -36,8 +41,17 @@ const Header: React.FC = () => {
 
   return (
     <header className="border-b bg-background">
-      <div className="container flex h-16 items-center px-4 justify-between">
-        <Link to="/" className="text-2xl font-bold">AI Tools Explorer</Link>
+      <div className="container flex h-16 items-center px-4 justify-between gap-4">
+        <Link to="/" className="text-2xl font-bold whitespace-nowrap">AI Tools Explorer</Link>
+        <div className="flex-1 flex justify-center">
+          <Input
+            type="text"
+            placeholder="Search for items..."
+            value={searchValue}
+            onChange={e => onSearchChange(e.target.value)}
+            className="max-w-lg w-full rounded-lg border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
         <div className="flex items-center gap-4">
           {user && user.isAdmin && (
             <button
