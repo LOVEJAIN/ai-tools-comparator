@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -6,11 +6,20 @@ import { aiTools as initialAiTools, AITool } from "../data/aiTools";
 import { aiNews } from "../data/aiNews";
 import Footer from "@/components/Footer";
 import { useData } from "@/contexts/DataContext";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import Admin from "./Admin";
 import Header from "@/components/Header";
 import ItemCard from "@/components/ItemCard";
 import CategoryFilter from "@/components/CategoryFilter";
+import Modal from "../components/Modal";
+import CreateListForm from "../components/CreateListForm";
+
+type PublicList = {
+  id: string;
+  title: string;
+  creator: string;
+  toolIds: string[];
+};
 
 function StarRating({ value, onChange, readOnly = false }: { value: number; onChange?: (v: number) => void; readOnly?: boolean }) {
   return (
@@ -39,6 +48,42 @@ function Index() {
   const [toolClicks, setToolClicks] = useState<{ [id: string]: number }>({});
   const [reviews, setReviews] = useState<{ [toolId: string]: { user: string; rating: number; text: string }[] }>({});
   const navigate = useNavigate();
+  const [publicLists, setPublicLists] = useState<PublicList[]>([
+    {
+      id: '1',
+      title: '20 AI Tools for ML Projects',
+      creator: 'demo@user.com',
+      toolIds: ['1', '2', '3', '4', '5']
+    },
+    {
+      id: '2',
+      title: 'Best Free AI Tools',
+      creator: 'freebie@user.com',
+      toolIds: ['6', '7', '8']
+    },
+    {
+      id: '3',
+      title: 'AI for Content Creation',
+      creator: 'content@user.com',
+      toolIds: ['13', '14', '15']
+    },
+    {
+      id: '4',
+      title: 'AI for Developers',
+      creator: 'dev@user.com',
+      toolIds: ['6', '1', '9']
+    },
+    {
+      id: '5',
+      title: 'AI for Productivity',
+      creator: 'productivity@user.com',
+      toolIds: ['7', '5', '10']
+    }
+  ]);
+  const [listDialog, setListDialog] = useState<{ open: boolean; list: PublicList | null }>({ open: false, list: null });
+  const location = useLocation();
+  const [showCreateListModal, setShowCreateListModal] = useState(false);
+  const [privateLists, setPrivateLists] = useState<PublicList[]>([]);
 
   // Unique categories for filter dropdown
   const uniqueCategories = categories;
@@ -174,6 +219,26 @@ function Index() {
 
   // Calculate total clicks and submissions
   const totalClicks = Object.values(toolClicks).reduce((a, b) => a + b, 0);
+
+  // Add new list from navigation state if present
+  useEffect(() => {
+    if (location.state && location.state.newList) {
+      setPublicLists(prev => [location.state.newList, ...prev]);
+      // Clear the state so it doesn't add again on refresh
+      navigate("/", { replace: true, state: {} });
+    }
+  }, [location.state, navigate]);
+
+  // Add new list from CreateListForm
+  const handleAddList = (list) => {
+    if (list.isPublic) {
+      setPublicLists(prev => [list, ...prev]);
+    } else {
+      setPrivateLists(prev => [list, ...prev]);
+    }
+    setShowCreateListModal(false);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header searchValue={search} onSearchChange={setSearch} />
@@ -327,6 +392,7 @@ function Index() {
           </div>
           {/* Right Column - News Section */}
           <div className="col-span-3 min-w-0">
+            {/* News Card (existing) */}
             <Card className="h-full overflow-y-auto max-h-[calc(100vh-12rem)]">
               <CardHeader>
                 <CardTitle>AI News & Articles</CardTitle>
@@ -364,82 +430,128 @@ function Index() {
             </Card>
           </div>
         </div>
-        {/* Submit Tool Section */}
-        <section className="max-w-xl mx-auto mt-12 mb-8 p-6 bg-white rounded-lg shadow-lg border">
-          <h2 className="text-lg font-semibold mb-4">Submit Your AI Tool</h2>
-          {showSuccess && <div className="mb-4 text-green-600 font-medium">Tool submitted successfully!</div>}
-          {formError && <div className="mb-4 text-red-600 font-medium">{formError}</div>}
-          <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
-            <input
-              type="text"
-              name="name"
-              placeholder="Tool Name*"
-              value={form.name}
-              onChange={handleFormChange}
-              className="border rounded px-3 py-2"
-              required
-            />
-            <textarea
-              name="description"
-              placeholder="Description*"
-              value={form.description}
-              onChange={handleFormChange}
-              className="border rounded px-3 py-2"
-              rows={2}
-              required
-            />
-            <input
-              type="url"
-              name="url"
-              placeholder="Website URL*"
-              value={form.url}
-              onChange={handleFormChange}
-              className="border rounded px-3 py-2"
-              required
-            />
-            <select
-              name="category"
-              value={form.category}
-              onChange={handleFormChange}
-              className="border rounded px-3 py-2"
-              required
-            >
-              <option value="">Select Category*</option>
-              {uniqueCategories.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
-            <input
-              type="url"
-              name="imageUrl"
-              placeholder="Image URL (optional)"
-              value={form.imageUrl}
-              onChange={handleFormChange}
-              className="border rounded px-3 py-2"
-            />
-            <div className="flex items-center gap-2">
-              <label htmlFor="captcha" className="text-sm">What is 3 + 4?</label>
-              <input
-                type="text"
-                name="captcha"
-                id="captcha"
-                placeholder="Answer*"
-                value={form.captcha}
-                onChange={handleFormChange}
-                className="border rounded px-3 py-2 w-24"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-primary text-white rounded px-4 py-2 font-semibold hover:bg-primary/90 transition"
-            >
-              Submit Tool
-            </button>
-          </form>
-        </section>
+        {/* Lists Side-by-Side */}
+        <div className="flex flex-row gap-8 max-w-5xl mx-auto mt-12 mb-8 ml-[60]">
+          {/* Private Lists Card - left of Public Lists */}
+          {user && (
+            <section className="w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between">
+              <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold text-primary">Private Lists</CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
+                    {privateLists.filter(list => list.creator === user.email).length === 0 && (
+                      <div className="text-lg text-muted-foreground mb-2">No private lists yet.</div>
+                    )}
+                    {privateLists.filter(list => list.creator === user.email).map(list => (
+                      <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition">
+                        <div className="font-bold text-lg mb-1">{list.title}</div>
+                        <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {list.toolIds.slice(0, 3).map(tid => {
+                            const tool = aiTools.find(t => t.id === tid);
+                            return tool ? (<span key={tid} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>) : null;
+                          })}
+                          {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
+          )}
+          {/* Public Lists Card - right of Private Lists */}
+          <section className="w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between">
+            <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-primary">Public Lists</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col">
+                <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
+                  {publicLists.length === 0 && (<div className="text-lg text-muted-foreground mb-2">No public lists yet.</div>)}
+                  {publicLists.map(list => (
+                    <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition" onClick={() => setListDialog({ open: true, list })}>
+                      <div className="font-bold text-lg mb-1">{list.title}</div>
+                      <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {list.toolIds.slice(0, 3).map(tid => {
+                          const tool = aiTools.find(t => t.id === tid);
+                          return tool ? (<span key={tid} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>) : null;
+                        })}
+                        {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  className={`mt-6 w-full rounded-xl px-6 py-4 font-bold text-xl flex items-center justify-center gap-2 transition shadow-lg ${user ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'}`}
+                  onClick={() => { if (user) setShowCreateListModal(true); }}
+                  disabled={!user}
+                  title={user ? '' : 'You must be logged in to create a list'}
+                >
+                  <span className="text-2xl">➕</span> Create List
+                </button>
+              </CardContent>
+            </Card>
+          </section>
+        </div>
+        {/* Submit Tool Section - centered below lists */}
+        <div className="flex justify-center mt-4 mb-12">
+          <section className="w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between">
+            <h2 className="text-2xl font-bold mb-6 text-primary">Submit Your AI Tool</h2>
+            {showSuccess && <div className="mb-4 text-green-600 font-medium">Tool submitted successfully!</div>}
+            {formError && <div className="mb-4 text-red-600 font-medium">{formError}</div>}
+            <form onSubmit={handleFormSubmit} className="flex flex-col gap-5">
+              <input type="text" name="name" placeholder="Tool Name*" value={form.name} onChange={handleFormChange} className="border rounded-lg px-4 py-3 text-lg" required />
+              <textarea name="description" placeholder="Description*" value={form.description} onChange={handleFormChange} className="border rounded-lg px-4 py-3 text-lg" rows={2} required />
+              <input type="url" name="url" placeholder="Website URL*" value={form.url} onChange={handleFormChange} className="border rounded-lg px-4 py-3 text-lg" required />
+              <select name="category" value={form.category} onChange={handleFormChange} className="border rounded-lg px-4 py-3 text-lg" required>
+                <option value="">Select Category*</option>
+                {uniqueCategories.map(cat => (<option key={cat.id} value={cat.id}>{cat.name}</option>))}
+              </select>
+              <input type="url" name="imageUrl" placeholder="Image URL (optional)" value={form.imageUrl} onChange={handleFormChange} className="border rounded-lg px-4 py-3 text-lg" />
+              <div className="flex items-center gap-3">
+                <label htmlFor="captcha" className="text-lg">What is 3 + 4?</label>
+                <input type="text" name="captcha" id="captcha" placeholder="Answer*" value={form.captcha} onChange={handleFormChange} className="border rounded-lg px-4 py-3 w-24 text-lg" required />
+              </div>
+              <button type="submit" className="bg-primary text-white rounded-lg px-6 py-3 font-bold text-lg hover:bg-primary/90 transition">Submit Tool</button>
+            </form>
+          </section>
+        </div>
       </main>
       <Footer />
+      {/* List Dialog/Modal */}
+      {listDialog.open && listDialog.list && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative">
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+              onClick={() => setListDialog({ open: false, list: null })}
+            >✕</button>
+            <h3 className="text-lg font-semibold mb-2">{listDialog.list.title}</h3>
+            <div className="text-xs text-muted-foreground mb-4">by {listDialog.list.creator}</div>
+            <div className="space-y-2">
+              {listDialog.list.toolIds.map(tid => {
+                const tool = aiTools.find(t => t.id === tid);
+                return tool ? (
+                  <div key={tid} className="border rounded p-2 flex items-center gap-2">
+                    {tool.imageUrl && <img src={tool.imageUrl} alt={tool.name} className="w-8 h-8 rounded" />}
+                    <div>
+                      <div className="font-medium">{tool.name}</div>
+                      <div className="text-xs text-muted-foreground">{tool.description}</div>
+                    </div>
+                  </div>
+                ) : null;
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+      <Modal open={showCreateListModal} onClose={() => setShowCreateListModal(false)}>
+        <CreateListForm onSubmit={handleAddList} onCancel={() => setShowCreateListModal(false)} />
+      </Modal>
     </div>
   );
 }

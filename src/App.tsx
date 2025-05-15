@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { DataProvider } from "./contexts/DataContext";
 import Admin from "./pages/Admin";
+import CreateList from "./pages/CreateList";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/home" element={<Index />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/create-list" element={<CreateList addList={() => {}} />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
