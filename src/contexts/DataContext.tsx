@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Category, Item, Review, User, Analytics } from '../types';
-import { mockCategories, mockItems, mockReviews, mockAnalytics } from '../data/mockData';
+import { mockItems, mockReviews, mockAnalytics } from '../data/mockData';
 import { toast } from "@/components/ui/sonner";
+import { aiTools } from '../data/aiTools';
 
 interface DataContextType {
   user: User | null;
@@ -27,10 +27,22 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [categories, setCategories] = useState<Category[]>(mockCategories);
-  const [items, setItems] = useState<Item[]>(mockItems);
+  const [items, setItems] = useState<Item[]>(aiTools as any);
   const [reviews, setReviews] = useState<Review[]>(mockReviews);
-  const [analytics, setAnalytics] = useState<Analytics[]>(mockAnalytics);
+  const [analytics, setAnalytics] = useState<Analytics[]>(
+    (aiTools as any[]).map(tool => ({
+      itemId: tool.id,
+      itemTitle: tool.name,
+      clicks: 0,
+      conversion: 0,
+      revenue: 0,
+    }))
+  );
+  // Dynamically generate categories from items
+  const categories = React.useMemo(() => {
+    const unique = Array.from(new Set(items.map(item => item.category)));
+    return unique.map(cat => ({ id: cat, name: cat, slug: cat.toLowerCase().replace(/\s+/g, '-') }));
+  }, [items]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [sortOrder, setSortOrder] = useState<'popular' | 'latest' | 'rating'>('popular');
 
@@ -181,19 +193,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const trackItemClick = (itemId: string) => {
-    // In a real application, this would send data to an analytics backend
-    // For the demo, we'll just update our mock analytics
-    setAnalytics(prev => 
-      prev.map(analytic => {
-        if (analytic.itemId === itemId) {
-          return {
-            ...analytic,
-            clicks: analytic.clicks + 1,
-            revenue: parseFloat((analytic.clicks * 0.25).toFixed(2))
-          };
-        }
-        return analytic;
-      })
+    setAnalytics(prev =>
+      prev.map(analytic =>
+        analytic.itemId === itemId
+          ? {
+              ...analytic,
+              clicks: analytic.clicks + 1,
+              revenue: (analytic.clicks + 1) * 1, // 1 INR per click
+            }
+          : analytic
+      )
     );
   };
 
