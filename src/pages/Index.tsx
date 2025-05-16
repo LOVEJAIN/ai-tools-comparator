@@ -20,7 +20,15 @@ type PublicList = {
   creator: string;
   toolIds: string[];
 };
-
+function useAIVideos() {
+  const [videos, setVideos] = useState([]);
+  useEffect(() => {
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=artificial%20intelligence&type=video&maxResults=8&key=YOUR_YOUTUBE_API_KEY`)
+      .then(res => res.json())
+      .then(data => setVideos(data.items || []));
+  }, []);
+  return videos;
+}
 function StarRating({ value, onChange, readOnly = false }: { value: number; onChange?: (v: number) => void; readOnly?: boolean }) {
   return (
     <div className="flex items-center gap-1">
@@ -39,11 +47,14 @@ function StarRating({ value, onChange, readOnly = false }: { value: number; onCh
 }
 
 function Index() {
+  const aiVideos = useAIVideos();
   const [aiTools, setAiTools] = useState<AITool[]>(initialAiTools);
   const [search, setSearch] = useState("");
   const { user, categories, activeCategory, setActiveCategory } = useData();
   const [tool1, setTool1] = useState<string>("");
   const [tool2, setTool2] = useState<string>("");
+  const [draggedToolId, setDraggedToolId] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<'popular' | 'latest' | 'rating'>('popular');
   const [showSuccess, setShowSuccess] = useState(false);
   const [toolClicks, setToolClicks] = useState<{ [id: string]: number }>({});
   const [reviews, setReviews] = useState<{ [toolId: string]: { user: string; rating: number; text: string }[] }>({});
@@ -243,16 +254,48 @@ function Index() {
     <div className="min-h-screen bg-background">
       <Header searchValue={search} onSearchChange={setSearch} />
       <main className="container p-4 overflow-x-hidden">
-        <CategoryFilter />
+        {/* Sort by Dropdown */}
+        <div className="flex items-center gap-4 mb-4">
+          <label className="text-base font-medium">Sort by:</label>
+          <select
+            value={sortOrder}
+            onChange={e => setSortOrder(e.target.value as any)}
+            className="border rounded px-3 py-2"
+          >
+            <option value="popular">Most Votes</option>
+            <option value="latest">Latest</option>
+            <option value="rating">Highest Rated</option>
+          </select>
+        </div>
+        {/* Category Chips Section (single row, below Sort by) */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          <button
+            className={`px-4 py-2 rounded-full font-semibold transition text-base ${activeCategory === 'all' ? 'bg-primary text-white' : 'bg-purple-100 text-primary hover:bg-purple-200'}`}
+            onClick={() => setActiveCategory('all')}
+          >
+            All
+          </button>
+          {uniqueCategories.map(cat => (
+            <button
+              key={cat.id}
+              className={`px-4 py-2 rounded-full font-semibold transition text-base ${activeCategory === cat.id ? 'bg-primary text-white' : 'bg-purple-100 text-primary hover:bg-purple-200'}`}
+              onClick={() => setActiveCategory(cat.id)}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
         {/* Featured AI Tools Section */}
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-4">Featured AI Tools</h2>
           <div className="flex gap-4 overflow-x-auto pb-2">
-            {featuredTools.map(tool => (
-              <div key={tool.id} className="w-[260px] flex-shrink-0">
-                <ItemCard item={tool} />
-              </div>
-            ))}
+            {featuredTools
+              .filter(tool => activeCategory === 'all' || tool.category === activeCategory)
+              .map(tool => (
+                <div key={tool.id} className="w-[260px] flex-shrink-0">
+                  <ItemCard item={tool} />
+                </div>
+              ))}
           </div>
         </section>
         {/* Main 3-column layout */}
@@ -283,6 +326,19 @@ function Index() {
                 </div>
                 <div className="mb-2">
                   <label className="block text-sm font-medium mb-1">Tool 1</label>
+                  <div
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={() => {
+                      if (draggedToolId) setTool1(draggedToolId);
+                      setDraggedToolId(null);
+                    }}
+                    className={`border rounded px-2 py-1 w-full mb-2 bg-gray-50 transition ${draggedToolId ? 'ring-2 ring-primary' : ''}`}
+                    style={{ minHeight: 38 }}
+                  >
+                    {tool1
+                      ? aiTools.find(t => t.id === tool1)?.name
+                      : <span className="text-gray-400">Drag tool here or select</span>}
+                  </div>
                   <select
                     value={tool1}
                     onChange={e => setTool1(e.target.value)}
@@ -297,6 +353,19 @@ function Index() {
                 </div>
                 <div className="mb-2">
                   <label className="block text-sm font-medium mb-1">Tool 2</label>
+                  <div
+                    onDragOver={e => e.preventDefault()}
+                    onDrop={() => {
+                      if (draggedToolId) setTool2(draggedToolId);
+                      setDraggedToolId(null);
+                    }}
+                    className={`border rounded px-2 py-1 w-full mb-2 bg-gray-50 transition ${draggedToolId ? 'ring-2 ring-primary' : ''}`}
+                    style={{ minHeight: 38 }}
+                  >
+                    {tool2
+                      ? aiTools.find(t => t.id === tool2)?.name
+                      : <span className="text-gray-400">Drag tool here or select</span>}
+                  </div>
                   <select
                     value={tool2}
                     onChange={e => setTool2(e.target.value)}
@@ -371,7 +440,13 @@ function Index() {
                 <ScrollArea className="flex-1">
                   <div className="grid grid-cols-2 gap-4">
                     {filteredTools.slice(0, 50).map((tool) => (
-                      <div key={tool.id} className="w-[260px] flex-shrink-0">
+                      <div
+                        key={tool.id}
+                        className="w-[260px] flex-shrink-0"
+                        draggable
+                        onDragStart={() => setDraggedToolId(tool.id)}
+                        onDragEnd={() => setDraggedToolId(null)}
+                      >
                         <ItemCard
                           item={{
                             ...tool,
@@ -514,6 +589,40 @@ function Index() {
             ))}
           </div>
         </section>
+<section className="max-w-5xl mx-auto mb-12">
+  <h2 className="text-xl font-semibold mb-4 text-center">Latest AI YouTube Videos</h2>
+  <div className="flex gap-6 overflow-x-auto pb-2 px-2">
+    {(aiVideos.length > 0 ? aiVideos : [1,2,3,4]).map((video, idx) => (
+      aiVideos.length > 0 ? (
+        <a
+          key={video.id.videoId}
+          href={`https://www.youtube.com/watch?v=${video.id.videoId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="min-w-[320px] bg-white rounded-xl shadow-lg border flex flex-col items-center p-4 hover:shadow-xl transition"
+        >
+          <img
+            src={video.snippet.thumbnails.medium.url}
+            alt={video.snippet.title}
+            className="rounded-lg mb-3 w-full h-40 object-cover"
+          />
+          <div className="font-bold text-base mb-1">{video.snippet.title}</div>
+          <div className="text-xs text-muted-foreground">{video.snippet.channelTitle}</div>
+        </a>
+      ) : (
+        <div key={idx} className="min-w-[320px] bg-white rounded-xl shadow-lg border flex flex-col items-center p-4">
+          <img
+            src={`https://picsum.photos/seed/youtube${idx}/320/160`}
+            alt={`Dummy Video ${idx+1}`}
+            className="rounded-lg mb-3 w-full h-40 object-cover"
+          />
+          <div className="font-bold text-base mb-1">Dummy AI Video {idx+1}</div>
+          <div className="text-xs text-muted-foreground">AI Channel {idx+1}</div>
+        </div>
+      )
+    ))}
+  </div>
+</section>
       </main>
       <Footer />
       {/* List Dialog/Modal */}
