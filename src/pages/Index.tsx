@@ -431,7 +431,7 @@ function Index() {
           </div>
         </div>
         {/* Lists Side-by-Side */}
-        <div className="flex flex-row gap-8 max-w-5xl mx-auto mt-12 mb-8 ml-[60]">
+        <div className={`flex flex-row gap-8 max-w-5xl mx-auto mt-12 mb-8 ${user ? 'justify-center' : 'justify-center'}`}>
           {/* Private Lists Card - left of Public Lists */}
           {user && (
             <section className="w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between">
@@ -463,7 +463,7 @@ function Index() {
             </section>
           )}
           {/* Public Lists Card - right of Private Lists */}
-          <section className="w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between">
+          <section className={`w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between ${!user ? 'mx-auto' : ''}`}>
             <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold text-primary">Public Lists</CardTitle>
@@ -497,29 +497,23 @@ function Index() {
             </Card>
           </section>
         </div>
-        {/* Submit Tool Section - centered below lists */}
-        <div className="flex justify-center mt-4 mb-12">
-          <section className="w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between">
-            <h2 className="text-2xl font-bold mb-6 text-primary">Submit Your AI Tool</h2>
-            {showSuccess && <div className="mb-4 text-green-600 font-medium">Tool submitted successfully!</div>}
-            {formError && <div className="mb-4 text-red-600 font-medium">{formError}</div>}
-            <form onSubmit={handleFormSubmit} className="flex flex-col gap-5">
-              <input type="text" name="name" placeholder="Tool Name*" value={form.name} onChange={handleFormChange} className="border rounded-lg px-4 py-3 text-lg" required />
-              <textarea name="description" placeholder="Description*" value={form.description} onChange={handleFormChange} className="border rounded-lg px-4 py-3 text-lg" rows={2} required />
-              <input type="url" name="url" placeholder="Website URL*" value={form.url} onChange={handleFormChange} className="border rounded-lg px-4 py-3 text-lg" required />
-              <select name="category" value={form.category} onChange={handleFormChange} className="border rounded-lg px-4 py-3 text-lg" required>
-                <option value="">Select Category*</option>
-                {uniqueCategories.map(cat => (<option key={cat.id} value={cat.id}>{cat.name}</option>))}
-              </select>
-              <input type="url" name="imageUrl" placeholder="Image URL (optional)" value={form.imageUrl} onChange={handleFormChange} className="border rounded-lg px-4 py-3 text-lg" />
-              <div className="flex items-center gap-3">
-                <label htmlFor="captcha" className="text-lg">What is 3 + 4?</label>
-                <input type="text" name="captcha" id="captcha" placeholder="Answer*" value={form.captcha} onChange={handleFormChange} className="border rounded-lg px-4 py-3 w-24 text-lg" required />
+        {/* Scrollable Photos Section */}
+        <section className="max-w-3xl mx-auto mb-12">
+          <h2 className="text-xl font-semibold mb-4 text-center">Community Highlights</h2>
+          <div className="flex gap-6 overflow-x-auto pb-2 px-2">
+            {[1,2,3,4].map((n) => (
+              <div key={n} className="min-w-[260px] bg-white rounded-xl shadow-lg border flex flex-col items-center p-4">
+                <img
+                  src={`https://picsum.photos/seed/community${n}/240/160`}
+                  alt={`Community Highlight ${n}`}
+                  className="rounded-lg mb-3 w-full h-40 object-cover"
+                />
+                <div className="font-bold text-lg mb-1">Photo Title {n}</div>
+                <div className="text-sm text-muted-foreground mb-2">Description for photo {n} goes here. This is a community highlight.</div>
               </div>
-              <button type="submit" className="bg-primary text-white rounded-lg px-6 py-3 font-bold text-lg hover:bg-primary/90 transition">Submit Tool</button>
-            </form>
-          </section>
-        </div>
+            ))}
+          </div>
+        </section>
       </main>
       <Footer />
       {/* List Dialog/Modal */}
