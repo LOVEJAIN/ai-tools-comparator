@@ -3,7 +3,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautif
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { aiTools as initialAiTools, AITool } from "../data/aiTools";
-import { aiNews } from "../data/aiNews";
+import { newsData } from "../data/newsData";
 import Footer from "@/components/Footer";
 import { useData } from "@/contexts/DataContext";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
@@ -467,7 +467,6 @@ function Index() {
           </div>
           {/* Right Column - News Section */}
           <div className="col-span-3 min-w-0">
-            {/* News Card (existing) */}
             <Card className="h-full overflow-y-auto max-h-[calc(100vh-12rem)]">
               <CardHeader>
                 <CardTitle>AI News & Articles</CardTitle>
@@ -475,26 +474,37 @@ function Index() {
               <CardContent>
                 <ScrollArea className="h-[calc(100vh-12rem)]">
                   <div className="space-y-4">
-                    {aiNews.map((news) => (
-                      <Card key={news.id}>
+                    {newsData.map((news) => (
+                      <Card key={news.url}>
                         <CardContent className="p-4">
-                          <h3 className="font-semibold mb-2">{news.title}</h3>
-                          <p className="text-sm text-muted-foreground mb-2">{news.content}</p>
-                          <div className="space-y-2">
-                            {news.links.map((link, index) => (
-                              <a
-                                key={index}
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block text-sm text-blue-600 hover:underline"
-                              >
-                                {link.text}
-                              </a>
-                            ))}
-                          </div>
-                          <div className="mt-2 text-xs text-muted-foreground">
-                            <span>{news.author}</span> • <span>{news.date}</span>
+                          {news.urlToImage && (
+                            <img
+                              src={news.urlToImage}
+                              alt={news.title}
+                              className="w-full h-48 object-cover rounded-lg mb-4"
+                            />
+                          )}
+                          <h3 className="font-semibold mb-2 hover:text-primary">
+                            <a href={news.url} target="_blank" rel="noopener noreferrer">
+                              {news.title}
+                            </a>
+                          </h3>
+                          {news.description && (
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {news.description}
+                            </p>
+                          )}
+                          <div className="mt-2 text-xs text-muted-foreground flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span>{news.source.name}</span>
+                              {news.author && (
+                                <>
+                                  <span>•</span>
+                                  <span>{news.author}</span>
+                                </>
+                              )}
+                            </div>
+                            <span>{new Date(news.publishedAt).toLocaleDateString()}</span>
                           </div>
                         </CardContent>
                       </Card>
