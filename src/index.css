@@ -99,3 +99,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+.header-link {
+  @apply text-base font-semibold px-3 py-2 rounded hover:underline text-primary transition;
+}
+.header-btn {
+  @apply bg-primary text-white font-semibold px-4 py-2 rounded hover:bg-primary/90 transition shadow;
+}
+.header-btn-outline {
+  @apply border border-primary text-primary font-semibold px-4 py-2 rounded hover:bg-primary hover:text-white transition shadow;
+}

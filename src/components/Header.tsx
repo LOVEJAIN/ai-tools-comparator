@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useData } from "@/contexts/DataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import SubmitToolModal, { SubmitToolModalHandle } from './SubmitBanner';
 
 interface HeaderProps {
   searchValue: string;
@@ -20,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange }) => {
     email: '',
     password: ''
   });
+  const submitModalRef = useRef<SubmitToolModalHandle>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -53,22 +55,16 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange }) => {
           />
         </div>
         <div className="flex items-center gap-4">
+          <Link to="/jobs" className="header-link">Jobs</Link>
+          <Link to="/subscription" className="header-link">Advertise</Link>
+          <Button className="header-btn" onClick={() => submitModalRef.current?.open('submit')}>Submit AI Tool</Button>
           {user && user.isAdmin && (
-            <button
-              className="px-3 py-1 rounded bg-primary text-white text-sm font-medium hover:bg-primary/90 transition"
-              onClick={() => navigate("/admin")}
-            >
-              Dashboard
-            </button>
+            <Button className="header-btn" onClick={() => navigate("/admin")}>Dashboard</Button>
           )}
           {!user ? (
             <>
-              <Button className="px-3 py-1 rounded bg-primary text-white text-sm font-medium hover:bg-primary/90 transition" onClick={() => { setIsDialogOpen(true); setIsSignUp(false); }}>
-                Log in
-              </Button>
-              <Button variant="outline" className="px-3 py-1 text-sm font-medium" onClick={() => { setIsDialogOpen(true); setIsSignUp(true); }}>
-                Sign up
-              </Button>
+              <Button className="header-btn" onClick={() => { setIsDialogOpen(true); setIsSignUp(false); }}>Log in</Button>
+              <Button variant="outline" className="header-btn-outline" onClick={() => { setIsDialogOpen(true); setIsSignUp(true); }}>Sign up</Button>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="sm:max-w-[400px]">
                   <DialogHeader>
@@ -121,16 +117,12 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange }) => {
           ) : (
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">{user.username || user.email}</span>
-              <button
-                className="px-2 py-1 rounded bg-muted text-xs font-medium hover:bg-accent transition"
-                onClick={logout}
-              >
-                Sign out
-              </button>
+              <Button variant="outline" className="header-btn-outline" onClick={logout}>Sign out</Button>
             </div>
           )}
         </div>
       </div>
+      <SubmitToolModal ref={submitModalRef} />
     </header>
   );
 };
