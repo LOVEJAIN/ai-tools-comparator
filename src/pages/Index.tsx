@@ -13,6 +13,14 @@ import ItemCard from "@/components/ItemCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import Modal from "../components/Modal";
 import CreateListForm from "../components/CreateListForm";
+import YoutubeCarousel from "../components/YoutubeCarousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../components/ui/carousel";
 
 type PublicList = {
   id: string;
@@ -253,284 +261,312 @@ function Index() {
   return (
     <div className="min-h-screen bg-background">
       <Header searchValue={search} onSearchChange={setSearch} />
-      <main className="container p-4 overflow-x-hidden">
-        {/* Sort by Dropdown */}
-        <div className="flex items-center gap-4 mb-4">
-          <label className="text-base font-medium">Sort by:</label>
-          <select
-            value={sortOrder}
-            onChange={e => setSortOrder(e.target.value as any)}
-            className="border rounded px-3 py-2"
-          >
-            <option value="popular">Most Votes</option>
-            <option value="latest">Latest</option>
-            <option value="rating">Highest Rated</option>
-          </select>
-        </div>
-        {/* Category Chips Section (single row, below Sort by) */}
-        <div className="flex flex-wrap gap-3 mb-6">
-          <button
-            className={`px-4 py-2 rounded-full font-semibold transition text-base ${activeCategory === 'all' ? 'bg-primary text-white' : 'bg-purple-100 text-primary hover:bg-purple-200'}`}
-            onClick={() => setActiveCategory('all')}
-          >
-            All
-          </button>
-          {uniqueCategories.map(cat => (
-            <button
-              key={cat.id}
-              className={`px-4 py-2 rounded-full font-semibold transition text-base ${activeCategory === cat.id ? 'bg-primary text-white' : 'bg-purple-100 text-primary hover:bg-purple-200'}`}
-              onClick={() => setActiveCategory(cat.id)}
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <main className="container p-4 overflow-x-hidden">
+          {/* Sort by Dropdown */}
+          <div className="flex items-center gap-4 mb-4">
+            <label className="text-base font-medium">Sort by:</label>
+            <select
+              value={sortOrder}
+              onChange={e => setSortOrder(e.target.value as any)}
+              className="border rounded px-3 py-2"
             >
-              {cat.name}
+              <option value="popular">Most Votes</option>
+              <option value="latest">Latest</option>
+              <option value="rating">Highest Rated</option>
+            </select>
+          </div>
+          {/* Category Chips Section (single row, below Sort by) */}
+          <div className="flex flex-wrap gap-3 mb-6">
+            <button
+              className={`px-4 py-2 rounded-full font-semibold transition text-base ${activeCategory === 'all' ? 'bg-primary text-white' : 'bg-purple-100 text-primary hover:bg-purple-200'}`}
+              onClick={() => setActiveCategory('all')}
+            >
+              All
             </button>
-          ))}
-        </div>
-        {/* Featured AI Tools Section */}
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Featured AI Tools</h2>
-          <div className="flex gap-4 overflow-x-auto pb-2">
-            {featuredTools
-              .filter(tool => activeCategory === 'all' || tool.category === activeCategory)
-              .map(tool => (
-                <div key={tool.id} className="w-[260px] flex-shrink-0">
-                  <ItemCard item={tool} />
-                </div>
-              ))}
+            {uniqueCategories.map(cat => (
+              <button
+                key={cat.id}
+                className={`px-4 py-2 rounded-full font-semibold transition text-base ${activeCategory === cat.id ? 'bg-primary text-white' : 'bg-purple-100 text-primary hover:bg-purple-200'}`}
+                onClick={() => setActiveCategory(cat.id)}
+              >
+                {cat.name}
+              </button>
+            ))}
           </div>
-        </section>
-        {/* Main 3-column layout */}
-        <div className="grid grid-cols-12 gap-4" style={{ minHeight: '70vh' }}>
-          {/* Left Column - Comparator */}
-          <div className="col-span-3 min-w-0">
-            <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)]">
-              <CardHeader>
-                <CardTitle>Compare AI Tools</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col gap-4">
-                <div className="mb-2">
-                  <label className="block text-sm font-medium mb-1">Category</label>
-                  <select
-                    value={activeCategory}
-                    onChange={e => {
-                      setActiveCategory(e.target.value);
-                      setTool1("");
-                      setTool2("");
-                    }}
-                    className="border rounded px-2 py-1 w-full"
-                  >
-                    <option value="">Select Category</option>
-                    {uniqueCategories.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="mb-2">
-                  <label className="block text-sm font-medium mb-1">Tool 1</label>
-                  <div
-                    onDragOver={e => e.preventDefault()}
-                    onDrop={() => {
-                      if (draggedToolId) setTool1(draggedToolId);
-                      setDraggedToolId(null);
-                    }}
-                    className={`border rounded px-2 py-1 w-full mb-2 bg-gray-50 transition ${draggedToolId ? 'ring-2 ring-primary' : ''}`}
-                    style={{ minHeight: 38 }}
-                  >
-                    {tool1
-                      ? aiTools.find(t => t.id === tool1)?.name
-                      : <span className="text-gray-400">Drag tool here or select</span>}
+          {/* Featured AI Tools Section */}
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Featured AI Tools</h2>
+            <div className="flex gap-4 overflow-x-auto pb-2">
+              {featuredTools
+                .filter(tool => activeCategory === 'all' || tool.category === activeCategory)
+                .map(tool => (
+                  <div key={tool.id} className="w-[260px] flex-shrink-0">
+                    <ItemCard item={tool} />
                   </div>
-                  <select
-                    value={tool1}
-                    onChange={e => setTool1(e.target.value)}
-                    className="border rounded px-2 py-1 w-full"
-                    disabled={!activeCategory}
-                  >
-                    <option value="">Select Tool 1</option>
-                    {toolsInCategory.map(tool => (
-                      <option key={tool.id} value={tool.id}>{tool.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="mb-2">
-                  <label className="block text-sm font-medium mb-1">Tool 2</label>
-                  <div
-                    onDragOver={e => e.preventDefault()}
-                    onDrop={() => {
-                      if (draggedToolId) setTool2(draggedToolId);
-                      setDraggedToolId(null);
-                    }}
-                    className={`border rounded px-2 py-1 w-full mb-2 bg-gray-50 transition ${draggedToolId ? 'ring-2 ring-primary' : ''}`}
-                    style={{ minHeight: 38 }}
-                  >
-                    {tool2
-                      ? aiTools.find(t => t.id === tool2)?.name
-                      : <span className="text-gray-400">Drag tool here or select</span>}
+                ))}
+            </div>
+          </section>
+          {/* Main 3-column layout */}
+          <div className="grid grid-cols-12 gap-4" style={{ minHeight: '70vh' }}>
+            {/* Left Column - Comparator */}
+            <div className="col-span-3 min-w-0">
+              <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)]">
+                <CardHeader>
+                  <CardTitle>Compare AI Tools</CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col gap-4">
+                  <div className="mb-2">
+                    <label className="block text-sm font-medium mb-1">Category</label>
+                    <select
+                      value={activeCategory}
+                      onChange={e => {
+                        setActiveCategory(e.target.value);
+                        setTool1("");
+                        setTool2("");
+                      }}
+                      className="border rounded px-2 py-1 w-full"
+                    >
+                      <option value="">Select Category</option>
+                      {uniqueCategories.map(cat => (
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      ))}
+                    </select>
                   </div>
-                  <select
-                    value={tool2}
-                    onChange={e => setTool2(e.target.value)}
-                    className="border rounded px-2 py-1 w-full"
-                    disabled={!activeCategory}
-                  >
-                    <option value="">Select Tool 2</option>
-                    {toolsInCategory.map(tool => (
-                      <option key={tool.id} value={tool.id}>{tool.name}</option>
-                    ))}
-                  </select>
-                </div>
-                {/* Filters (rating, review count, etc.) */}
-                <div className="flex gap-2 mb-2">
-                  <span className="text-xs">Filters:</span>
-                  <span className="text-xs">Rating</span>
-                  <span className="text-xs">Reviews</span>
-                  {/* Add more filters as needed */}
-                </div>
-                {/* Side-by-side comparison */}
-                {toolObj1 && toolObj2 && (
-                  <div className="mt-2 border-t pt-2">
-                    <div className="font-semibold mb-2">Comparison</div>
-                    <table className="w-full text-xs">
-                      <thead>
-                        <tr>
-                          <th className="text-left">Feature</th>
-                          <th className="text-center">{toolObj1.name}</th>
-                          <th className="text-center">{toolObj2.name}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td className="font-medium">Category</td>
-                          <td className="text-center">{toolObj1.category}</td>
-                          <td className="text-center">{toolObj2.category}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-medium">Rating</td>
-                          <td className="text-center">{toolObj1.rating} ★</td>
-                          <td className="text-center">{toolObj2.rating} ★</td>
-                        </tr>
-                        <tr>
-                          <td className="font-medium">Reviews</td>
-                          <td className="text-center">{toolObj1.reviewCount}</td>
-                          <td className="text-center">{toolObj2.reviewCount}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-medium">Description</td>
-                          <td className="text-center">{toolObj1.description}</td>
-                          <td className="text-center">{toolObj2.description}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-medium">URL</td>
-                          <td className="text-center"><a href={toolObj1.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Visit</a></td>
-                          <td className="text-center"><a href={toolObj2.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Visit</a></td>
-                        </tr>
-                      </tbody>
-                    </table>
+                  <div className="mb-2">
+                    <label className="block text-sm font-medium mb-1">Tool 1</label>
+                    <div
+                      onDragOver={e => e.preventDefault()}
+                      onDrop={() => {
+                        if (draggedToolId) setTool1(draggedToolId);
+                        setDraggedToolId(null);
+                      }}
+                      className={`border rounded px-2 py-1 w-full mb-2 bg-gray-50 transition ${draggedToolId ? 'ring-2 ring-primary' : ''}`}
+                      style={{ minHeight: 38 }}
+                    >
+                      {tool1
+                        ? aiTools.find(t => t.id === tool1)?.name
+                        : <span className="text-gray-400">Drag tool here or select</span>}
+                    </div>
+                    <select
+                      value={tool1}
+                      onChange={e => setTool1(e.target.value)}
+                      className="border rounded px-2 py-1 w-full"
+                      disabled={!activeCategory}
+                    >
+                      <option value="">Select Tool 1</option>
+                      {toolsInCategory.map(tool => (
+                        <option key={tool.id} value={tool.id}>{tool.name}</option>
+                      ))}
+                    </select>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-          {/* Middle Column - AI Tools Grid with Search/Filter */}
-          <div className="col-span-6 min-w-0">
-            <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)]">
-              <CardHeader>
-                <CardTitle>AI Tools</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col">
-                <ScrollArea className="flex-1">
-                  <div className="grid grid-cols-2 gap-4">
-                    {filteredTools.slice(0, 50).map((tool) => (
-                      <div
-                        key={tool.id}
-                        className="w-[260px] flex-shrink-0"
-                        draggable
-                        onDragStart={() => setDraggedToolId(tool.id)}
-                        onDragEnd={() => setDraggedToolId(null)}
-                      >
-                        <ItemCard
-                          item={{
-                            ...tool,
-                            title: tool.name,
-                            votes: 0,
-                            reviewsCount: tool.reviewCount,
-                            createdAt: '2024-01-01T00:00:00.000Z',
-                            imageUrl: tool.imageUrl || '',
-                          }}
-                        />
-                      </div>
-                    ))}
+                  <div className="mb-2">
+                    <label className="block text-sm font-medium mb-1">Tool 2</label>
+                    <div
+                      onDragOver={e => e.preventDefault()}
+                      onDrop={() => {
+                        if (draggedToolId) setTool2(draggedToolId);
+                        setDraggedToolId(null);
+                      }}
+                      className={`border rounded px-2 py-1 w-full mb-2 bg-gray-50 transition ${draggedToolId ? 'ring-2 ring-primary' : ''}`}
+                      style={{ minHeight: 38 }}
+                    >
+                      {tool2
+                        ? aiTools.find(t => t.id === tool2)?.name
+                        : <span className="text-gray-400">Drag tool here or select</span>}
+                    </div>
+                    <select
+                      value={tool2}
+                      onChange={e => setTool2(e.target.value)}
+                      className="border rounded px-2 py-1 w-full"
+                      disabled={!activeCategory}
+                    >
+                      <option value="">Select Tool 2</option>
+                      {toolsInCategory.map(tool => (
+                        <option key={tool.id} value={tool.id}>{tool.name}</option>
+                      ))}
+                    </select>
                   </div>
-                </ScrollArea>
-                <div className="text-xs text-muted-foreground mt-2">Showing {filteredTools.length > 50 ? 50 : filteredTools.length} of {filteredTools.length} tools</div>
-              </CardContent>
-            </Card>
-          </div>
-          {/* Right Column - News Section */}
-          <div className="col-span-3 min-w-0">
-            <Card className="h-full overflow-y-auto max-h-[calc(100vh-12rem)]">
-              <CardHeader>
-                <CardTitle>AI News & Articles</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[calc(100vh-12rem)]">
-                  <div className="space-y-4">
-                    {newsData.map((news) => (
-                      <Card key={news.url}>
-                        <CardContent className="p-4">
-                          {news.urlToImage && (
-                            <img
-                              src={news.urlToImage}
-                              alt={news.title}
-                              className="w-full h-48 object-cover rounded-lg mb-4"
-                            />
-                          )}
-                          <h3 className="font-semibold mb-2 hover:text-primary">
-                            <a href={news.url} target="_blank" rel="noopener noreferrer">
-                              {news.title}
-                            </a>
-                          </h3>
-                          {news.description && (
-                            <p className="text-sm text-muted-foreground mb-2">
-                              {news.description}
-                            </p>
-                          )}
-                          <div className="mt-2 text-xs text-muted-foreground flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span>{news.source.name}</span>
-                              {news.author && (
-                                <>
-                                  <span>•</span>
-                                  <span>{news.author}</span>
-                                </>
-                              )}
+                  {/* Filters (rating, review count, etc.) */}
+                  <div className="flex gap-2 mb-2">
+                    <span className="text-xs">Filters:</span>
+                    <span className="text-xs">Rating</span>
+                    <span className="text-xs">Reviews</span>
+                    {/* Add more filters as needed */}
+                  </div>
+                  {/* Side-by-side comparison */}
+                  {toolObj1 && toolObj2 && (
+                    <div className="mt-2 border-t pt-2">
+                      <div className="font-semibold mb-2">Comparison</div>
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr>
+                            <th className="text-left">Feature</th>
+                            <th className="text-center">{toolObj1.name}</th>
+                            <th className="text-center">{toolObj2.name}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="font-medium">Category</td>
+                            <td className="text-center">{toolObj1.category}</td>
+                            <td className="text-center">{toolObj2.category}</td>
+                          </tr>
+                          <tr>
+                            <td className="font-medium">Rating</td>
+                            <td className="text-center">{toolObj1.rating} ★</td>
+                            <td className="text-center">{toolObj2.rating} ★</td>
+                          </tr>
+                          <tr>
+                            <td className="font-medium">Reviews</td>
+                            <td className="text-center">{toolObj1.reviewCount}</td>
+                            <td className="text-center">{toolObj2.reviewCount}</td>
+                          </tr>
+                          <tr>
+                            <td className="font-medium">Description</td>
+                            <td className="text-center">{toolObj1.description}</td>
+                            <td className="text-center">{toolObj2.description}</td>
+                          </tr>
+                          <tr>
+                            <td className="font-medium">URL</td>
+                            <td className="text-center"><a href={toolObj1.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Visit</a></td>
+                            <td className="text-center"><a href={toolObj2.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Visit</a></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+            {/* Middle Column - AI Tools Grid with Search/Filter */}
+            <div className="col-span-6 min-w-0">
+              <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)]">
+                <CardHeader>
+                  <CardTitle>AI Tools</CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col">
+                  <ScrollArea className="flex-1">
+                    <div className="grid grid-cols-2 gap-4">
+                      {filteredTools.slice(0, 50).map((tool) => (
+                        <div
+                          key={tool.id}
+                          className="w-[260px] flex-shrink-0"
+                          draggable
+                          onDragStart={() => setDraggedToolId(tool.id)}
+                          onDragEnd={() => setDraggedToolId(null)}
+                        >
+                          <ItemCard
+                            item={{
+                              ...tool,
+                              title: tool.name,
+                              votes: 0,
+                              reviewsCount: tool.reviewCount,
+                              createdAt: '2024-01-01T00:00:00.000Z',
+                              imageUrl: tool.imageUrl || '',
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                  <div className="text-xs text-muted-foreground mt-2">Showing {filteredTools.length > 50 ? 50 : filteredTools.length} of {filteredTools.length} tools</div>
+                </CardContent>
+              </Card>
+            </div>
+            {/* Right Column - News Section */}
+            <div className="col-span-3 min-w-0">
+              <Card className="h-full overflow-y-auto max-h-[calc(100vh-12rem)]">
+                <CardHeader>
+                  <CardTitle>AI News & Articles</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-[calc(100vh-12rem)]">
+                    <div className="space-y-4">
+                      {newsData.map((news) => (
+                        <Card key={news.url}>
+                          <CardContent className="p-4">
+                            {news.urlToImage && (
+                              <img
+                                src={news.urlToImage}
+                                alt={news.title}
+                                className="w-full h-48 object-cover rounded-lg mb-4"
+                              />
+                            )}
+                            <h3 className="font-semibold mb-2 hover:text-primary">
+                              <a href={news.url} target="_blank" rel="noopener noreferrer">
+                                {news.title}
+                              </a>
+                            </h3>
+                            {news.description && (
+                              <p className="text-sm text-muted-foreground mb-2">
+                                {news.description}
+                              </p>
+                            )}
+                            <div className="mt-2 text-xs text-muted-foreground flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span>{news.source.name}</span>
+                                {news.author && (
+                                  <>
+                                    <span>•</span>
+                                    <span>{news.author}</span>
+                                  </>
+                                )}
+                              </div>
+                              <span>{new Date(news.publishedAt).toLocaleDateString()}</span>
                             </div>
-                            <span>{new Date(news.publishedAt).toLocaleDateString()}</span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
-        {/* Lists Side-by-Side */}
-        <div className={`flex flex-row gap-8 max-w-5xl mx-auto mt-12 mb-8 ${user ? 'justify-center' : 'justify-center'}`}>
-          {/* Private Lists Card - left of Public Lists */}
-          {user && (
-            <section className="w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between">
+          {/* Lists Side-by-Side */}
+          <div className={`flex flex-row gap-8 max-w-5xl mx-auto mt-12 mb-8 ${user ? 'justify-center' : 'justify-center'}`}>
+            {/* Private Lists Card - left of Public Lists */}
+            {user && (
+              <section className="w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between">
+                <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-primary">Private Lists</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-1 flex flex-col">
+                    <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
+                      {privateLists.filter(list => list.creator === user.email).length === 0 && (
+                        <div className="text-lg text-muted-foreground mb-2">No private lists yet.</div>
+                      )}
+                      {privateLists.filter(list => list.creator === user.email).map(list => (
+                        <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition">
+                          <div className="font-bold text-lg mb-1">{list.title}</div>
+                          <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {list.toolIds.slice(0, 3).map(tid => {
+                              const tool = aiTools.find(t => t.id === tid);
+                              return tool ? (<span key={tid} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>) : null;
+                            })}
+                            {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+            {/* Public Lists Card - right of Private Lists */}
+            <section className={`w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between ${!user ? 'mx-auto' : ''}`}>
               <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-primary">Private Lists</CardTitle>
+                  <CardTitle className="text-2xl font-bold text-primary">Public Lists</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
                   <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
-                    {privateLists.filter(list => list.creator === user.email).length === 0 && (
-                      <div className="text-lg text-muted-foreground mb-2">No private lists yet.</div>
-                    )}
-                    {privateLists.filter(list => list.creator === user.email).map(list => (
-                      <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition">
+                    {publicLists.length === 0 && (<div className="text-lg text-muted-foreground mb-2">No public lists yet.</div>)}
+                    {publicLists.map(list => (
+                      <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition" onClick={() => setListDialog({ open: true, list })}>
                         <div className="font-bold text-lg mb-1">{list.title}</div>
                         <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
                         <div className="flex flex-wrap gap-2 mt-1">
@@ -543,128 +579,133 @@ function Index() {
                       </div>
                     ))}
                   </div>
+                  <button
+                    className={`mt-6 w-full rounded-xl px-6 py-4 font-bold text-xl flex items-center justify-center gap-2 transition shadow-lg ${user ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'}`}
+                    onClick={() => { if (user) setShowCreateListModal(true); }}
+                    disabled={!user}
+                    title={user ? '' : 'You must be logged in to create a list'}
+                  >
+                    <span className="text-2xl">➕</span> Create List
+                  </button>
                 </CardContent>
               </Card>
             </section>
-          )}
-          {/* Public Lists Card - right of Private Lists */}
-          <section className={`w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between ${!user ? 'mx-auto' : ''}`}>
-            <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-primary">Public Lists</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col">
-                <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
-                  {publicLists.length === 0 && (<div className="text-lg text-muted-foreground mb-2">No public lists yet.</div>)}
-                  {publicLists.map(list => (
-                    <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition" onClick={() => setListDialog({ open: true, list })}>
-                      <div className="font-bold text-lg mb-1">{list.title}</div>
-                      <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        {list.toolIds.slice(0, 3).map(tid => {
-                          const tool = aiTools.find(t => t.id === tid);
-                          return tool ? (<span key={tid} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>) : null;
-                        })}
-                        {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  className={`mt-6 w-full rounded-xl px-6 py-4 font-bold text-xl flex items-center justify-center gap-2 transition shadow-lg ${user ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'}`}
-                  onClick={() => { if (user) setShowCreateListModal(true); }}
-                  disabled={!user}
-                  title={user ? '' : 'You must be logged in to create a list'}
-                >
-                  <span className="text-2xl">➕</span> Create List
-                </button>
-              </CardContent>
-            </Card>
-          </section>
-        </div>
-        {/* Scrollable Photos Section */}
-        <section className="max-w-3xl mx-auto mb-12">
-          <h2 className="text-xl font-semibold mb-4 text-center">Community Highlights</h2>
-          <div className="flex gap-6 overflow-x-auto pb-2 px-2">
-            {[1,2,3,4].map((n) => (
-              <div key={n} className="min-w-[260px] bg-white rounded-xl shadow-lg border flex flex-col items-center p-4">
-                <img
-                  src={`https://picsum.photos/seed/community${n}/240/160`}
-                  alt={`Community Highlight ${n}`}
-                  className="rounded-lg mb-3 w-full h-40 object-cover"
-                />
-                <div className="font-bold text-lg mb-1">Photo Title {n}</div>
-                <div className="text-sm text-muted-foreground mb-2">Description for photo {n} goes here. This is a community highlight.</div>
-              </div>
-            ))}
           </div>
-        </section>
-<section className="max-w-5xl mx-auto mb-12">
-  <h2 className="text-xl font-semibold mb-4 text-center">Latest AI YouTube Videos</h2>
-  <div className="flex gap-6 overflow-x-auto pb-2 px-2">
-    {(aiVideos.length > 0 ? aiVideos : [1,2,3,4]).map((video, idx) => (
-      aiVideos.length > 0 ? (
-        <a
-          key={video.id.videoId}
-          href={`https://www.youtube.com/watch?v=${video.id.videoId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="min-w-[320px] bg-white rounded-xl shadow-lg border flex flex-col items-center p-4 hover:shadow-xl transition"
-        >
-          <img
-            src={video.snippet.thumbnails.medium.url}
-            alt={video.snippet.title}
-            className="rounded-lg mb-3 w-full h-40 object-cover"
-          />
-          <div className="font-bold text-base mb-1">{video.snippet.title}</div>
-          <div className="text-xs text-muted-foreground">{video.snippet.channelTitle}</div>
-        </a>
-      ) : (
-        <div key={idx} className="min-w-[320px] bg-white rounded-xl shadow-lg border flex flex-col items-center p-4">
-          <img
-            src={`https://picsum.photos/seed/youtube${idx}/320/160`}
-            alt={`Dummy Video ${idx+1}`}
-            className="rounded-lg mb-3 w-full h-40 object-cover"
-          />
-          <div className="font-bold text-base mb-1">Dummy AI Video {idx+1}</div>
-          <div className="text-xs text-muted-foreground">AI Channel {idx+1}</div>
+        </main>
+        {/* Place YoutubeCarousel above Community Highlights, both above Footer */}
+        <div style={{ marginTop: 24, marginBottom: 32 }}>
+          <YoutubeCarousel />
         </div>
-      )
-    ))}
-  </div>
-</section>
-      </main>
-      <Footer />
-      {/* List Dialog/Modal */}
-      {listDialog.open && listDialog.list && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-black"
-              onClick={() => setListDialog({ open: false, list: null })}
-            >✕</button>
-            <h3 className="text-lg font-semibold mb-2">{listDialog.list.title}</h3>
-            <div className="text-xs text-muted-foreground mb-4">by {listDialog.list.creator}</div>
-            <div className="space-y-2">
-              {listDialog.list.toolIds.map(tid => {
-                const tool = aiTools.find(t => t.id === tid);
-                return tool ? (
-                  <div key={tid} className="border rounded p-2 flex items-center gap-2">
-                    {tool.imageUrl && <img src={tool.imageUrl} alt={tool.name} className="w-8 h-8 rounded" />}
-                    <div>
-                      <div className="font-medium">{tool.name}</div>
-                      <div className="text-xs text-muted-foreground">{tool.description}</div>
-                    </div>
-                  </div>
-                ) : null;
-              })}
+        <section className="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row gap-8 items-start">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-2xl font-bold mb-4 text-center">AI Events</h2>
+            <div className="relative">
+              <Carousel opts={{ align: "start", loop: true }}>
+                <CarouselPrevious />
+                <CarouselContent>
+                  {[
+                    {
+                      title: "GIDS 2024",
+                      description: "Global AI Developer Summit. April 10-12, 2024, Bengaluru, India.",
+                      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+                      link: "https://gids.ai/"
+                    },
+                    {
+                      title: "NeurIPS 2024",
+                      description: "Neural Information Processing Systems. Dec 9-15, 2024, Vancouver, Canada.",
+                      image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
+                      link: "https://neurips.cc/Conferences/2024"
+                    },
+                    {
+                      title: "CVPR 2024",
+                      description: "Computer Vision and Pattern Recognition. June 17-21, 2024, Seattle, USA.",
+                      image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+                      link: "https://cvpr2024.thecvf.com/"
+                    },
+                    {
+                      title: "AI Expo India",
+                      description: "AI Expo & Conference. Aug 22-23, 2024, New Delhi, India.",
+                      image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
+                      link: "https://aiexpoindia.com/"
+                    }
+                  ].map((event, idx, arr) => (
+                    <CarouselItem key={idx} className={`px-2 w-[320px] max-w-[320px] flex-shrink-0${idx === arr.length - 1 ? ' pl-2' : ''}`}>
+                      <div className="bg-white rounded-xl shadow-lg border flex flex-col items-center p-4 h-full">
+                        <img
+                          src={event.image}
+                          alt={event.title}
+                          className="rounded-lg mb-3 w-full h-32 object-cover bg-gray-50"
+                        />
+                        <div className="font-bold text-lg mb-1 text-center">{event.title}</div>
+                        <div className="text-sm text-muted-foreground mb-4 text-center">{event.description}</div>
+                        <a
+                          href={event.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full"
+                        >
+                          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">Register</button>
+                        </a>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselNext />
+              </Carousel>
             </div>
           </div>
-        </div>
-      )}
-      <Modal open={showCreateListModal} onClose={() => setShowCreateListModal(false)}>
-        <CreateListForm onSubmit={handleAddList} onCancel={() => setShowCreateListModal(false)} />
-      </Modal>
+          {/* Newsletter Box (no map, not overlapping) */}
+          <div className="w-full md:w-[340px] min-w-[260px] max-w-[360px] flex flex-col items-center justify-center mt-8 md:mt-12 md:ml-4">
+            <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center w-full">
+              <div className="font-bold text-lg mb-2 text-center">Join our newsletter to get latest knowledge of AI events happening around you</div>
+              <form className="flex flex-col gap-2 w-full items-center">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+                >
+                  Subscribe
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+        <Footer />
+        {/* List Dialog/Modal */}
+        {listDialog.open && listDialog.list && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative">
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-black"
+                onClick={() => setListDialog({ open: false, list: null })}
+              >✕</button>
+              <h3 className="text-lg font-semibold mb-2">{listDialog.list.title}</h3>
+              <div className="text-xs text-muted-foreground mb-4">by {listDialog.list.creator}</div>
+              <div className="space-y-2">
+                {listDialog.list.toolIds.map(tid => {
+                  const tool = aiTools.find(t => t.id === tid);
+                  return tool ? (
+                    <div key={tid} className="border rounded p-2 flex items-center gap-2">
+                      {tool.imageUrl && <img src={tool.imageUrl} alt={tool.name} className="w-8 h-8 rounded" />}
+                      <div>
+                        <div className="font-medium">{tool.name}</div>
+                        <div className="text-xs text-muted-foreground">{tool.description}</div>
+                      </div>
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+        <Modal open={showCreateListModal} onClose={() => setShowCreateListModal(false)}>
+          <CreateListForm onSubmit={handleAddList} onCancel={() => setShowCreateListModal(false)} />
+        </Modal>
+      </div>
     </div>
   );
 }
