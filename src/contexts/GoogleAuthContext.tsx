@@ -47,6 +47,21 @@ export function GoogleAuthProvider({ children }: { children: React.ReactNode }) 
         isAdmin: false, // By default, Google users are not admins
       };
 
+      // POST user info to backend
+      try {
+        await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            googleId: user.sub,
+            email: user.email,
+            name: user.name
+          })
+        });
+      } catch (err) {
+        console.error('Failed to sync user with backend:', err);
+      }
+
       setGoogleUser(user);
       localStorage.setItem('googleUser', JSON.stringify(user));
       navigate('/'); // Redirect to home page after successful login

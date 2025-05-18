@@ -27,10 +27,12 @@ const Footer: React.FC = () => {
   const [hover, setHover] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(!!localStorage.getItem('siteRating'));
+  const [rateError, setRateError] = useState<string>("");
 
   // Contact us state
   const [contact, setContact] = useState({ name: '', email: '', message: '' });
   const [contactSent, setContactSent] = useState(false);
+  const [contactError, setContactError] = useState<string>("");
 
   // FAQ state
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -42,19 +44,45 @@ const Footer: React.FC = () => {
   const version = "0.0.0";
 
   // Handle rating submit
-  const handleRateSubmit = (e: React.FormEvent) => {
+  const handleRateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setRateError("");
     if (rating > 0) {
-      localStorage.setItem('siteRating', String(rating));
-      setSubmitted(true);
+      try {
+        await fetch("/api/site-ratings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: null, rating, comment })
+        });
+        localStorage.setItem('siteRating', String(rating));
+        setSubmitted(true);
+      } catch (err) {
+        setRateError("Failed to submit rating. Please try again later.");
+      }
     }
   };
 
   // Handle contact submit
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setContactSent(true);
-    setContact({ name: '', email: '', message: '' });
+    setContactError("");
+    try {
+      await fetch("/api/contact-messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: null,
+          name: contact.name,
+          email: contact.email,
+          message: contact.message,
+          source: 'footer'
+        })
+      });
+      setContactSent(true);
+      setContact({ name: '', email: '', message: '' });
+    } catch (err) {
+      setContactError("Failed to send message. Please try again later.");
+    }
   };
 
   return (
@@ -92,6 +120,7 @@ const Footer: React.FC = () => {
                 <input className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="text" placeholder="Your Name" value={contact.name} onChange={e => setContact({ ...contact, name: e.target.value })} required />
                 <input className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="email" placeholder="Your Email" value={contact.email} onChange={e => setContact({ ...contact, email: e.target.value })} required />
                 <textarea className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" placeholder="Message" value={contact.message} onChange={e => setContact({ ...contact, message: e.target.value })} required />
+                {contactError && <div className="text-red-500 text-xs mb-2">{contactError}</div>}
                 <button className="bg-primary text-white px-4 py-1 rounded w-full hover:bg-primary/90 transition" type="submit">Send</button>
               </form>
             )}
@@ -117,6 +146,7 @@ const Footer: React.FC = () => {
                   ))}
                 </div>
                 <input className="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="text" placeholder="Leave a comment (optional)" value={comment} onChange={e => setComment(e.target.value)} />
+                {rateError && <div className="text-red-500 text-xs mb-2">{rateError}</div>}
                 <button className="bg-primary text-white px-4 py-1 rounded w-full hover:bg-primary/90 transition" type="submit">Submit</button>
               </form>
             )}
