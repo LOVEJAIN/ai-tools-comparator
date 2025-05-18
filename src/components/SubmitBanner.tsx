@@ -17,9 +17,7 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    itemName: '',
-    itemUrl: '',
-    description: ''
+    mobile: ''
   });
 
   useImperativeHandle(ref, () => ({
@@ -42,9 +40,7 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
     setFormData({
       name: '',
       email: '',
-      itemName: '',
-      itemUrl: '',
-      description: ''
+      mobile: ''
     });
   };
   
@@ -59,30 +55,20 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
           <Button variant={activeTab === 'advertise' ? 'default' : 'outline'} onClick={() => setActiveTab('advertise')}>Advertise</Button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Your Name</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Your Name</Label>
               <Input id="name" name="name" value={formData.name} onChange={handleChange} placeholder="John Doe" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Your Email</Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Your Email</Label>
               <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="you@example.com" required />
-                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="itemName">Item Name</Label>
-            <Input id="itemName" name="itemName" value={formData.itemName} onChange={handleChange} placeholder="Your awesome product" required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="itemUrl">Item URL</Label>
-            <Input id="itemUrl" name="itemUrl" type="url" value={formData.itemUrl} onChange={handleChange} placeholder="https://example.com/product" required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-            <Textarea id="description" name="description" value={formData.description} onChange={handleChange} placeholder="Tell us about your product..." className="min-h-[100px]" required />
+                  <Label htmlFor="mobile">Mobile Number</Label>
+              <Input id="mobile" name="mobile" type="tel" value={formData.mobile} onChange={handleChange} placeholder="Your mobile number" required />
                 </div>
                 <div className="text-xs text-gray-500">
-            By submitting, you agree to our terms and conditions. We'll review your submission and get back to you.
+            Join the waitlist and be the first to know when we launch!
                 </div>
                 <div className="flex justify-end">
                   <Button type="submit" className="bg-brand-purple hover:bg-brand-purple/90">

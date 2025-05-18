@@ -5,8 +5,7 @@ import SubmitToolModal, { SubmitToolModalHandle } from "@/components/SubmitBanne
 const plans = [
   {
     name: "Fast Listing",
-    price: "$79",
-    subtitle: "one time fee",
+    price: "Coming Soon",
     features: [
       "Published within 3 days",
       "With extra features",
@@ -20,8 +19,7 @@ const plans = [
   },
   {
     name: "Verified Listing",
-    price: "$279",
-    subtitle: "one time fee",
+    price: "Coming Soon",
     features: [
       "All 'Fast Listing' features",
       "Verified blue check mark for trust",
@@ -36,8 +34,7 @@ const plans = [
   },
   {
     name: "Featured Ads",
-    price: "$399",
-    subtitle: "one time fee",
+    price: "Coming Soon",
     features: [
       "AI tool displayed almost everywhere",
       "Featured duration: 3 days",
@@ -63,7 +60,6 @@ export default function Subscription() {
               {plan.popular && <div className="mb-2 text-xs font-bold text-primary">Most Popular</div>}
               <h2 className="text-xl font-semibold mb-2">{plan.name}</h2>
               <div className="text-3xl font-bold mb-1">{plan.price}</div>
-              <div className="text-gray-500 text-sm mb-4">{plan.subtitle}</div>
               <ul className="text-left mb-6 space-y-2">
                 {plan.features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-2"><span className="text-green-500">✔</span> <span>{feature}</span></li>

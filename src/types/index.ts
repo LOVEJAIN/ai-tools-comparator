@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   username: string;
@@ -43,4 +42,6 @@ export interface Analytics {
   clicks: number;
   conversion: number;
   revenue: number;
+  avgRating: number;
+  numRaters: number;
 }

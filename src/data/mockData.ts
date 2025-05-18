@@ -1,4 +1,3 @@
-
 import { Category, Item, Review, Analytics } from '../types';
 
 export const mockCategories: Category[] = [
@@ -272,19 +271,29 @@ export const mockReviews: Review[] = [
 ];
 
 export const mockAnalytics: Analytics[] = [
-  { itemId: 'item1', itemTitle: 'Wireless Earbuds Pro', clicks: 324, conversion: 0.12, revenue: 81.00 },
-  { itemId: 'item2', itemTitle: 'Smartphone X', clicks: 286, conversion: 0.08, revenue: 71.50 },
-  { itemId: 'item3', itemTitle: 'Gaming Laptop Ultra', clicks: 198, conversion: 0.05, revenue: 49.50 },
-  { itemId: 'item4', itemTitle: 'Cosmic Adventure', clicks: 412, conversion: 0.15, revenue: 103.00 },
-  { itemId: 'item5', itemTitle: 'Strategy Kingdom', clicks: 267, conversion: 0.09, revenue: 66.75 },
-  { itemId: 'item6', itemTitle: 'Mystery Island', clicks: 182, conversion: 0.07, revenue: 45.50 },
-  { itemId: 'item7', itemTitle: 'The Lost City', clicks: 245, conversion: 0.11, revenue: 61.25 },
-  { itemId: 'item8', itemTitle: 'Future Technology', clicks: 307, conversion: 0.13, revenue: 76.75 },
-  { itemId: 'item9', itemTitle: 'Healthy Cooking', clicks: 174, conversion: 0.06, revenue: 43.50 },
-  { itemId: 'item10', itemTitle: 'Gourmet Restaurant', clicks: 356, conversion: 0.14, revenue: 89.00 },
-  { itemId: 'item11', itemTitle: 'Street Food Market', clicks: 289, conversion: 0.10, revenue: 72.25 },
-  { itemId: 'item12', itemTitle: 'Countryside Retreat', clicks: 341, conversion: 0.12, revenue: 85.25 },
-  { itemId: 'item13', itemTitle: 'Beach Paradise', clicks: 403, conversion: 0.16, revenue: 100.75 },
-  { itemId: 'item14', itemTitle: 'Mountain Adventure', clicks: 322, conversion: 0.11, revenue: 80.50 },
-  { itemId: 'item15', itemTitle: 'Classic Bakery', clicks: 251, conversion: 0.08, revenue: 62.75 }
+  { itemId: 'item1', itemTitle: 'Wireless Earbuds Pro', clicks: 324, conversion: 0.12, revenue: 81.00, avgRating: 4.7, numRaters: 15 },
+  { itemId: 'item2', itemTitle: 'Smartphone X', clicks: 286, conversion: 0.08, revenue: 71.50, avgRating: 4.5, numRaters: 12 },
+  { itemId: 'item3', itemTitle: 'Gaming Laptop Ultra', clicks: 198, conversion: 0.05, revenue: 49.50, avgRating: 4.3, numRaters: 8 },
+  { itemId: 'item4', itemTitle: 'Cosmic Adventure', clicks: 412, conversion: 0.15, revenue: 103.00, avgRating: 4.8, numRaters: 24 },
+  { itemId: 'item5', itemTitle: 'Strategy Kingdom', clicks: 267, conversion: 0.09, revenue: 66.75, avgRating: 4.2, numRaters: 16 },
+  { itemId: 'item6', itemTitle: 'Mystery Island', clicks: 182, conversion: 0.07, revenue: 45.50, avgRating: 4.0, numRaters: 10 },
+  { itemId: 'item7', itemTitle: 'The Lost City', clicks: 245, conversion: 0.11, revenue: 61.25, avgRating: 4.6, numRaters: 19 },
+  { itemId: 'item8', itemTitle: 'Future Technology', clicks: 307, conversion: 0.13, revenue: 76.75, avgRating: 4.4, numRaters: 14 },
+  { itemId: 'item9', itemTitle: 'Healthy Cooking', clicks: 174, conversion: 0.06, revenue: 43.50, avgRating: 4.2, numRaters: 9 },
+  { itemId: 'item10', itemTitle: 'Gourmet Restaurant', clicks: 356, conversion: 0.14, revenue: 89.00, avgRating: 4.9, numRaters: 22 },
+  { itemId: 'item11', itemTitle: 'Street Food Market', clicks: 289, conversion: 0.10, revenue: 72.25, avgRating: 4.5, numRaters: 17 },
+  { itemId: 'item12', itemTitle: 'Countryside Retreat', clicks: 341, conversion: 0.12, revenue: 85.25, avgRating: 4.7, numRaters: 20 },
+  { itemId: 'item13', itemTitle: 'Beach Paradise', clicks: 403, conversion: 0.16, revenue: 100.75, avgRating: 4.8, numRaters: 23 },
+  { itemId: 'item14', itemTitle: 'Mountain Adventure', clicks: 322, conversion: 0.11, revenue: 80.50, avgRating: 4.6, numRaters: 16 },
+  { itemId: 'item15', itemTitle: 'Classic Bakery', clicks: 251, conversion: 0.08, revenue: 62.75, avgRating: 4.4, numRaters: 13 }
+];
+
+export const mockTraffic = [
+  { date: '2024-06-01', visits: 120 },
+  { date: '2024-06-02', visits: 150 },
+  { date: '2024-06-03', visits: 180 },
+  { date: '2024-06-04', visits: 200 },
+  { date: '2024-06-05', visits: 170 },
+  { date: '2024-06-06', visits: 210 },
+  { date: '2024-06-07', visits: 190 }
 ];
