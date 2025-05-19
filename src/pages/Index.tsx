@@ -21,6 +21,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "../components/ui/carousel";
+import { motion, AnimatePresence } from "framer-motion";
 
 type PublicList = {
   id: string;
@@ -103,6 +104,7 @@ function Index() {
   const location = useLocation();
   const [showCreateListModal, setShowCreateListModal] = useState(false);
   const [privateLists, setPrivateLists] = useState<PublicList[]>([]);
+  const [showMainContent, setShowMainContent] = useState(false);
 
   // Unique categories for filter dropdown
   const uniqueCategories = categories;
@@ -258,12 +260,106 @@ function Index() {
     setShowCreateListModal(false);
   };
 
+  // Handler for bubble click
+  const handleBubbleSelect = (catId: string) => {
+    setActiveCategory(catId);
+    setShowMainContent(true);
+  };
+
+  // Blend submission state
+  const [blendForm, setBlendForm] = useState({
+    title: "",
+    tools: "",
+    tag: "",
+    description: ""
+  });
+  const [contributedBlends, setContributedBlends] = useState([]);
+
+  // Verified user logic
+  const [showVerifyDialog, setShowVerifyDialog] = useState(false);
+  // By default, admin is always verified
+  const isVerified = user?.isAdmin || user?.isVerified;
+
+  const handleBlendSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!blendForm.title || !blendForm.tools || !blendForm.tag || !blendForm.description) {
+      alert("All fields are required.");
+      return;
+    }
+    setContributedBlends(prev => [
+      {
+        title: blendForm.title,
+        tools: blendForm.tools,
+        tag: blendForm.tag,
+        description: blendForm.description
+      },
+      ...prev
+    ]);
+    setBlendForm({ title: "", tools: "", tag: "", description: "" });
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header searchValue={search} onSearchChange={setSearch} />
+      <div className="flex-1 flex flex-col">
+        <AnimatePresence>
+          {!showMainContent && (
+            <motion.div
+              key="bubble-landing"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
+              transition={{ duration: 0.6 }}
+              className="flex flex-col items-center justify-center min-h-[60vh]"
+            >
+              <h1 className="text-3xl font-bold mb-6 text-center">What are you interested in exploring today?</h1>
+              <div className="flex flex-wrap justify-center gap-8 max-w-3xl mx-auto">
+                {categories.map((cat, i) => (
+                  <motion.button
+                    key={cat.id}
+                    className="rounded-full shadow-lg flex items-center justify-center text-xl font-semibold text-white focus:outline-none"
+                    style={{
+                      width: `${120 + (i % 3) * 20}px`, // Vary size
+                      height: `${120 + (i % 3) * 20}px`,
+                      background: "linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%)",
+                    }}
+                    whileHover={{ scale: 1.18, boxShadow: "0 8px 32px rgba(80,80,200,0.25)" }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ scale: 0, opacity: 0, y: 30 }}
+                    animate={{
+                      scale: 1,
+                      opacity: 1,
+                      y: [0, -8, 0, 8, 0], // floating effect
+                      transition: {
+                        delay: i * 0.07,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        duration: 2 + (i % 3) * 0.3,
+                      }
+                    }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    onClick={() => handleBubbleSelect(cat.id)}
+                  >
+                    {cat.name}
+                  </motion.button>
+                ))}
+              </div>
+              <p className="mt-8 text-gray-500 text-center max-w-xl">Select a category bubble to see the best AI tools for that area. This helps you focus and not get overwhelmed by all the options!</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {showMainContent && (
+            <motion.div
+              key="main-content"
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              transition={{ duration: 0.7 }}
+            >
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         <main className="container p-4 overflow-x-hidden">
-          {/* Sort by Dropdown */}
+                  {/* Sort by Dropdown and Change Category Button */}
           <div className="flex items-center gap-4 mb-4">
             <label className="text-base font-medium">Sort by:</label>
             <select
@@ -275,25 +371,14 @@ function Index() {
               <option value="latest">Latest</option>
               <option value="rating">Highest Rated</option>
             </select>
-          </div>
-          {/* Category Chips Section (single row, below Sort by) */}
-          <div className="flex flex-wrap gap-3 mb-6">
             <button
-              className={`px-4 py-2 rounded-full font-semibold transition text-base ${activeCategory === 'all' ? 'bg-primary text-white' : 'bg-purple-100 text-primary hover:bg-purple-200'}`}
-              onClick={() => setActiveCategory('all')}
-            >
-              All
-            </button>
-            {uniqueCategories.map(cat => (
-              <button
-                key={cat.id}
-                className={`px-4 py-2 rounded-full font-semibold transition text-base ${activeCategory === cat.id ? 'bg-primary text-white' : 'bg-purple-100 text-primary hover:bg-purple-200'}`}
-                onClick={() => setActiveCategory(cat.id)}
-              >
-                {cat.name}
+                      className="ml-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-full font-semibold hover:bg-blue-200 transition"
+                      onClick={() => setShowMainContent(false)}
+                    >
+                      ← Change Category
               </button>
-            ))}
           </div>
+                  {/* Category Chips Section (single row, below Sort by) - REMOVED */}
           {/* Featured AI Tools Section */}
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">Featured AI Tools</h2>
@@ -579,23 +664,214 @@ function Index() {
                       </div>
                     ))}
                   </div>
-                  <button
-                    className={`mt-6 w-full rounded-xl px-6 py-4 font-bold text-xl flex items-center justify-center gap-2 transition shadow-lg ${user ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'}`}
-                    onClick={() => { if (user) setShowCreateListModal(true); }}
-                    disabled={!user}
-                    title={user ? '' : 'You must be logged in to create a list'}
-                  >
-                    <span className="text-2xl">➕</span> Create List
-                  </button>
+                  {user && isVerified ? (
+                    <button
+                      className={`mt-6 w-full rounded-xl px-6 py-4 font-bold text-xl flex items-center justify-center gap-2 transition shadow-lg bg-blue-600 text-white hover:bg-blue-700`}
+                      onClick={() => setShowCreateListModal(true)}
+                    >
+                      <span className="text-2xl">➕</span> Create List
+                    </button>
+                  ) : user ? (
+                    <>
+                      <button
+                        className={`mt-6 w-full rounded-xl px-6 py-4 font-bold text-xl flex items-center justify-center gap-2 transition shadow-lg bg-blue-200 text-blue-800 cursor-pointer`}
+                        onClick={() => setShowVerifyDialog(true)}
+                      >
+                        <span className="text-2xl">🔒</span> Become Verified to Create List
+                      </button>
+                      <Modal open={showVerifyDialog} onClose={() => setShowVerifyDialog(false)}>
+                        <div className="p-6 max-w-md mx-auto">
+                          <h2 className="text-2xl font-bold mb-4 text-center">Get Verified (Coming Soon)</h2>
+                          <ul className="mb-4 text-gray-700">
+                            <li className="mb-2">✔️ Create AI Tool Blends</li>
+                            <li className="mb-2">✔️ Create Public Lists</li>
+                            <li className="mb-2">✔️ Early access to new features</li>
+                          </ul>
+                          <div className="flex flex-col gap-3">
+                            <button className="bg-blue-200 text-blue-800 px-4 py-2 rounded cursor-not-allowed" disabled>Monthly Plan (Coming Soon)</button>
+                            <button className="bg-blue-200 text-blue-800 px-4 py-2 rounded cursor-not-allowed" disabled>Yearly Plan (Coming Soon)</button>
+                            <button className="bg-blue-200 text-blue-800 px-4 py-2 rounded cursor-not-allowed" disabled>One-time Plan (Coming Soon)</button>
+                          </div>
+                        </div>
+                      </Modal>
+                    </>
+                  ) : (
+                    <button
+                      className={`mt-6 w-full rounded-xl px-6 py-4 font-bold text-xl flex items-center justify-center gap-2 transition shadow-lg bg-gray-300 text-gray-500 cursor-not-allowed opacity-60`}
+                      disabled
+                      title="You must be logged in to create a list"
+                    >
+                      <span className="text-2xl">➕</span> Create List
+                    </button>
+                  )}
                 </CardContent>
               </Card>
             </section>
           </div>
         </main>
-        {/* Place YoutubeCarousel above Community Highlights, both above Footer */}
-        <div style={{ marginTop: 24, marginBottom: 32 }}>
-          <YoutubeCarousel />
-        </div>
+                {/* AI Tool Blends Section (replaces YoutubeCarousel) */}
+                <section className="max-w-5xl mx-auto mb-12">
+                  <h2 className="text-2xl font-bold mb-6 text-center">AI Tool Blends: Combine Tools for Powerful Workflows</h2>
+                  {/* Horizontally scrollable blends carousel */}
+                  <div className="overflow-x-auto pb-2">
+                    <div className="flex gap-8 min-w-[700px]">
+                      {/* Example Blend 1 */}
+                      <div className="bg-gradient-to-br from-blue-50 to-purple-100 rounded-2xl shadow-lg p-6 flex flex-col gap-3 min-w-[350px] max-w-[400px]">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-lg font-bold text-blue-700">Video Editing Workflow</span>
+                          <span className="ml-auto text-xs bg-blue-200 text-blue-800 px-3 py-1 rounded-full">Content Creation</span>
+                        </div>
+                        <div className="flex gap-2 items-center mb-2">
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Synthesia</span>
+                          <span className="text-xl font-bold text-gray-400">+</span>
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Descript</span>
+                          <span className="text-xl font-bold text-gray-400">+</span>
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Runway</span>
+                        </div>
+                        <p className="text-gray-700 text-sm">Generate a script with Synthesia, edit and enhance audio/video with Descript, then add AI-powered effects or remove backgrounds using Runway. Perfect for YouTube, marketing, or training videos.</p>
+                      </div>
+                      {/* Example Blend 2 */}
+                      <div className="bg-gradient-to-br from-pink-50 to-yellow-100 rounded-2xl shadow-lg p-6 flex flex-col gap-3 min-w-[350px] max-w-[400px]">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-lg font-bold text-pink-700">AI-Powered Blog Creation</span>
+                          <span className="ml-auto text-xs bg-pink-200 text-pink-800 px-3 py-1 rounded-full">Writing</span>
+                        </div>
+                        <div className="flex gap-2 items-center mb-2">
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">ChatGPT</span>
+                          <span className="text-xl font-bold text-gray-400">+</span>
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Grammarly</span>
+                          <span className="text-xl font-bold text-gray-400">+</span>
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Canva</span>
+                        </div>
+                        <p className="text-gray-700 text-sm">Draft your article with ChatGPT, polish grammar and style with Grammarly, and design eye-catching blog images or infographics with Canva. Streamline your content pipeline!</p>
+                      </div>
+                      {/* Example Blend 3 */}
+                      <div className="bg-gradient-to-br from-green-50 to-teal-100 rounded-2xl shadow-lg p-6 flex flex-col gap-3 min-w-[350px] max-w-[400px]">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-lg font-bold text-green-700">Social Media Automation</span>
+                          <span className="ml-auto text-xs bg-green-200 text-green-800 px-3 py-1 rounded-full">Productivity</span>
+                        </div>
+                        <div className="flex gap-2 items-center mb-2">
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Buffer</span>
+                          <span className="text-xl font-bold text-gray-400">+</span>
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Midjourney</span>
+                          <span className="text-xl font-bold text-gray-400">+</span>
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Copy.ai</span>
+                        </div>
+                        <p className="text-gray-700 text-sm">Create stunning visuals with Midjourney, generate engaging captions with Copy.ai, and schedule posts across platforms using Buffer. Boost your social presence with less effort!</p>
+                      </div>
+                      {/* Example Blend 4 */}
+                      <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-2xl shadow-lg p-6 flex flex-col gap-3 min-w-[350px] max-w-[400px]">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-lg font-bold text-yellow-700">AI Research Assistant</span>
+                          <span className="ml-auto text-xs bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full">Research</span>
+                        </div>
+                        <div className="flex gap-2 items-center mb-2">
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Elicit</span>
+                          <span className="text-xl font-bold text-gray-400">+</span>
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Notion AI</span>
+                          <span className="text-xl font-bold text-gray-400">+</span>
+                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">ChatPDF</span>
+                        </div>
+                        <p className="text-gray-700 text-sm">Use Elicit to find and summarize papers, organize notes and insights in Notion AI, and quickly extract info from PDFs with ChatPDF. Supercharge your research workflow!</p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Contribute Blend Section for Verified Users (admin or verified) */}
+                  {user && (
+                    isVerified ? (
+                      <div className="mt-10 bg-white rounded-2xl shadow-lg p-6 max-w-xl mx-auto">
+                        <h3 className="text-xl font-bold mb-4 text-center text-blue-700">Contribute Your Blend</h3>
+                        <form className="flex flex-col gap-3" onSubmit={handleBlendSubmit}>
+                          <input
+                            type="text"
+                            className="border rounded px-3 py-2"
+                            placeholder="Blend Title (e.g. Podcast Production)"
+                            value={blendForm.title}
+                            onChange={e => setBlendForm({ ...blendForm, title: e.target.value })}
+                            required
+                          />
+                          <input
+                            type="text"
+                            className="border rounded px-3 py-2"
+                            placeholder="Tools (comma separated, e.g. Riverside, Descript, Canva)"
+                            value={blendForm.tools}
+                            onChange={e => setBlendForm({ ...blendForm, tools: e.target.value })}
+                            required
+                          />
+                          <input
+                            type="text"
+                            className="border rounded px-3 py-2"
+                            placeholder="Use Case Tag (e.g. Audio, Content Creation)"
+                            value={blendForm.tag}
+                            onChange={e => setBlendForm({ ...blendForm, tag: e.target.value })}
+                            required
+                          />
+                          <textarea
+                            className="border rounded px-3 py-2"
+                            placeholder="Short Description"
+                            value={blendForm.description}
+                            onChange={e => setBlendForm({ ...blendForm, description: e.target.value })}
+                            required
+                          />
+                          <button
+                            type="submit"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition mt-2"
+                          >
+                            Submit Blend
+                          </button>
+                        </form>
+                        {/* List of contributed blends */}
+                        {contributedBlends.length > 0 && (
+                          <div className="mt-6">
+                            <h4 className="font-semibold mb-2 text-blue-700">Your Contributed Blends</h4>
+                            <div className="flex flex-col gap-4">
+                              {contributedBlends.map((blend, idx) => (
+                                <div key={idx} className="bg-blue-50 rounded-xl p-3 shadow flex flex-col gap-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-bold text-blue-800">{blend.title}</span>
+                                    <span className="ml-auto text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full">{blend.tag}</span>
+                                  </div>
+                                  <div className="flex gap-2 flex-wrap mb-1">
+                                    {blend.tools.split(',').map((tool, i) => (
+                                      <span key={i} className="bg-white rounded-full px-2 py-0.5 font-semibold text-gray-700 shadow text-xs">{tool.trim()}</span>
+                                    ))}
+                                  </div>
+                                  <div className="text-xs text-gray-700">{blend.description}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="mt-10 bg-white rounded-2xl shadow-lg p-8 max-w-xl mx-auto flex flex-col items-center">
+                        <h3 className="text-xl font-bold mb-4 text-center text-blue-700">Want to contribute your own blend?</h3>
+                        <button
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition mb-4"
+                          onClick={() => setShowVerifyDialog(true)}
+                        >
+                          Become Verified
+                        </button>
+                        <Modal open={showVerifyDialog} onClose={() => setShowVerifyDialog(false)}>
+                          <div className="p-6 max-w-md mx-auto">
+                            <h2 className="text-2xl font-bold mb-4 text-center">Get Verified (Coming Soon)</h2>
+                            <ul className="mb-4 text-gray-700">
+                              <li className="mb-2">✔️ Create AI Tool Blends</li>
+                              <li className="mb-2">✔️ Create Public Lists</li>
+                              <li className="mb-2">✔️ Early access to new features</li>
+                            </ul>
+                            <div className="flex flex-col gap-3">
+                              <button className="bg-blue-200 text-blue-800 px-4 py-2 rounded cursor-not-allowed" disabled>Monthly Plan (Coming Soon)</button>
+                              <button className="bg-blue-200 text-blue-800 px-4 py-2 rounded cursor-not-allowed" disabled>Yearly Plan (Coming Soon)</button>
+                              <button className="bg-blue-200 text-blue-800 px-4 py-2 rounded cursor-not-allowed" disabled>One-time Plan (Coming Soon)</button>
+                            </div>
+                          </div>
+                        </Modal>
+                      </div>
+                    )
+                  )}
+                </section>
         <section className="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 min-w-0">
             <h2 className="text-2xl font-bold mb-4 text-center">AI Events</h2>
@@ -674,6 +950,11 @@ function Index() {
             </div>
           </div>
         </section>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
         <Footer />
         {/* List Dialog/Modal */}
         {listDialog.open && listDialog.list && (
@@ -705,7 +986,6 @@ function Index() {
         <Modal open={showCreateListModal} onClose={() => setShowCreateListModal(false)}>
           <CreateListForm onSubmit={handleAddList} onCancel={() => setShowCreateListModal(false)} />
         </Modal>
-      </div>
     </div>
   );
 }
