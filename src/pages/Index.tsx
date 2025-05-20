@@ -547,11 +547,11 @@ function Index() {
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
                   <ScrollArea className="flex-1">
-                    <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {filteredTools.slice(0, 50).map((tool) => (
                         <div
                           key={tool.id}
-                          className="w-[260px] flex-shrink-0"
+                          className=""
                           draggable
                           onDragStart={() => setDraggedToolId(tool.id)}
                           onDragEnd={() => setDraggedToolId(null)}
