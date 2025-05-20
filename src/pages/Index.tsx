@@ -22,6 +22,7 @@ import {
   CarouselNext,
 } from "../components/ui/carousel";
 import { motion, AnimatePresence } from "framer-motion";
+import { addNewsletterSubscriber } from "../lib/utils";
 
 type PublicList = {
   id: string;
@@ -298,6 +299,20 @@ function Index() {
     setBlendForm({ title: "", tools: "", tag: "", description: "" });
   };
 
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterSuccess, setNewsletterSuccess] = useState(false);
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+    try {
+      await addNewsletterSubscriber(newsletterEmail); // Assume this function exists and works
+      setNewsletterSuccess(true);
+      setNewsletterEmail("");
+    } catch (err) {
+      alert("Failed to subscribe. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header searchValue={search} onSearchChange={setSearch} />
@@ -313,7 +328,7 @@ function Index() {
               className="flex flex-col items-center justify-center min-h-[60vh]"
             >
               <h1 className="text-3xl font-bold mb-6 text-center">What are you interested in exploring today?</h1>
-              <div className="flex flex-wrap justify-center gap-8 max-w-3xl mx-auto">
+              <div className="flex flex-wrap justify-center gap-8 w-full px-4">
                 {categories.map((cat, i) => (
                   <motion.button
                     key={cat.id}
@@ -532,7 +547,7 @@ function Index() {
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
                   <ScrollArea className="flex-1">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
                       {filteredTools.slice(0, 50).map((tool) => (
                         <div
                           key={tool.id}
@@ -934,11 +949,14 @@ function Index() {
           <div className="w-full md:w-[340px] min-w-[260px] max-w-[360px] flex flex-col items-center justify-center mt-8 md:mt-12 md:ml-4">
             <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center w-full">
               <div className="font-bold text-lg mb-2 text-center">Join our newsletter to get latest knowledge of AI events happening around you</div>
-              <form className="flex flex-col gap-2 w-full items-center">
+              <form className="flex flex-col gap-2 w-full items-center" onSubmit={handleNewsletterSubmit}>
                 <input
                   type="email"
                   placeholder="Enter your email"
                   className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newsletterEmail}
+                  onChange={e => setNewsletterEmail(e.target.value)}
+                  required
                 />
                 <button
                   type="submit"
@@ -946,6 +964,7 @@ function Index() {
                 >
                   Subscribe
                 </button>
+                {newsletterSuccess && <div className="text-green-600 text-sm mt-2">Subscribed successfully!</div>}
               </form>
             </div>
           </div>
