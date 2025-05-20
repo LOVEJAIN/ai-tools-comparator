@@ -1,3 +1,15 @@
-com/scrollvote/api/controller/ProductController.class
-com/scrollvote/api/model/Product.class
+com/scrollvote/api/controller/TrafficController.class
+com/scrollvote/api/model/ContactMessage.class
+com/scrollvote/api/model/NewsletterSubscriber.class
 com/scrollvote/api/ApiApplication.class
+com/scrollvote/api/controller/NewsletterSubscriberController.class
+com/scrollvote/api/model/Product.class
+com/scrollvote/api/model/ToolSubmission.class
+com/scrollvote/api/controller/UserController.class
+com/scrollvote/api/repository/NewsletterSubscriberRepository.class
+com/scrollvote/api/controller/ContactMessageController.class
+com/scrollvote/api/controller/ProductController.class
+com/scrollvote/api/model/SiteRating.class
+com/scrollvote/api/controller/ToolSubmissionController.class
+com/scrollvote/api/model/User.class
+com/scrollvote/api/controller/SiteRatingController.class
