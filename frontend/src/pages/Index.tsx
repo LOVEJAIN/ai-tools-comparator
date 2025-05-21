@@ -23,6 +23,7 @@ import {
 } from "../components/ui/carousel";
 import { motion, AnimatePresence } from "framer-motion";
 import { addNewsletterSubscriber } from "../lib/utils";
+import { Input } from "@/components/ui/input";
 
 type PublicList = {
   id: string;
@@ -313,9 +314,22 @@ function Index() {
     }
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const matches = aiTools.filter(tool => tool.name.toLowerCase().includes(search.trim().toLowerCase()));
+      if (matches.length > 0) {
+        setShowMainContent(true);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Header searchValue={search} onSearchChange={setSearch} />
+      <Header searchValue={search} onSearchChange={handleSearchChange} onSearchKeyDown={handleSearchKeyDown} />
       <div className="flex-1 flex flex-col">
         <AnimatePresence>
           {!showMainContent && (

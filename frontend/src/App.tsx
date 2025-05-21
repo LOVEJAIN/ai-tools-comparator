@@ -12,6 +12,7 @@ import Admin from "./pages/Admin";
 import CreateList from "./pages/CreateList";
 import Jobs from "./pages/Jobs";
 import Subscription from "./pages/Subscription";
+import ToolDetail from "./pages/ToolDetail";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
                 <Route path="/create-list" element={<CreateList />} />
                 <Route path="/jobs" element={<Jobs />} />
                 <Route path="/subscription" element={<Subscription />} />
+                <Route path="/tools/:id" element={<ToolDetail />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

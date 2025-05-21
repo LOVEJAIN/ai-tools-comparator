@@ -41,7 +41,7 @@ const Footer: React.FC = () => {
   const [reviewIdx, setReviewIdx] = useState(0);
 
   // Version
-  const version = "0.0.0";
+  const version = "1.0.0";
 
   // Handle rating submit
   const handleRateSubmit = async (e: React.FormEvent) => {
@@ -88,24 +88,6 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-gradient-to-br from-[#f8fafc] via-[#e0e7ef] to-[#f1f5f9] border-t mt-12 pt-10">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10 pb-10">
-        {/* About Us */}
-        <div className="rounded-xl shadow bg-white/80 p-6 flex flex-col gap-4 border border-gray-100">
-          <div className="flex items-center gap-2 mb-2">
-            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M12 4v16m0 0H3m9 0a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/></svg>
-            <h3 className="font-bold text-lg">About Us</h3>
-          </div>
-          <p className="text-sm text-muted-foreground max-w-xs mb-2">
-            AI Tools Explorer is your one-stop directory for discovering, comparing, and reviewing the best AI tools on the web. We help users and businesses find the right AI for every need.
-          </p>
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-xs font-semibold">Version:</span>
-            <span className="text-xs">{version}</span>
-          </div>
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-xs font-semibold">Made in India</span>
-            <span role="img" aria-label="India">🇮🇳</span>
-          </div>
-        </div>
         {/* Contact Us & Rate Us */}
         <div className="flex flex-col gap-8">
           <div className="rounded-xl shadow bg-white/80 p-6 border border-gray-100 mb-2">
@@ -203,10 +185,24 @@ const Footer: React.FC = () => {
             </div>
           </div>
         </div>
+        {/* About Us */}
+        <div className="rounded-xl shadow bg-white/80 p-6 flex flex-col gap-4 border border-gray-100">
+          <div className="flex items-center gap-2 mb-2">
+            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M12 4v16m0 0H3m9 0a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/></svg>
+            <h3 className="font-bold text-lg">About Us</h3>
+          </div>
+          <p className="text-gray-500 text-lg mb-6 max-w-2xl">Aikin is your one-stop directory for discovering, comparing, and reviewing the best AI tools on the web. We help users and businesses find the right AI for every need.</p>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-xs font-semibold">Version:</span>
+            <span className="text-xs">{version}</span>
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-xs font-semibold">Made in India</span>
+            <span role="img" aria-label="India">🇮🇳</span>
+          </div>
+        </div>
       </div>
-      <div className="text-center text-xs text-muted-foreground py-4 border-t bg-white/70">
-        &copy; {new Date().getFullYear()} AI Tools Explorer. All rights reserved.
-      </div>
+      <div className="text-center text-gray-500 text-sm mt-12">&copy; {new Date().getFullYear()} Aikin. All rights reserved.</div>
     </footer>
   );
 };

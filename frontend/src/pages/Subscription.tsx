@@ -10,7 +10,7 @@ const plans = [
       "Published within 3 days",
       "With extra features",
       "Listed in 'Latest AI' on home page + Full AI List",
-      "30 days in 'AIxploria Selection' on Homepage",
+      "30 days in 'Aikin Selection' on Homepage",
       "Description of up to 165 characters",
       "An extra link to your product page",
       "Indexed on Google"
@@ -27,7 +27,7 @@ const plans = [
       "3 extra links to your product page",
       "You can write a text of up to 1000 words",
       "Add media: videos, audio and images",
-      "60 days in 'AIxploria Selection' on Homepage"
+      "60 days in 'Aikin Selection' on Homepage"
     ],
     cta: "Submit your website",
     popular: true
