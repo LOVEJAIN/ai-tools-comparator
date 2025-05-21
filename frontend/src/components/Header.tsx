@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from '@/components/ui/separator';
 import SubmitToolModal, { SubmitToolModalHandle } from "./SubmitBanner";
+import AikinLogo from "@/assets/aikin-logo.svg";
 
 interface HeaderProps {
   searchValue: string;
@@ -63,8 +64,8 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange }) => {
   return (
     <header className="border-b bg-background">
       <div className="container flex h-16 items-center px-4 justify-between gap-4">
-        <Link to="/" className="text-2xl font-bold whitespace-nowrap">
-          AI Tools Explorer
+        <Link to="/" className="flex items-center gap-2 text-2xl font-bold whitespace-nowrap">
+          <img src={AikinLogo} alt="Aikin Logo" className="h-10 w-auto" />
         </Link>
         <div className="flex-1 flex justify-center">
           <Input
