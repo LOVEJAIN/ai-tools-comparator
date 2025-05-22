@@ -65,6 +65,10 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
 
   const currentUser = googleUser || user;
 
+  const handleHomeClick = () => {
+    navigate('/', { replace: true, state: { forceShowMain: true } });
+  };
+
   return (
     <header className="border-b bg-background">
       <div className="container flex h-16 items-center px-4 justify-between gap-4">
@@ -82,6 +86,9 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
           />
         </div>
         <div className="flex items-center gap-4">
+          <Button variant="outline" asChild>
+            <span onClick={handleHomeClick} style={{ cursor: 'pointer' }}>Home</span>
+          </Button>
           <Button variant="outline" asChild>
             <Link to="/jobs">Jobs</Link>
           </Button>
