@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useData } from "@/contexts/DataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import AikinButton from "@/components/AikinButton";
 
 const levels = ["Entry", "Mid", "Senior"];
 const sectors = ["Engineering Jobs", "AI Research", "Machine Learning", "NLP", "Data Science", "Robotics"];
@@ -65,7 +66,6 @@ export default function Jobs() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="container py-8 flex-1">
-        <button onClick={() => window.location.href = '/'} className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">← Back to Home</button>
         <h1 className="text-3xl font-bold mb-6">AI Job Offers</h1>
         {isVerified && (
           <Button className="mb-6" onClick={() => setShowJobDialog(true)}>

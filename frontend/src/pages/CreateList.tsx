@@ -27,7 +27,6 @@ const CreateList = () => {
         <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-xl flex flex-col gap-6 items-center">
           <h2 className="text-2xl font-bold text-center text-primary mb-2">Oops!</h2>
           <p className="text-center text-lg text-gray-600 mb-4">You must use the 'Create List' button on the main page to add a list.</p>
-          <button onClick={() => navigate("/")} className="bg-blue-600 text-white rounded-xl px-6 py-3 font-bold text-lg hover:bg-blue-700 transition">← Back to Home</button>
         </div>
       </div>
     );

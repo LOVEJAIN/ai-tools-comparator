@@ -113,13 +113,6 @@ function Index() {
   const [editingList, setEditingList] = useState<PublicList | null>(null);
   const [editingPrivateList, setEditingPrivateList] = useState<PublicList | null>(null);
 
-  // Unique categories for filter dropdown
-  const uniqueCategories = categories;
-
-  // Tools in selected category
-  const toolsInCategory = useMemo(() => activeCategory === 'all' ? aiTools : aiTools.filter(t => t.category === activeCategory), [aiTools, activeCategory]);
-
-  // Filtered tools for grid
   const filteredTools = useMemo(() => {
     return aiTools.filter(tool => {
       const matchesSearch = tool.name.toLowerCase().includes(search.toLowerCase());
@@ -127,6 +120,19 @@ function Index() {
       return matchesSearch && matchesCategory;
     });
   }, [search, activeCategory, aiTools]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const toolsPerPage = 50;
+  const totalPages = Math.ceil(filteredTools.length / toolsPerPage);
+  // Reset to page 1 when category or search changes
+  useEffect(() => { setCurrentPage(1); }, [activeCategory, search]);
+  const paginatedTools = filteredTools.slice((currentPage - 1) * toolsPerPage, currentPage * toolsPerPage);
+
+  // Unique categories for filter dropdown
+  const uniqueCategories = categories;
+
+  // Tools in selected category
+  const toolsInCategory = useMemo(() => activeCategory === 'all' ? aiTools : aiTools.filter(t => t.category === activeCategory), [aiTools, activeCategory]);
 
   // Featured tools: top-rated or featured item per category
   const featuredTools = useMemo(() => {
@@ -387,7 +393,13 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Header searchValue={search} onSearchChange={handleSearchChange} onSearchKeyDown={handleSearchKeyDown} />
+      <Header 
+        searchValue={search} 
+        onSearchChange={handleSearchChange} 
+        onSearchKeyDown={handleSearchKeyDown}
+        showMainContent={showMainContent}
+        setShowMainContent={setShowMainContent}
+      />
       <div className="flex-1 flex flex-col">
         <AnimatePresence>
           {!showMainContent && (
@@ -623,7 +635,7 @@ function Index() {
                 <CardContent className="flex-1 flex flex-col">
                   <ScrollArea className="flex-1">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {filteredTools.slice(0, 50).map((tool) => (
+                      {paginatedTools.map((tool) => (
                         <div
                           key={tool.id}
                           className=""
@@ -646,8 +658,108 @@ function Index() {
                     </div>
                   </ScrollArea>
                   <div className="text-xs text-muted-foreground mt-2">
-                    Showing {filteredTools.length > 50 ? 50 : filteredTools.length} of {filteredTools.length} tools
+                    Showing {paginatedTools.length > 50 ? 50 : paginatedTools.length} of {filteredTools.length} tools
                   </div>
+                  {totalPages > 1 && (
+                    <Pagination className="mt-6">
+                      <PaginationContent>
+                        {/* Previous Arrow */}
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={e => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}
+                            href="#"
+                            className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                          />
+                        </PaginationItem>
+
+                        {/* First Page */}
+                        {currentPage > 2 && (
+                          <>
+                            <PaginationItem>
+                              <PaginationLink
+                                isActive={currentPage === 1}
+                                href="#"
+                                onClick={e => { e.preventDefault(); setCurrentPage(1); }}
+                              >
+                                1
+                              </PaginationLink>
+                            </PaginationItem>
+                            {currentPage > 3 && (
+                              <PaginationItem>
+                                <span className="px-2">...</span>
+                              </PaginationItem>
+                            )}
+                          </>
+                        )}
+
+                        {/* Previous Page */}
+                        {currentPage > 1 && (
+                          <PaginationItem>
+                            <PaginationLink
+                              isActive={false}
+                              href="#"
+                              onClick={e => { e.preventDefault(); setCurrentPage(currentPage - 1); }}
+                            >
+                              {currentPage - 1}
+                            </PaginationLink>
+                          </PaginationItem>
+                        )}
+
+                        {/* Current Page */}
+                        <PaginationItem>
+                          <PaginationLink
+                            isActive={true}
+                            href="#"
+                            onClick={e => e.preventDefault()}
+                          >
+                            {currentPage}
+                          </PaginationLink>
+                        </PaginationItem>
+
+                        {/* Next Page */}
+                        {currentPage < totalPages && (
+                          <PaginationItem>
+                            <PaginationLink
+                              isActive={false}
+                              href="#"
+                              onClick={e => { e.preventDefault(); setCurrentPage(currentPage + 1); }}
+                            >
+                              {currentPage + 1}
+                            </PaginationLink>
+                          </PaginationItem>
+                        )}
+
+                        {/* Last Page */}
+                        {currentPage < totalPages - 1 && (
+                          <>
+                            {currentPage < totalPages - 2 && (
+                              <PaginationItem>
+                                <span className="px-2">...</span>
+                              </PaginationItem>
+                            )}
+                            <PaginationItem>
+                              <PaginationLink
+                                isActive={currentPage === totalPages}
+                                href="#"
+                                onClick={e => { e.preventDefault(); setCurrentPage(totalPages); }}
+                              >
+                                {totalPages}
+                              </PaginationLink>
+                            </PaginationItem>
+                          </>
+                        )}
+
+                        {/* Next Arrow */}
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={e => { e.preventDefault(); if (currentPage < totalPages) setCurrentPage(currentPage + 1); }}
+                            href="#"
+                            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  )}
                 </CardContent>
               </Card>
             </div>

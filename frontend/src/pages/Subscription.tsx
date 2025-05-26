@@ -53,7 +53,6 @@ export default function Subscription() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="container py-8 flex-1">
-        <button onClick={() => window.location.href = '/'} className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">← Back to Home</button>
         <h1 className="text-3xl font-bold mb-6">Feature or Advertise Your AI Tool</h1>
         <div className="grid gap-8 md:grid-cols-3">
           {plans.map((plan, idx) => (
