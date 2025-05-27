@@ -24,6 +24,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { addNewsletterSubscriber } from "../lib/utils";
 import { Input } from "@/components/ui/input";
+import FeaturedCarousel from '../components/FeaturedCarousel';
 
 type PublicList = {
   id: string;
@@ -390,48 +391,51 @@ function Index() {
       <div className="flex-1 flex flex-col">
         <AnimatePresence>
           {!showMainContent && (
-            <motion.div
-              key="bubble-landing"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -40 }}
-              transition={{ duration: 0.6 }}
-              className="flex flex-col items-center justify-center min-h-[60vh]"
-            >
-              <h1 className="text-3xl font-bold mb-6 text-center">What are you interested in exploring today?</h1>
-              <div className="flex flex-wrap justify-center gap-8 w-full px-4">
-                {categories.map((cat, i) => (
-                  <motion.button
-                    key={cat.id}
-                    className="rounded-full shadow-lg flex items-center justify-center text-xl font-semibold text-white focus:outline-none"
-                    style={{
-                      width: `${120 + (i % 3) * 20}px`, // Vary size
-                      height: `${120 + (i % 3) * 20}px`,
-                      background: "linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%)",
-                    }}
-                    whileHover={{ scale: 1.18, boxShadow: "0 8px 32px rgba(80,80,200,0.25)" }}
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ scale: 0, opacity: 0, y: 30 }}
-                    animate={{
-                      scale: 1,
-                      opacity: 1,
-                      y: [0, -8, 0, 8, 0], // floating effect
-                      transition: {
-                        delay: i * 0.07,
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                        duration: 2 + (i % 3) * 0.3,
-                      }
-                    }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    onClick={() => handleBubbleSelect(cat.id)}
-                  >
-                    {cat.name}
-                  </motion.button>
-                ))}
-              </div>
-              <p className="mt-8 text-gray-500 text-center max-w-xl">Select a category bubble to see the best AI tools for that area. This helps you focus and not get overwhelmed by all the options!</p>
-            </motion.div>
+            <>
+              <motion.div
+                key="bubble-landing"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -40 }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col items-center justify-center min-h-[60vh]"
+              >
+                <h1 className="text-3xl font-bold mb-6 text-center">What are you interested in exploring today?</h1>
+                <div className="flex flex-wrap justify-center gap-8 w-full px-4">
+                  {categories.map((cat, i) => (
+                    <motion.button
+                      key={cat.id}
+                      className="rounded-full shadow-lg flex items-center justify-center text-xl font-semibold text-white focus:outline-none"
+                      style={{
+                        width: `${120 + (i % 3) * 20}px`, // Vary size
+                        height: `${120 + (i % 3) * 20}px`,
+                        background: "linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%)",
+                      }}
+                      whileHover={{ scale: 1.18, boxShadow: "0 8px 32px rgba(80,80,200,0.25)" }}
+                      whileTap={{ scale: 0.95 }}
+                      initial={{ scale: 0, opacity: 0, y: 30 }}
+                      animate={{
+                        scale: 1,
+                        opacity: 1,
+                        y: [0, -8, 0, 8, 0], // floating effect
+                        transition: {
+                          delay: i * 0.07,
+                          repeat: Infinity,
+                          repeatType: "reverse",
+                          duration: 2 + (i % 3) * 0.3,
+                        }
+                      }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      onClick={() => handleBubbleSelect(cat.id)}
+                    >
+                      {cat.name}
+                    </motion.button>
+                  ))}
+                </div>
+                <p className="mt-8 text-gray-500 text-center max-w-xl">Select a category bubble to see the best AI tools for that area. This helps you focus and not get overwhelmed by all the options!</p>
+              </motion.div>
+              <FeaturedCarousel />
+            </>
           )}
         </AnimatePresence>
         <AnimatePresence>
