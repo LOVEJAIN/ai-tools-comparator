@@ -13,13 +13,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from '@/components/ui/separator';
 import SubmitToolModal, { SubmitToolModalHandle } from "./SubmitBanner";
+import AikinLogo from "@/assets/aikin-logo.svg";
+import AikinButton from "./AikinButton";
 
 interface HeaderProps {
   searchValue: string;
   onSearchChange: (value: string) => void;
+  onSearchKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  showMainContent?: boolean;
+  setShowMainContent?: (v: boolean) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange }) => {
+const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKeyDown, showMainContent, setShowMainContent }) => {
   const { user, login, logout, register } = useData();
   const { googleUser, handleGoogleSuccess, handleGoogleError, logout: googleLogout } = useGoogleAuth();
   const navigate = useNavigate();
@@ -31,6 +36,10 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange }) => {
     password: "",
   });
   const submitModalRef = useRef<SubmitToolModalHandle>(null);
+  const [showJobDialog, setShowJobDialog] = useState(false);
+  const [jobForm, setJobForm] = useState({ title: '', company: '', location: '', description: '' });
+  const [jobSuccess, setJobSuccess] = useState(false);
+  const location = window.location.pathname;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -60,38 +69,45 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange }) => {
 
   const currentUser = googleUser || user;
 
+  const handleHomeClick = () => {
+    navigate('/', { replace: true, state: { forceShowMain: true } });
+  };
+
+  const handleAikinClick = () => {
+    if (location === "/" && showMainContent && setShowMainContent) {
+      setShowMainContent(false);
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <header className="border-b bg-background">
       <div className="container flex h-16 items-center px-4 justify-between gap-4">
-        <Link to="/" className="text-2xl font-bold whitespace-nowrap">
-          AI Tools Explorer
-        </Link>
+        <AikinButton className="mr-2" onClick={handleAikinClick} />
         <div className="flex-1 flex justify-center">
           <Input
             type="text"
             placeholder="Search for items..."
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
+            onKeyDown={onSearchKeyDown}
             className="max-w-lg w-full rounded-lg border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
         <div className="flex items-center gap-4">
-          <Link to="/jobs" className="header-link">
-            Jobs
-          </Link>
-          <Link to="/subscription" className="header-link">
-            Advertise
-          </Link>
-          <Button
-            className="header-btn"
-            onClick={() => submitModalRef.current?.open("submit")}
-          >
-            Submit AI Tool
+          <Button variant="outline" asChild>
+            <Link to="/jobs">Jobs</Link>
           </Button>
+          <Button variant="outline" asChild>
+            <Link to="/subscription">Advertise</Link>
+          </Button>
+          <Button variant="outline" onClick={() => submitModalRef.current?.open("submit")}>Submit AI Tool</Button>
           {currentUser && currentUser.isAdmin && (
-            <Button className="header-btn" onClick={() => navigate("/admin")}>
-              Dashboard
-            </Button>
+            <Button variant="outline" onClick={() => navigate("/admin")}>Dashboard</Button>
+          )}
+          {(currentUser && (currentUser.isAdmin || (user && user.isVerified))) && (
+            <Button variant="outline" onClick={() => setShowJobDialog(true)}>Submit Job</Button>
           )}
           {!currentUser ? (
             <>
@@ -208,14 +224,6 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange }) => {
                       )}
                     </div>
                   </form>
-                  <div className="text-xs text-muted-foreground mt-2">
-                    <div>
-                      Dummy Admin: <b>admin@example.com / password</b>
-                    </div>
-                    <div>
-                      Dummy User: <b>user@example.com / password</b>
-                    </div>
-                  </div>
                 </DialogContent>
               </Dialog>
             </>
@@ -243,6 +251,30 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange }) => {
         </div>
       </div>
       <SubmitToolModal ref={submitModalRef} />
+      <Dialog open={showJobDialog} onOpenChange={setShowJobDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Submit a Job Opportunity</DialogTitle>
+          </DialogHeader>
+          {jobSuccess ? (
+            <div className="text-green-600 text-center py-4">Job posted successfully!</div>
+          ) : (
+            <form className="flex flex-col gap-3" onSubmit={e => {
+              e.preventDefault();
+              setJobSuccess(true);
+              setTimeout(() => setJobSuccess(false), 2000);
+              setShowJobDialog(false);
+              setJobForm({ title: '', company: '', location: '', description: '' });
+            }}>
+              <input className="border rounded px-3 py-2" placeholder="Job Title" value={jobForm.title} onChange={e => setJobForm({ ...jobForm, title: e.target.value })} required />
+              <input className="border rounded px-3 py-2" placeholder="Company Name" value={jobForm.company} onChange={e => setJobForm({ ...jobForm, company: e.target.value })} required />
+              <input className="border rounded px-3 py-2" placeholder="Location" value={jobForm.location} onChange={e => setJobForm({ ...jobForm, location: e.target.value })} required />
+              <textarea className="border rounded px-3 py-2" placeholder="Job Description" value={jobForm.description} onChange={e => setJobForm({ ...jobForm, description: e.target.value })} required />
+              <Button type="submit" className="bg-primary text-white w-full mt-2">Submit Job</Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </header>
   );
 };

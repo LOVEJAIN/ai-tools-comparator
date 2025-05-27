@@ -2,16 +2,18 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ErrorPage from "./pages/ErrorPage";
 import { DataProvider } from "./contexts/DataContext";
 import { GoogleAuthProvider } from "./contexts/GoogleAuthContext";
 import Admin from "./pages/Admin";
 import CreateList from "./pages/CreateList";
 import Jobs from "./pages/Jobs";
 import Subscription from "./pages/Subscription";
+import ToolDetail from "./pages/ToolDetail";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +35,8 @@ const App = () => (
                 <Route path="/create-list" element={<CreateList />} />
                 <Route path="/jobs" element={<Jobs />} />
                 <Route path="/subscription" element={<Subscription />} />
+                <Route path="/tools/:id" element={<ToolDetail />} />
+                <Route path="/error" element={<ErrorPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

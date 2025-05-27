@@ -23,6 +23,15 @@ import {
 } from "../components/ui/carousel";
 import { motion, AnimatePresence } from "framer-motion";
 import { addNewsletterSubscriber } from "../lib/utils";
+import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination";
 
 type PublicList = {
   id: string;
@@ -60,6 +69,8 @@ function Index() {
   const aiVideos = useAIVideos();
   const [aiTools, setAiTools] = useState<AITool[]>(initialAiTools);
   const [search, setSearch] = useState("");
+  const [listSearch, setListSearch] = useState("");
+  const [listSearchType, setListSearchType] = useState<'name' | 'user'>('name');
   const { user, categories, activeCategory, setActiveCategory } = useData();
   const [tool1, setTool1] = useState<string>("");
   const [tool2, setTool2] = useState<string>("");
@@ -106,14 +117,9 @@ function Index() {
   const [showCreateListModal, setShowCreateListModal] = useState(false);
   const [privateLists, setPrivateLists] = useState<PublicList[]>([]);
   const [showMainContent, setShowMainContent] = useState(false);
+  const [editingList, setEditingList] = useState<PublicList | null>(null);
+  const [editingPrivateList, setEditingPrivateList] = useState<PublicList | null>(null);
 
-  // Unique categories for filter dropdown
-  const uniqueCategories = categories;
-
-  // Tools in selected category
-  const toolsInCategory = useMemo(() => activeCategory === 'all' ? aiTools : aiTools.filter(t => t.category === activeCategory), [aiTools, activeCategory]);
-
-  // Filtered tools for grid
   const filteredTools = useMemo(() => {
     return aiTools.filter(tool => {
       const matchesSearch = tool.name.toLowerCase().includes(search.toLowerCase());
@@ -121,6 +127,19 @@ function Index() {
       return matchesSearch && matchesCategory;
     });
   }, [search, activeCategory, aiTools]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const toolsPerPage = 50;
+  const totalPages = Math.ceil(filteredTools.length / toolsPerPage);
+  // Reset to page 1 when category or search changes
+  useEffect(() => { setCurrentPage(1); }, [activeCategory, search]);
+  const paginatedTools = filteredTools.slice((currentPage - 1) * toolsPerPage, currentPage * toolsPerPage);
+
+  // Unique categories for filter dropdown
+  const uniqueCategories = categories;
+
+  // Tools in selected category
+  const toolsInCategory = useMemo(() => activeCategory === 'all' ? aiTools : aiTools.filter(t => t.category === activeCategory), [aiTools, activeCategory]);
 
   // Featured tools: top-rated or featured item per category
   const featuredTools = useMemo(() => {
@@ -313,9 +332,81 @@ function Index() {
     }
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const matches = aiTools.filter(tool => tool.name.toLowerCase().includes(search.trim().toLowerCase()));
+      if (matches.length > 0) {
+        setShowMainContent(true);
+      }
+    }
+  };
+
+  const handleListSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setListSearch(e.target.value);
+  };
+
+  const filteredPublicLists = useMemo(() => {
+    if (!listSearch) return publicLists;
+    const searchLower = listSearch.toLowerCase();
+    return publicLists.filter(list => {
+      if (listSearchType === 'name') {
+        return list.title.toLowerCase().includes(searchLower);
+      } else {
+        return list.creator.toLowerCase().includes(searchLower);
+      }
+    });
+  }, [publicLists, listSearch, listSearchType]);
+
+  const handleEditList = (list: PublicList) => {
+    setEditingList(list);
+    setShowCreateListModal(true);
+  };
+
+  const handleUpdateList = (updatedList: PublicList) => {
+    setPublicLists(prev => prev.map(list => 
+      list.id === updatedList.id ? updatedList : list
+    ));
+    setEditingList(null);
+    setShowCreateListModal(false);
+  };
+
+  const handleEditPrivateList = (list: PublicList) => {
+    setEditingPrivateList(list);
+    setShowCreateListModal(true);
+  };
+
+  const handleUpdatePrivateList = (updatedList: PublicList) => {
+    setPrivateLists(prev => prev.map(list =>
+      list.id === updatedList.id ? updatedList : list
+    ));
+    setEditingPrivateList(null);
+    setShowCreateListModal(false);
+  };
+
+  useEffect(() => {
+    // Show main content with all tools when navigating to home or when forceShowMain is set
+    if (location.pathname === '/' && (location.state?.forceShowMain || location.state === undefined)) {
+      setShowMainContent(true);
+      setActiveCategory('all');
+      if (location.state?.forceShowMain) {
+        navigate('/', { replace: true, state: {} });
+      }
+    }
+  }, [location.pathname, location.state, setActiveCategory, navigate]);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Header searchValue={search} onSearchChange={setSearch} />
+      <Header 
+        searchValue={search} 
+        onSearchChange={handleSearchChange} 
+        onSearchKeyDown={handleSearchKeyDown}
+        showMainContent={showMainContent}
+        setShowMainContent={setShowMainContent}
+      />
       <div className="flex-1 flex flex-col">
         <AnimatePresence>
           {!showMainContent && (
@@ -548,7 +639,7 @@ function Index() {
                 <CardContent className="flex-1 flex flex-col">
                   <ScrollArea className="flex-1">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {filteredTools.slice(0, 50).map((tool) => (
+                      {paginatedTools.map((tool) => (
                         <div
                           key={tool.id}
                           className=""
@@ -570,7 +661,109 @@ function Index() {
                       ))}
                     </div>
                   </ScrollArea>
-                  <div className="text-xs text-muted-foreground mt-2">Showing {filteredTools.length > 50 ? 50 : filteredTools.length} of {filteredTools.length} tools</div>
+                  <div className="text-xs text-muted-foreground mt-2">
+                    Showing {paginatedTools.length > 50 ? 50 : paginatedTools.length} of {filteredTools.length} tools
+                  </div>
+                  {totalPages > 1 && (
+                    <Pagination className="mt-6">
+                      <PaginationContent>
+                        {/* Previous Arrow */}
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={e => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}
+                            href="#"
+                            className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                          />
+                        </PaginationItem>
+
+                        {/* First Page */}
+                        {currentPage > 2 && (
+                          <>
+                            <PaginationItem>
+                              <PaginationLink
+                                isActive={currentPage === 1}
+                                href="#"
+                                onClick={e => { e.preventDefault(); setCurrentPage(1); }}
+                              >
+                                1
+                              </PaginationLink>
+                            </PaginationItem>
+                            {currentPage > 3 && (
+                              <PaginationItem>
+                                <span className="px-2">...</span>
+                              </PaginationItem>
+                            )}
+                          </>
+                        )}
+
+                        {/* Previous Page */}
+                        {currentPage > 1 && (
+                          <PaginationItem>
+                            <PaginationLink
+                              isActive={false}
+                              href="#"
+                              onClick={e => { e.preventDefault(); setCurrentPage(currentPage - 1); }}
+                            >
+                              {currentPage - 1}
+                            </PaginationLink>
+                          </PaginationItem>
+                        )}
+
+                        {/* Current Page */}
+                        <PaginationItem>
+                          <PaginationLink
+                            isActive={true}
+                            href="#"
+                            onClick={e => e.preventDefault()}
+                          >
+                            {currentPage}
+                          </PaginationLink>
+                        </PaginationItem>
+
+                        {/* Next Page */}
+                        {currentPage < totalPages && (
+                          <PaginationItem>
+                            <PaginationLink
+                              isActive={false}
+                              href="#"
+                              onClick={e => { e.preventDefault(); setCurrentPage(currentPage + 1); }}
+                            >
+                              {currentPage + 1}
+                            </PaginationLink>
+                          </PaginationItem>
+                        )}
+
+                        {/* Last Page */}
+                        {currentPage < totalPages - 1 && (
+                          <>
+                            {currentPage < totalPages - 2 && (
+                              <PaginationItem>
+                                <span className="px-2">...</span>
+                              </PaginationItem>
+                            )}
+                            <PaginationItem>
+                              <PaginationLink
+                                isActive={currentPage === totalPages}
+                                href="#"
+                                onClick={e => { e.preventDefault(); setCurrentPage(totalPages); }}
+                              >
+                                {totalPages}
+                              </PaginationLink>
+                            </PaginationItem>
+                          </>
+                        )}
+
+                        {/* Next Arrow */}
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={e => { e.preventDefault(); if (currentPage < totalPages) setCurrentPage(currentPage + 1); }}
+                            href="#"
+                            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -649,6 +842,28 @@ function Index() {
                             })}
                             {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
                           </div>
+                          <div className="flex gap-2 mt-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditPrivateList(list);
+                              }}
+                              className="text-blue-600 hover:text-blue-800 text-sm"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (window.confirm('Are you sure you want to delete this list?')) {
+                                  setPrivateLists(prev => prev.filter(l => l.id !== list.id));
+                                }
+                              }}
+                              className="text-red-600 hover:text-red-800 text-sm"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -661,11 +876,30 @@ function Index() {
               <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-primary">Public Lists</CardTitle>
+                  <div className="flex flex-col gap-2 mt-2">
+                    <div className="flex gap-2">
+                      <Input
+                        type="text"
+                        placeholder={`Search by ${listSearchType === 'name' ? 'list name' : 'user'}`}
+                        value={listSearch}
+                        onChange={handleListSearch}
+                        className="flex-1"
+                      />
+                      <select
+                        value={listSearchType}
+                        onChange={(e) => setListSearchType(e.target.value as 'name' | 'user')}
+                        className="border rounded-md px-2 py-1"
+                      >
+                        <option value="name">By Name</option>
+                        <option value="user">By User</option>
+                      </select>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
                   <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
-                    {publicLists.length === 0 && (<div className="text-lg text-muted-foreground mb-2">No public lists yet.</div>)}
-                    {publicLists.map(list => (
+                    {filteredPublicLists.length === 0 && (<div className="text-lg text-muted-foreground mb-2">No public lists found.</div>)}
+                    {filteredPublicLists.map(list => (
                       <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition" onClick={() => setListDialog({ open: true, list })}>
                         <div className="font-bold text-lg mb-1">{list.title}</div>
                         <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
@@ -676,6 +910,30 @@ function Index() {
                           })}
                           {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
                         </div>
+                        {user && list.creator === user.email && (
+                          <div className="flex gap-2 mt-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditList(list);
+                              }}
+                              className="text-blue-600 hover:text-blue-800 text-sm"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (window.confirm('Are you sure you want to delete this list?')) {
+                                  setPublicLists(prev => prev.filter(l => l.id !== list.id));
+                                }
+                              }}
+                              className="text-red-600 hover:text-red-800 text-sm"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -1002,8 +1260,30 @@ function Index() {
             </div>
           </div>
         )}
-        <Modal open={showCreateListModal} onClose={() => setShowCreateListModal(false)}>
-          <CreateListForm onSubmit={handleAddList} onCancel={() => setShowCreateListModal(false)} />
+        <Modal open={showCreateListModal} onClose={() => {
+          setShowCreateListModal(false);
+          setEditingList(null);
+          setEditingPrivateList(null);
+        }}>
+          <CreateListForm 
+            onSubmit={editingList ? handleUpdateList : editingPrivateList ? handleUpdatePrivateList : handleAddList} 
+            onCancel={() => {
+              setShowCreateListModal(false);
+              setEditingList(null);
+              setEditingPrivateList(null);
+            }}
+            initialValues={editingList ? {
+              id: editingList.id,
+              title: editingList.title,
+              selected: editingList.toolIds,
+              isPublic: true
+            } : editingPrivateList ? {
+              id: editingPrivateList.id,
+              title: editingPrivateList.title,
+              selected: editingPrivateList.toolIds,
+              isPublic: false
+            } : undefined}
+          />
         </Modal>
     </div>
   );

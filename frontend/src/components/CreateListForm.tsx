@@ -4,8 +4,9 @@ import { useData } from "@/contexts/DataContext";
 
 interface CreateListFormProps {
   onSubmit: (list: any) => void;
-  onCancel: () => void;
+  onCancel?: () => void;
   initialValues?: {
+    id?: string;
     title?: string;
     selected?: string[];
     isPublic?: boolean;
@@ -31,7 +32,7 @@ const CreateListForm: React.FC<CreateListFormProps> = ({ onSubmit, onCancel, ini
       return;
     }
     const newList = {
-      id: Date.now().toString(),
+      id: initialValues?.id || Date.now().toString(),
       title,
       creator: user?.email || "anon",
       toolIds: selected,
@@ -86,13 +87,15 @@ const CreateListForm: React.FC<CreateListFormProps> = ({ onSubmit, onCancel, ini
       </div>
       {error && <div className="mb-2 text-red-600 text-center font-semibold">{error}</div>}
       <div className="flex gap-4 justify-end">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-xl px-6 py-3 font-bold text-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
-        >
-          Cancel
-        </button>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-xl px-6 py-3 font-bold text-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
+          >
+            Cancel
+          </button>
+        )}
         <button
           type="submit"
           className={`rounded-xl px-6 py-3 font-bold text-lg flex items-center justify-center gap-3 transition shadow-lg ${user ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'}`}
@@ -106,4 +109,4 @@ const CreateListForm: React.FC<CreateListFormProps> = ({ onSubmit, onCancel, ini
   );
 };
 
-export default CreateListForm; 
+export default CreateListForm;
