@@ -109,3 +109,10 @@
 .header-btn-outline {
   @apply border border-primary text-primary font-semibold px-4 py-2 rounded hover:bg-primary hover:text-white transition shadow;
 }
+
+.subscription-card {
+  transition: border-color 0.2s;
+}
+.subscription-card:hover {
+  border-color: #000 !important;
+}

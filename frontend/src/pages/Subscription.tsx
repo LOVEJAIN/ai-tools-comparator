@@ -53,10 +53,11 @@ export default function Subscription() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="container py-8 flex-1">
+        <button onClick={() => window.location.href = '/'} className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">← Back to Home</button>
         <h1 className="text-3xl font-bold mb-6">Feature or Advertise Your AI Tool</h1>
         <div className="grid gap-8 md:grid-cols-3">
           {plans.map((plan, idx) => (
-            <div key={idx} className={`bg-white rounded-lg shadow p-8 border flex flex-col items-center ${plan.popular ? 'border-primary border-2' : ''}`}>
+            <div key={idx} className={`subscription-card bg-white rounded-lg shadow p-8 border flex flex-col items-center${plan.popular ? ' shadow-lg' : ''}`}>
               {plan.popular && <div className="mb-2 text-xs font-bold text-primary">Most Popular</div>}
               <h2 className="text-xl font-semibold mb-2">{plan.name}</h2>
               <div className="text-3xl font-bold mb-1">{plan.price}</div>

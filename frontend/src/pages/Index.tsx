@@ -24,14 +24,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { addNewsletterSubscriber } from "../lib/utils";
 import { Input } from "@/components/ui/input";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationPrevious,
-  PaginationNext,
-} from "@/components/ui/pagination";
+import FeaturedCarousel from '../components/FeaturedCarousel';
 
 type PublicList = {
   id: string;
@@ -120,6 +113,13 @@ function Index() {
   const [editingList, setEditingList] = useState<PublicList | null>(null);
   const [editingPrivateList, setEditingPrivateList] = useState<PublicList | null>(null);
 
+  // Unique categories for filter dropdown
+  const uniqueCategories = categories;
+
+  // Tools in selected category
+  const toolsInCategory = useMemo(() => activeCategory === 'all' ? aiTools : aiTools.filter(t => t.category === activeCategory), [aiTools, activeCategory]);
+
+  // Filtered tools for grid
   const filteredTools = useMemo(() => {
     return aiTools.filter(tool => {
       const matchesSearch = tool.name.toLowerCase().includes(search.toLowerCase());
@@ -127,19 +127,6 @@ function Index() {
       return matchesSearch && matchesCategory;
     });
   }, [search, activeCategory, aiTools]);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const toolsPerPage = 50;
-  const totalPages = Math.ceil(filteredTools.length / toolsPerPage);
-  // Reset to page 1 when category or search changes
-  useEffect(() => { setCurrentPage(1); }, [activeCategory, search]);
-  const paginatedTools = filteredTools.slice((currentPage - 1) * toolsPerPage, currentPage * toolsPerPage);
-
-  // Unique categories for filter dropdown
-  const uniqueCategories = categories;
-
-  // Tools in selected category
-  const toolsInCategory = useMemo(() => activeCategory === 'all' ? aiTools : aiTools.filter(t => t.category === activeCategory), [aiTools, activeCategory]);
 
   // Featured tools: top-rated or featured item per category
   const featuredTools = useMemo(() => {
@@ -400,58 +387,55 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Header 
-        searchValue={search} 
-        onSearchChange={handleSearchChange} 
-        onSearchKeyDown={handleSearchKeyDown}
-        showMainContent={showMainContent}
-        setShowMainContent={setShowMainContent}
-      />
+      <Header searchValue={search} onSearchChange={handleSearchChange} onSearchKeyDown={handleSearchKeyDown} />
       <div className="flex-1 flex flex-col">
         <AnimatePresence>
           {!showMainContent && (
-            <motion.div
-              key="bubble-landing"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -40 }}
-              transition={{ duration: 0.6 }}
-              className="flex flex-col items-center justify-center min-h-[60vh]"
-            >
-              <h1 className="text-3xl font-bold mb-6 text-center">What are you interested in exploring today?</h1>
-              <div className="flex flex-wrap justify-center gap-8 w-full px-4">
-                {categories.map((cat, i) => (
-                  <motion.button
-                    key={cat.id}
-                    className="rounded-full shadow-lg flex items-center justify-center text-xl font-semibold text-white focus:outline-none"
-                    style={{
-                      width: `${120 + (i % 3) * 20}px`, // Vary size
-                      height: `${120 + (i % 3) * 20}px`,
-                      background: "linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%)",
-                    }}
-                    whileHover={{ scale: 1.18, boxShadow: "0 8px 32px rgba(80,80,200,0.25)" }}
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ scale: 0, opacity: 0, y: 30 }}
-                    animate={{
-                      scale: 1,
-                      opacity: 1,
-                      y: [0, -8, 0, 8, 0], // floating effect
-                      transition: {
-                        delay: i * 0.07,
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                        duration: 2 + (i % 3) * 0.3,
-                      }
-                    }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    onClick={() => handleBubbleSelect(cat.id)}
-                  >
-                    {cat.name}
-                  </motion.button>
-                ))}
-              </div>
-              <p className="mt-8 text-gray-500 text-center max-w-xl">Select a category bubble to see the best AI tools for that area. This helps you focus and not get overwhelmed by all the options!</p>
-            </motion.div>
+            <>
+              <motion.div
+                key="bubble-landing"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -40 }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col items-center justify-center min-h-[60vh]"
+              >
+                <h1 className="text-3xl font-bold mb-6 text-center">What are you interested in exploring today?</h1>
+                <div className="flex flex-wrap justify-center gap-8 w-full px-4">
+                  {categories.map((cat, i) => (
+                    <motion.button
+                      key={cat.id}
+                      className="rounded-full shadow-lg flex items-center justify-center text-xl font-semibold text-white focus:outline-none"
+                      style={{
+                        width: `${120 + (i % 3) * 20}px`, // Vary size
+                        height: `${120 + (i % 3) * 20}px`,
+                        background: "linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%)",
+                      }}
+                      whileHover={{ scale: 1.18, boxShadow: "0 8px 32px rgba(80,80,200,0.25)" }}
+                      whileTap={{ scale: 0.95 }}
+                      initial={{ scale: 0, opacity: 0, y: 30 }}
+                      animate={{
+                        scale: 1,
+                        opacity: 1,
+                        y: [0, -8, 0, 8, 0], // floating effect
+                        transition: {
+                          delay: i * 0.07,
+                          repeat: Infinity,
+                          repeatType: "reverse",
+                          duration: 2 + (i % 3) * 0.3,
+                        }
+                      }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      onClick={() => handleBubbleSelect(cat.id)}
+                    >
+                      {cat.name}
+                    </motion.button>
+                  ))}
+                </div>
+                <p className="mt-8 text-gray-500 text-center max-w-xl">Select a category bubble to see the best AI tools for that area. This helps you focus and not get overwhelmed by all the options!</p>
+              </motion.div>
+              <FeaturedCarousel />
+            </>
           )}
         </AnimatePresence>
         <AnimatePresence>
@@ -639,7 +623,7 @@ function Index() {
                 <CardContent className="flex-1 flex flex-col">
                   <ScrollArea className="flex-1">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {paginatedTools.map((tool) => (
+                      {filteredTools.slice(0, 50).map((tool) => (
                         <div
                           key={tool.id}
                           className=""
@@ -662,108 +646,8 @@ function Index() {
                     </div>
                   </ScrollArea>
                   <div className="text-xs text-muted-foreground mt-2">
-                    Showing {paginatedTools.length > 50 ? 50 : paginatedTools.length} of {filteredTools.length} tools
+                    Showing {filteredTools.length > 50 ? 50 : filteredTools.length} of {filteredTools.length} tools
                   </div>
-                  {totalPages > 1 && (
-                    <Pagination className="mt-6">
-                      <PaginationContent>
-                        {/* Previous Arrow */}
-                        <PaginationItem>
-                          <PaginationPrevious
-                            onClick={e => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}
-                            href="#"
-                            className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
-                          />
-                        </PaginationItem>
-
-                        {/* First Page */}
-                        {currentPage > 2 && (
-                          <>
-                            <PaginationItem>
-                              <PaginationLink
-                                isActive={currentPage === 1}
-                                href="#"
-                                onClick={e => { e.preventDefault(); setCurrentPage(1); }}
-                              >
-                                1
-                              </PaginationLink>
-                            </PaginationItem>
-                            {currentPage > 3 && (
-                              <PaginationItem>
-                                <span className="px-2">...</span>
-                              </PaginationItem>
-                            )}
-                          </>
-                        )}
-
-                        {/* Previous Page */}
-                        {currentPage > 1 && (
-                          <PaginationItem>
-                            <PaginationLink
-                              isActive={false}
-                              href="#"
-                              onClick={e => { e.preventDefault(); setCurrentPage(currentPage - 1); }}
-                            >
-                              {currentPage - 1}
-                            </PaginationLink>
-                          </PaginationItem>
-                        )}
-
-                        {/* Current Page */}
-                        <PaginationItem>
-                          <PaginationLink
-                            isActive={true}
-                            href="#"
-                            onClick={e => e.preventDefault()}
-                          >
-                            {currentPage}
-                          </PaginationLink>
-                        </PaginationItem>
-
-                        {/* Next Page */}
-                        {currentPage < totalPages && (
-                          <PaginationItem>
-                            <PaginationLink
-                              isActive={false}
-                              href="#"
-                              onClick={e => { e.preventDefault(); setCurrentPage(currentPage + 1); }}
-                            >
-                              {currentPage + 1}
-                            </PaginationLink>
-                          </PaginationItem>
-                        )}
-
-                        {/* Last Page */}
-                        {currentPage < totalPages - 1 && (
-                          <>
-                            {currentPage < totalPages - 2 && (
-                              <PaginationItem>
-                                <span className="px-2">...</span>
-                              </PaginationItem>
-                            )}
-                            <PaginationItem>
-                              <PaginationLink
-                                isActive={currentPage === totalPages}
-                                href="#"
-                                onClick={e => { e.preventDefault(); setCurrentPage(totalPages); }}
-                              >
-                                {totalPages}
-                              </PaginationLink>
-                            </PaginationItem>
-                          </>
-                        )}
-
-                        {/* Next Arrow */}
-                        <PaginationItem>
-                          <PaginationNext
-                            onClick={e => { e.preventDefault(); if (currentPage < totalPages) setCurrentPage(currentPage + 1); }}
-                            href="#"
-                            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
-                  )}
                 </CardContent>
               </Card>
             </div>

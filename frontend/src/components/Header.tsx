@@ -13,18 +13,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from '@/components/ui/separator';
 import SubmitToolModal, { SubmitToolModalHandle } from "./SubmitBanner";
-import AikinLogo from "@/assets/aikin-logo.svg";
-import AikinButton from "./AikinButton";
+import AikinLogo from "../assets/aikin-logo.png";
 
 interface HeaderProps {
   searchValue: string;
   onSearchChange: (value: string) => void;
   onSearchKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  showMainContent?: boolean;
-  setShowMainContent?: (v: boolean) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKeyDown, showMainContent, setShowMainContent }) => {
+const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKeyDown }) => {
   const { user, login, logout, register } = useData();
   const { googleUser, handleGoogleSuccess, handleGoogleError, logout: googleLogout } = useGoogleAuth();
   const navigate = useNavigate();
@@ -39,7 +36,6 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
   const [showJobDialog, setShowJobDialog] = useState(false);
   const [jobForm, setJobForm] = useState({ title: '', company: '', location: '', description: '' });
   const [jobSuccess, setJobSuccess] = useState(false);
-  const location = window.location.pathname;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -73,18 +69,13 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
     navigate('/', { replace: true, state: { forceShowMain: true } });
   };
 
-  const handleAikinClick = () => {
-    if (location === "/" && showMainContent && setShowMainContent) {
-      setShowMainContent(false);
-    } else {
-      navigate("/");
-    }
-  };
-
   return (
     <header className="border-b bg-background">
       <div className="container flex h-16 items-center px-4 justify-between gap-4">
-        <AikinButton className="mr-2" onClick={handleAikinClick} />
+        <Link to="/" className="flex items-center gap-2 text-2xl font-bold whitespace-nowrap">
+          <img src={AikinLogo} alt="Aikin Logo" className="h-11  object-contain" />
+          <h3>Aikin</h3>
+        </Link>
         <div className="flex-1 flex justify-center">
           <Input
             type="text"
@@ -96,6 +87,9 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
           />
         </div>
         <div className="flex items-center gap-4">
+          <Button variant="outline" asChild>
+            <span onClick={handleHomeClick} style={{ cursor: 'pointer' }}>Home</span>
+          </Button>
           <Button variant="outline" asChild>
             <Link to="/jobs">Jobs</Link>
           </Button>
@@ -224,6 +218,14 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
                       )}
                     </div>
                   </form>
+                  <div className="text-xs text-muted-foreground mt-2">
+                    <div>
+                      Dummy Admin: <b>admin@example.com / password</b>
+                    </div>
+                    <div>
+                      Dummy User: <b>user@example.com / password</b>
+                    </div>
+                  </div>
                 </DialogContent>
               </Dialog>
             </>
