@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -54,7 +53,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
   return (
     <>
       <Card 
-        className={`overflow-hidden transition-all hover:shadow-lg hover:scale-[1.01] cursor-pointer ${
+        className={`w-full overflow-hidden transition-all hover:shadow-lg hover:scale-[1.01] cursor-pointer ${
           item.featured ? 'border-brand-purple' : ''
         }`}
         onClick={handleItemClick}

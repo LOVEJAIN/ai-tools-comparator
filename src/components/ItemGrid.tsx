@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ItemCard from './ItemCard';
 import { useData } from '@/contexts/DataContext';
@@ -18,7 +17,7 @@ const ItemGrid: React.FC = () => {
   }
   
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 py-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
       {filteredItems.map((item) => (
         <ItemCard key={item.id} item={item} />
       ))}

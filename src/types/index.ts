@@ -1,9 +1,9 @@
-
 export interface User {
   id: string;
   username: string;
   email: string;
   isAdmin: boolean;
+  isVerified?: boolean;
 }
 
 export interface Category {
@@ -43,4 +43,6 @@ export interface Analytics {
   clicks: number;
   conversion: number;
   revenue: number;
+  avgRating: number;
+  numRaters: number;
 }

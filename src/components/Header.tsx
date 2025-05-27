@@ -1,203 +1,248 @@
+import React, { useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useData } from "@/contexts/DataContext";
+import { useGoogleAuth } from "@/contexts/GoogleAuthContext";
+import { GoogleLogin } from '@react-oauth/google';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from '@/components/ui/separator';
+import SubmitToolModal, { SubmitToolModalHandle } from "./SubmitBanner";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useData } from '@/contexts/DataContext';
-import { Search, User, LogOut } from 'lucide-react';
+interface HeaderProps {
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+}
 
-const Header: React.FC = () => {
-  const { user, logout } = useData();
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const { login, register } = useData();
+const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange }) => {
+  const { user, login, logout, register } = useData();
+  const { googleUser, handleGoogleSuccess, handleGoogleError, logout: googleLogout } = useGoogleAuth();
+  const navigate = useNavigate();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const submitModalRef = useRef<SubmitToolModalHandle>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
-    setIsLoginOpen(false);
-    resetForm();
+    login(form.email, form.password);
+    setIsDialogOpen(false);
+    setForm({ username: "", email: "", password: "" });
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
-    register(username, email, password);
-    setIsRegisterOpen(false);
-    resetForm();
-  };
-
-  const resetForm = () => {
-    setEmail('');
-    setPassword('');
-    setUsername('');
+    register(form.username, form.email, form.password);
+    setIsDialogOpen(false);
+    setForm({ username: "", email: "", password: "" });
   };
 
   const handleLogout = () => {
-    logout();
+    if (googleUser) {
+      googleLogout();
+    } else {
+      logout();
+    }
   };
 
-  return (
-    <header className="sticky top-0 z-40 w-full bg-white border-b shadow-sm">
-      <div className="container flex items-center justify-between h-16 px-4 mx-auto">
-        <div className="flex items-center space-x-2">
-          <a href="#" className="flex items-center space-x-2">
-            <div className="bg-brand-purple w-8 h-8 rounded-md flex items-center justify-center">
-              <span className="text-white font-bold">Hi</span>
-            </div>
-            <span className="font-bold text-xl">Hi</span>
-          </a>
-        </div>
+  const currentUser = googleUser || user;
 
-        <div className="relative hidden md:flex items-center w-full max-w-md mx-12">
-          <Search className="absolute left-2.5 h-4 w-4 text-gray-500" />
+  return (
+    <header className="border-b bg-background">
+      <div className="container flex h-16 items-center px-4 justify-between gap-4">
+        <Link to="/" className="text-2xl font-bold whitespace-nowrap">
+          AI Tools Explorer
+        </Link>
+        <div className="flex-1 flex justify-center">
           <Input
-            type="search"
+            type="text"
             placeholder="Search for items..."
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchValue}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="max-w-lg w-full rounded-lg border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-
-        <div className="flex items-center space-x-4">
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative rounded-full" size="icon">
-                  <Avatar>
-                    <AvatarFallback className="bg-brand-purple text-white">
-                      {user.username.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>{user.username}</span>
-                </DropdownMenuItem>
-                {user.isAdmin && (
-                  <DropdownMenuItem>
-                    <a href="#analytics" className="flex w-full">
-                      Admin Analytics
-                    </a>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <div className="flex items-center space-x-2">
-              <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="ghost">Log in</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+        <div className="flex items-center gap-4">
+          <Link to="/jobs" className="header-link">
+            Jobs
+          </Link>
+          <Link to="/subscription" className="header-link">
+            Advertise
+          </Link>
+          <Button
+            className="header-btn"
+            onClick={() => submitModalRef.current?.open("submit")}
+          >
+            Submit AI Tool
+          </Button>
+          {currentUser && currentUser.isAdmin && (
+            <Button className="header-btn" onClick={() => navigate("/admin")}>
+              Dashboard
+            </Button>
+          )}
+          {!currentUser ? (
+            <>
+              <Button
+                className="header-btn"
+                onClick={() => {
+                  setIsDialogOpen(true);
+                  setIsSignUp(false);
+                }}
+              >
+                Log in
+              </Button>
+              <Button
+                variant="outline"
+                className="header-btn-outline"
+                onClick={() => {
+                  setIsDialogOpen(true);
+                  setIsSignUp(true);
+                }}
+              >
+                Sign up
+              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="sm:max-w-[400px]">
                   <DialogHeader>
-                    <DialogTitle>Log in to your account</DialogTitle>
+                    <DialogTitle>{isSignUp ? "Sign Up" : "Log In"}</DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleLogin} className="space-y-4 pt-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                  <form
+                    onSubmit={isSignUp ? handleSignUp : handleLogin}
+                    className="space-y-4 pt-2"
+                  >
+                    {isSignUp && (
                       <Input
-                        id="email"
-                        type="email"
-                        placeholder="you@example.com"
+                        name="username"
+                        placeholder="Username"
+                        value={form.username}
+                        onChange={handleChange}
                         required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
                       />
-                      <div className="text-xs text-muted-foreground">
-                        Try with: admin@example.com / password
+                    )}
+                    <Input
+                      name="email"
+                      type="email"
+                      placeholder="Email"
+                      value={form.email}
+                      onChange={handleChange}
+                      required
+                    />
+                    <Input
+                      name="password"
+                      type="password"
+                      placeholder="Password"
+                      value={form.password}
+                      onChange={handleChange}
+                      required
+                    />
+                    <Button
+                      type="submit"
+                      className="w-full bg-primary text-white hover:bg-primary/90 transition"
+                    >
+                      {isSignUp ? "Sign Up" : "Log In"}
+                    </Button>
+                    
+                    <div className="relative my-4">
+                      <div className="absolute inset-0 flex items-center">
+                        <Separator className="w-full" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                          Or continue with
+                        </span>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                    </div>
-                    <Button type="submit" className="w-full bg-brand-purple hover:bg-brand-purple/90">
-                      Log in
-                    </Button>
-                  </form>
-                </DialogContent>
-              </Dialog>
 
-              <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-brand-purple hover:bg-brand-purple/90">Sign up</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Create an account</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleRegister} className="space-y-4 pt-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
-                      <Input
-                        id="username"
-                        placeholder="johndoe"
-                        required
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                      />
+                    <div className="flex justify-center mt-4">
+                      <div className="w-full max-w-[280px] mx-auto">
+                        <GoogleLogin
+                          onSuccess={handleGoogleSuccess}
+                          onError={handleGoogleError}
+                          useOneTap
+                          width="280"
+                          theme="filled_blue"
+                          size="large"
+                          text="continue_with"
+                          shape="rectangular"
+                          logo_alignment="left"
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-email">Email</Label>
-                      <Input
-                        id="register-email"
-                        type="email"
-                        placeholder="you@example.com"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
+
+                    <div className="text-xs text-center mt-4">
+                      {isSignUp ? (
+                        <span>
+                          Already have an account?{" "}
+                          <button
+                            type="button"
+                            className="underline"
+                            onClick={() => setIsSignUp(false)}
+                          >
+                            Log in
+                          </button>
+                        </span>
+                      ) : (
+                        <span>
+                          Don&apos;t have an account?{" "}
+                          <button
+                            type="button"
+                            className="underline"
+                            onClick={() => setIsSignUp(true)}
+                          >
+                            Sign up
+                          </button>
+                        </span>
+                      )}
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-password">Password</Label>
-                      <Input
-                        id="register-password"
-                        type="password"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                    </div>
-                    <Button type="submit" className="w-full bg-brand-purple hover:bg-brand-purple/90">
-                      Sign up
-                    </Button>
                   </form>
+                  <div className="text-xs text-muted-foreground mt-2">
+                    <div>
+                      Dummy Admin: <b>admin@example.com / password</b>
+                    </div>
+                    <div>
+                      Dummy User: <b>user@example.com / password</b>
+                    </div>
+                  </div>
                 </DialogContent>
               </Dialog>
+            </>
+          ) : (
+            <div className="flex items-center gap-2">
+              {googleUser && (
+                <img
+                  src={googleUser.picture}
+                  alt={googleUser.name}
+                  className="w-8 h-8 rounded-full"
+                />
+              )}
+              <span className="text-sm font-medium">
+                {googleUser ? googleUser.name : (user?.username || user?.email)}
+              </span>
+              <Button
+                variant="outline"
+                className="header-btn-outline"
+                onClick={handleLogout}
+              >
+                Sign out
+              </Button>
             </div>
           )}
         </div>
       </div>
+      <SubmitToolModal ref={submitModalRef} />
     </header>
   );
 };

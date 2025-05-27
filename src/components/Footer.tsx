@@ -1,66 +1,211 @@
+import React, { useState } from "react";
 
-import React from 'react';
+const trustedBy = [
+  { name: "Google", logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" },
+  { name: "Microsoft", logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" },
+  { name: "OpenAI", logo: "https://upload.wikimedia.org/wikipedia/commons/4/4d/OpenAI_Logo.svg" },
+  { name: "Amazon", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" },
+];
+
+const userReviews = [
+  { name: "Amit S.", review: "Superb directory for AI tools! Helped my startup a lot." },
+  { name: "Priya R.", review: "Love the clean UI and the variety of tools listed." },
+  { name: "John D.", review: "I found the perfect AI tool for my business here." },
+  { name: "Sara K.", review: "The reviews and ratings are very helpful!" },
+];
+
+const faqs = [
+  { q: "How do I submit my AI tool?", a: "Click the 'Submit AI Tool' button at the top and fill out the form." },
+  { q: "Is listing free?", a: "Basic listing is free. Featured and verified listings are paid." },
+  { q: "How are ratings calculated?", a: "Ratings are based on user submissions and reviews." },
+  { q: "How can I contact support?", a: "Email us at contact@aitoolsexplorer.com." },
+];
 
 const Footer: React.FC = () => {
+  // Rate us state
+  const [rating, setRating] = useState<number>(Number(localStorage.getItem('siteRating')) || 0);
+  const [hover, setHover] = useState<number>(0);
+  const [comment, setComment] = useState<string>("");
+  const [submitted, setSubmitted] = useState<boolean>(!!localStorage.getItem('siteRating'));
+  const [rateError, setRateError] = useState<string>("");
+
+  // Contact us state
+  const [contact, setContact] = useState({ name: '', email: '', message: '' });
+  const [contactSent, setContactSent] = useState(false);
+  const [contactError, setContactError] = useState<string>("");
+
+  // FAQ state
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  // Review carousel state
+  const [reviewIdx, setReviewIdx] = useState(0);
+
+  // Version
+  const version = "0.0.0";
+
+  // Handle rating submit
+  const handleRateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRateError("");
+    if (rating > 0) {
+      try {
+        await fetch("/api/site-ratings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: null, rating, comment })
+        });
+        localStorage.setItem('siteRating', String(rating));
+        setSubmitted(true);
+      } catch (err) {
+        setRateError("Failed to submit rating. Please try again later.");
+      }
+    }
+  };
+
+  // Handle contact submit
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactError("");
+    try {
+      await fetch("/api/contact-messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: null,
+          name: contact.name,
+          email: contact.email,
+          message: contact.message,
+          source: 'footer'
+        })
+      });
+      setContactSent(true);
+      setContact({ name: '', email: '', message: '' });
+    } catch (err) {
+      setContactError("Failed to send message. Please try again later.");
+    }
+  };
+
   return (
-    <footer className="bg-gray-100 py-8">
-      <div className="container px-4 mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <div className="flex items-center space-x-2">
-              <div className="bg-brand-purple w-8 h-8 rounded-md flex items-center justify-center">
-                <span className="text-white font-bold">UP</span>
-              </div>
-              <span className="font-bold text-xl">UpVotely</span>
+    <footer className="bg-gradient-to-br from-[#f8fafc] via-[#e0e7ef] to-[#f1f5f9] border-t mt-12 pt-10">
+      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10 pb-10">
+        {/* About Us */}
+        <div className="rounded-xl shadow bg-white/80 p-6 flex flex-col gap-4 border border-gray-100">
+          <div className="flex items-center gap-2 mb-2">
+            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M12 4v16m0 0H3m9 0a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/></svg>
+            <h3 className="font-bold text-lg">About Us</h3>
+          </div>
+          <p className="text-sm text-muted-foreground max-w-xs mb-2">
+            AI Tools Explorer is your one-stop directory for discovering, comparing, and reviewing the best AI tools on the web. We help users and businesses find the right AI for every need.
+          </p>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-xs font-semibold">Version:</span>
+            <span className="text-xs">{version}</span>
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-xs font-semibold">Made in India</span>
+            <span role="img" aria-label="India">🇮🇳</span>
+          </div>
+        </div>
+        {/* Contact Us & Rate Us */}
+        <div className="flex flex-col gap-8">
+          <div className="rounded-xl shadow bg-white/80 p-6 border border-gray-100 mb-2">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 10.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"/><path d="M21 10.5V17a2 2 0 0 1-2 2h-7"/><path d="M21 10.5l-9 6.5-9-6.5"/></svg>
+              <h3 className="font-bold text-lg">Contact Us</h3>
             </div>
-            <p className="mt-4 text-sm text-gray-600">
-              Discover and vote on the best products across categories.
-            </p>
+            {contactSent ? (
+              <div className="text-green-600 text-sm mb-4">Thank you! We'll get back to you soon.</div>
+            ) : (
+              <form className="mb-2" onSubmit={handleContactSubmit}>
+                <input className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="text" placeholder="Your Name" value={contact.name} onChange={e => setContact({ ...contact, name: e.target.value })} required />
+                <input className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="email" placeholder="Your Email" value={contact.email} onChange={e => setContact({ ...contact, email: e.target.value })} required />
+                <textarea className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" placeholder="Message" value={contact.message} onChange={e => setContact({ ...contact, message: e.target.value })} required />
+                {contactError && <div className="text-red-500 text-xs mb-2">{contactError}</div>}
+                <button className="bg-primary text-white px-4 py-1 rounded w-full hover:bg-primary/90 transition" type="submit">Send</button>
+              </form>
+            )}
           </div>
-          
-          <div>
-            <h3 className="font-medium mb-4">Resources</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><a href="#" className="hover:text-brand-purple">Help Center</a></li>
-              <li><a href="#" className="hover:text-brand-purple">Contact Us</a></li>
-              <li><a href="#" className="hover:text-brand-purple">Submission Guidelines</a></li>
-            </ul>
+          <div className="rounded-xl shadow bg-white/80 p-6 border border-gray-100">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              <h3 className="font-bold text-lg">Rate Us</h3>
+            </div>
+            {submitted ? (
+              <div className="text-green-600 text-sm">Thank you for rating us!</div>
+            ) : (
+              <form onSubmit={handleRateSubmit} className="flex flex-col gap-2">
+                <div className="flex gap-1 mb-1">
+                  {[1,2,3,4,5].map(star => (
+                    <span
+                      key={star}
+                      className={`cursor-pointer text-3xl transition ${star <= (hover || rating) ? 'text-yellow-400 scale-110' : 'text-gray-300'}`}
+                      onClick={() => setRating(star)}
+                      onMouseEnter={() => setHover(star)}
+                      onMouseLeave={() => setHover(0)}
+                    >★</span>
+                  ))}
+                </div>
+                <input className="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="text" placeholder="Leave a comment (optional)" value={comment} onChange={e => setComment(e.target.value)} />
+                {rateError && <div className="text-red-500 text-xs mb-2">{rateError}</div>}
+                <button className="bg-primary text-white px-4 py-1 rounded w-full hover:bg-primary/90 transition" type="submit">Submit</button>
+              </form>
+            )}
           </div>
-          
-          <div>
-            <h3 className="font-medium mb-4">Company</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><a href="#" className="hover:text-brand-purple">About</a></li>
-              <li><a href="#" className="hover:text-brand-purple">Careers</a></li>
-              <li><a href="#" className="hover:text-brand-purple">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-brand-purple">Privacy Policy</a></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="font-medium mb-4">Connect</h3>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-600 hover:text-brand-purple">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" />
-                </svg>
-              </a>
-              <a href="#" className="text-gray-600 hover:text-brand-purple">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                </svg>
-              </a>
-              <a href="#" className="text-gray-600 hover:text-brand-purple">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clipRule="evenodd" />
-                </svg>
-              </a>
+        </div>
+        {/* Socials, FAQ, Trusted By, User Reviews */}
+        <div className="flex flex-col gap-8">
+          <div className="rounded-xl shadow bg-white/80 p-6 border border-gray-100 mb-2">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 2h-3a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-5V6a2 2 0 0 1 2-2h3"/></svg>
+              <h3 className="font-bold text-lg">Follow Us</h3>
+            </div>
+            <div className="flex gap-4 mb-4">
+              <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">Twitter</a>
+              <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">LinkedIn</a>
+              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">GitHub</a>
+            </div>
+            <div className="border-t my-4" />
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              <h3 className="font-bold text-lg">FAQ</h3>
+            </div>
+            <div className="mb-4 divide-y divide-gray-200">
+              {faqs.map((faq, i) => (
+                <div key={i} className="py-2">
+                  <button className="font-semibold text-left w-full flex items-center gap-2" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                    <span>{faq.q}</span>
+                    <svg className={`w-4 h-4 ml-auto transition-transform ${openFaq === i ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  {openFaq === i && <div className="text-sm text-muted-foreground mt-1 pl-2">{faq.a}</div>}
+                </div>
+              ))}
+            </div>
+            <div className="border-t my-4" />
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
+              <h3 className="font-bold text-lg">Trusted By</h3>
+            </div>
+            <div className="flex gap-4 items-center mb-4 flex-nowrap overflow-x-auto pb-2">
+              {trustedBy.map((c, i) => (
+                <img key={i} src={c.logo} alt={c.name} title={c.name} className="h-8 w-auto bg-white rounded shadow p-1 min-w-[70px]" />
+              ))}
+            </div>
+            <div className="border-t my-4" />
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
+              <h3 className="font-bold text-lg">User Reviews</h3>
+            </div>
+            <div className="mb-2 text-sm italic">"{userReviews[reviewIdx].review}"</div>
+            <div className="mb-2 text-xs text-muted-foreground">- {userReviews[reviewIdx].name}</div>
+            <div className="flex gap-2 justify-center">
+              <button className="text-xs px-2 py-1 border rounded hover:bg-gray-100" onClick={() => setReviewIdx((reviewIdx - 1 + userReviews.length) % userReviews.length)}>&lt;</button>
+              <button className="text-xs px-2 py-1 border rounded hover:bg-gray-100" onClick={() => setReviewIdx((reviewIdx + 1) % userReviews.length)}>&gt;</button>
             </div>
           </div>
         </div>
-        <div className="mt-8 pt-6 border-t border-gray-200 text-center text-sm text-gray-600">
-          <p>© {new Date().getFullYear()} UpVotely. All rights reserved.</p>
-        </div>
+      </div>
+      <div className="text-center text-xs text-muted-foreground py-4 border-t bg-white/70">
+        &copy; {new Date().getFullYear()} AI Tools Explorer. All rights reserved.
       </div>
     </footer>
   );
