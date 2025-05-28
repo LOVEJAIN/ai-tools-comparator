@@ -15,6 +15,7 @@ const locations = [
 export default function Jobs() {
   const { user } = useData();
   const isVerified = user?.isAdmin || user?.isVerified;
+  const isAdmin = user?.isAdmin;
   const [level, setLevel] = useState("");
   const [sector, setSector] = useState("");
   const [location, setLocation] = useState("");
@@ -56,6 +57,16 @@ export default function Jobs() {
       setTimeout(() => setJobSuccess(false), 2000);
     } catch (err) {
       alert("Failed to post job");
+    }
+  };
+
+  const handleDeleteJob = async (jobId) => {
+    if (!window.confirm('Are you sure you want to delete this job?')) return;
+    try {
+      await fetch(`/api/jobs/${jobId}`, { method: 'DELETE' });
+      setJobs(prev => prev.filter(job => job.id !== jobId));
+    } catch (err) {
+      alert('Failed to delete job');
     }
   };
 
@@ -122,6 +133,14 @@ export default function Jobs() {
                 <div key={idx} className="bg-white rounded-lg shadow p-6 flex flex-col gap-2 border">
                   <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold">{job.title}</h2>
+                    {isAdmin && (
+                      <button
+                        className="ml-2 px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition text-xs font-semibold"
+                        onClick={() => handleDeleteJob(job.id)}
+                      >
+                        Delete
+                      </button>
+                    )}
                   </div>
                   <div className="text-gray-600 text-sm">{job.company} &bull; {job.location}</div>
                   <p className="text-gray-700 mt-2">{job.description}</p>
