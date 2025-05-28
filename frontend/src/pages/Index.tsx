@@ -25,6 +25,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { addNewsletterSubscriber } from "../lib/utils";
 import { Input } from "@/components/ui/input";
 import FeaturedCarousel from '../components/FeaturedCarousel';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 
 type PublicList = {
   id: string;
@@ -116,10 +124,14 @@ function Index() {
   const filteredTools = useMemo(() => {
     return aiTools.filter(tool => {
       const matchesSearch = tool.name.toLowerCase().includes(search.toLowerCase());
-      const matchesCategory = activeCategory === 'all' ? true : tool.category === activeCategory;
+      const matchesCategory = activeCategory === 'all' 
+        ? true 
+        : activeCategory === 'miscellaneous' 
+          ? !categories.some(c => c.id === tool.category && c.id !== 'miscellaneous')
+          : tool.category === activeCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [search, activeCategory, aiTools]);
+  }, [search, activeCategory, aiTools, categories]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const toolsPerPage = 50;

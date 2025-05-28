@@ -83,10 +83,14 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
   return (
     <header className="border-b bg-background">
       <div className="container flex h-16 items-center px-4 justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2 text-2xl font-bold whitespace-nowrap">
-          <img src={AikinLogo} alt="Aikin Logo" className="h-11  object-contain" />
-          <h3>Aikin</h3>
-        </Link>
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => {
+          if (setShowMainContent) setShowMainContent(false);
+          navigate('/', { replace: true, state: { forceShowMain: true } });
+          window.scrollTo(0, 0);
+        }}>
+          <img src={AikinLogo} alt="Aikin Logo" className="h-8 w-8" />
+          <span className="font-semibold text-xl">Aikin</span>
+        </div>
         <div className="flex-1 flex justify-center">
           <Input
             type="text"
@@ -98,13 +102,15 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
           />
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="outline" asChild>
+          <Button asChild variant="outline" className="header-btn-outline">
             <Link to="/jobs">Jobs</Link>
           </Button>
-          <Button variant="outline" asChild>
+          <Button asChild variant="outline" className="header-btn-outline">
             <Link to="/subscription">Advertise</Link>
           </Button>
-          <Button variant="outline" onClick={() => submitModalRef.current?.open("submit")}>Submit AI Tool</Button>
+          <Button variant="outline" onClick={() => submitModalRef.current?.open("submit")} className="header-btn-outline">
+            Submit AI Tool
+          </Button>
           {currentUser && currentUser.isAdmin && (
             <Button variant="outline" onClick={() => navigate("/admin")}>Dashboard</Button>
           )}

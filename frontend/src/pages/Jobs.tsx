@@ -4,6 +4,7 @@ import { useData } from "@/contexts/DataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import AikinButton from "@/components/AikinButton";
+import { useNavigate } from "react-router-dom";
 
 const levels = ["Entry", "Mid", "Senior"];
 const sectors = ["Engineering Jobs", "AI Research", "Machine Learning", "NLP", "Data Science", "Robotics"];
@@ -22,6 +23,7 @@ export default function Jobs() {
   const [showJobDialog, setShowJobDialog] = useState(false);
   const [jobForm, setJobForm] = useState({ title: '', company: '', location: '', description: '' });
   const [jobSuccess, setJobSuccess] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchJobs();
@@ -66,6 +68,13 @@ export default function Jobs() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="container py-8 flex-1">
+        <Button
+          variant="outline"
+          className="mb-6"
+          onClick={() => navigate('/', { replace: true, state: { forceShowMain: true } })}
+        >
+          ← Back to Home
+        </Button>
         <h1 className="text-3xl font-bold mb-6">AI Job Offers</h1>
         {isVerified && (
           <Button className="mb-6" onClick={() => setShowJobDialog(true)}>

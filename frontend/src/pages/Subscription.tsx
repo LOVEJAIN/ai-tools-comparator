@@ -1,6 +1,8 @@
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import SubmitToolModal, { SubmitToolModalHandle } from "@/components/SubmitBanner";
+import { Button } from "@/components/ui/button";
 
 const plans = [
   {
@@ -50,9 +52,17 @@ const plans = [
 
 export default function Subscription() {
   const submitModalRef = useRef<SubmitToolModalHandle>(null);
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="container py-8 flex-1">
+        <Button
+          variant="outline"
+          className="mb-6"
+          onClick={() => navigate('/', { replace: true, state: { forceShowMain: true } })}
+        >
+          ← Back to Home
+        </Button>
         <h1 className="text-3xl font-bold mb-6">Feature or Advertise Your AI Tool</h1>
         <div className="grid gap-8 md:grid-cols-3">
           {plans.map((plan, idx) => (
