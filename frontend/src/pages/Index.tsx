@@ -13,7 +13,6 @@ import ItemCard from "@/components/ItemCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import Modal from "../components/Modal";
 import CreateListForm from "../components/CreateListForm";
-import YoutubeCarousel from "../components/YoutubeCarousel";
 import {
   Carousel,
   CarouselContent,
@@ -40,15 +39,7 @@ type PublicList = {
   creator: string;
   toolIds: string[];
 };
-function useAIVideos() {
-  const [videos, setVideos] = useState([]);
-  useEffect(() => {
-    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=artificial%20intelligence&type=video&maxResults=8&key=YOUR_YOUTUBE_API_KEY`)
-      .then(res => res.json())
-      .then(data => setVideos(data.items || []));
-  }, []);
-  return videos;
-}
+
 function StarRating({ value, onChange, readOnly = false }: { value: number; onChange?: (v: number) => void; readOnly?: boolean }) {
   return (
     <div className="flex items-center gap-1">
@@ -67,7 +58,6 @@ function StarRating({ value, onChange, readOnly = false }: { value: number; onCh
 }
 
 function Index() {
-  const aiVideos = useAIVideos();
   const [aiTools, setAiTools] = useState<AITool[]>(initialAiTools);
   const [search, setSearch] = useState("");
   const [listSearch, setListSearch] = useState("");
