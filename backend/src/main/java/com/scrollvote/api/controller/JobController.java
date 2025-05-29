@@ -22,4 +22,9 @@ public class JobController {
     public Job createJob(@RequestBody Job job) {
         return jobRepository.save(job);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteJob(@PathVariable Long id) {
+        jobRepository.deleteById(id);
+    }
 } 
