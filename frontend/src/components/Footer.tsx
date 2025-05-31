@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useData } from "@/contexts/DataContext";
 
 const trustedBy = [
   { name: "Google", logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" },
@@ -22,6 +23,7 @@ const faqs = [
 ];
 
 const Footer: React.FC = () => {
+  const { user } = useData();
   // Rate us state
   const [rating, setRating] = useState<number>(Number(localStorage.getItem('siteRating')) || 0);
   const [hover, setHover] = useState<number>(0);
@@ -42,6 +44,10 @@ const Footer: React.FC = () => {
 
   // Version
   const version = "1.0.0";
+
+  useEffect(() => {
+    setSubmitted(!!localStorage.getItem('siteRating'));
+  }, [user]);
 
   // Handle rating submit
   const handleRateSubmit = async (e: React.FormEvent) => {
@@ -115,7 +121,14 @@ const Footer: React.FC = () => {
             {submitted ? (
               <div className="text-green-600 text-sm">Thank you for rating us!</div>
             ) : (
-              <form onSubmit={handleRateSubmit} className="flex flex-col gap-2">
+              <form onSubmit={e => {
+                e.preventDefault();
+                if (!user) {
+                  setRateError("Please log in to submit a rating.");
+                  return;
+                }
+                handleRateSubmit(e);
+              }} className="flex flex-col gap-2">
                 <div className="flex gap-1 mb-1">
                   {[1,2,3,4,5].map(star => (
                     <span

@@ -77,6 +77,7 @@ export function GoogleAuthProvider({ children }: { children: React.ReactNode }) 
   const logout = () => {
     setGoogleUser(null);
     localStorage.removeItem('googleUser');
+    localStorage.removeItem('siteRating'); // Clear site rating flag on logout
     navigate('/');
   };
 
