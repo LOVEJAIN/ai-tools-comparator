@@ -12,6 +12,10 @@ const locations = [
   "San Francisco, CA", "Remote, US", "New York, NY", "London, UK", "Berlin, Germany", "Toronto, Canada", "Sydney, Australia", "Bangalore, India", "Paris, France", "Tokyo, Japan", "Pomfret, Charles County", "Nationwide, US", "Enon, VA", "Spotsylvania County, VA", "Fredericksburg City, VA"
 ];
 
+const API_BASE_URL = import.meta.env.PROD
+  ? "https://backend-service-production-3bc1.up.railway.app"
+  : "";
+
 export default function Jobs() {
   const { user } = useData();
   const isVerified = user?.isAdmin || user?.isVerified;
@@ -33,7 +37,7 @@ export default function Jobs() {
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/jobs");
+      const res = await fetch(`${API_BASE_URL}/api/jobs`);
       const data = await res.json();
       setJobs(data);
     } catch (err) {
@@ -45,7 +49,7 @@ export default function Jobs() {
   const handleJobSubmit = async (e) => {
     e.preventDefault();
     try {
-      await fetch("/api/jobs", {
+      await fetch(`${API_BASE_URL}/api/jobs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...jobForm, postedBy: user?.email || "anon" })
@@ -63,7 +67,7 @@ export default function Jobs() {
   const handleDeleteJob = async (jobId) => {
     if (!window.confirm('Are you sure you want to delete this job?')) return;
     try {
-      await fetch(`/api/jobs/${jobId}`, { method: 'DELETE' });
+      await fetch(`${API_BASE_URL}/api/jobs/${jobId}`, { method: 'DELETE' });
       setJobs(prev => prev.filter(job => job.id !== jobId));
     } catch (err) {
       alert('Failed to delete job');
