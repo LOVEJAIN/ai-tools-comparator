@@ -25,6 +25,9 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+const ADMIN_EMAILS = ["admin@example.com"]; // Add more admin emails as needed
+const VERIFIED_EMAILS = ["verified@example.com", "specialuser@example.com"]; // Add more verified emails as needed
+
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [items, setItems] = useState<Item[]>(aiTools as any);
@@ -36,6 +39,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       clicks: 0,
       conversion: 0,
       revenue: 0,
+      avgRating: 0,
+      numRaters: 0,
     }))
   );
   // Dynamically generate categories from items
@@ -81,12 +86,15 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = (email: string, password: string) => {
     // In a real app, this would validate against a backend
     // Mock login for demonstration purposes
+    let isAdmin = ADMIN_EMAILS.includes(email);
+    let isVerified = isAdmin || VERIFIED_EMAILS.includes(email);
     if (email === 'admin@example.com' && password === 'password') {
       const adminUser: User = {
         id: '1',
         username: 'Admin User',
         email: email,
-        isAdmin: true
+        isAdmin,
+        isVerified
       };
       setUser(adminUser);
       localStorage.setItem('user', JSON.stringify(adminUser));
@@ -99,7 +107,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: '2',
         username: 'Regular User',
         email: email,
-        isAdmin: false
+        isAdmin,
+        isVerified
       };
       setUser(regularUser);
       localStorage.setItem('user', JSON.stringify(regularUser));
@@ -119,11 +128,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = (username: string, email: string, password: string) => {
     // In a real app, this would register the user in a backend
+    let isAdmin = ADMIN_EMAILS.includes(email);
+    let isVerified = isAdmin || VERIFIED_EMAILS.includes(email);
     const newUser: User = {
       id: `user-${Date.now()}`,
       username,
       email,
-      isAdmin: false
+      isAdmin,
+      isVerified
     };
     setUser(newUser);
     localStorage.setItem('user', JSON.stringify(newUser));

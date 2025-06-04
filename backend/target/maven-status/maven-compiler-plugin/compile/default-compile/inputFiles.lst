@@ -3,6 +3,7 @@
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/model/Job.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/controller/ToolSubmissionController.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/model/Product.java
+/Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/WebConfig.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/model/User.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/model/ContactMessage.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/controller/UserController.java
@@ -13,6 +14,7 @@
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/repository/NewsletterSubscriberRepository.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/controller/NewsletterSubscriberController.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/controller/ContactMessageController.java
+/Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/SecurityConfig.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/model/SiteRating.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/ApiApplication.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/controller/SiteRatingController.java

@@ -22,6 +22,8 @@ const faqs = [
   { q: "How can I contact support?", a: "Email us at contact@aitoolsexplorer.com." },
 ];
 
+const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
+
 const Footer: React.FC = () => {
   const { user } = useData();
   // Rate us state
@@ -55,7 +57,7 @@ const Footer: React.FC = () => {
     setRateError("");
     if (rating > 0) {
       try {
-        await fetch("/api/site-ratings", {
+        await fetch(`${API_BASE_URL}/api/site-ratings`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId: null, rating, comment })
@@ -73,16 +75,10 @@ const Footer: React.FC = () => {
     e.preventDefault();
     setContactError("");
     try {
-      await fetch("/api/contact-messages", {
+      await fetch(`${API_BASE_URL}/api/contact-messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: null,
-          name: contact.name,
-          email: contact.email,
-          message: contact.message,
-          source: 'footer'
-        })
+        body: JSON.stringify(contact)
       });
       setContactSent(true);
       setContact({ name: '', email: '', message: '' });
