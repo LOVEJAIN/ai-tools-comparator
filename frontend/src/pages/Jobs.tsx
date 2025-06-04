@@ -131,8 +131,8 @@ export default function Jobs() {
             <div className="text-center text-gray-500">Loading jobs...</div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredJobs.map((job, idx) => (
-                <div key={idx} className="bg-white rounded-lg shadow p-6 flex flex-col gap-2 border">
+              {filteredJobs.filter(job => job.id).map((job, idx) => (
+                <div key={job.id} className="bg-white rounded-lg shadow p-6 flex flex-col gap-2 border">
                   <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold">{job.title}</h2>
                     {isAdmin && (
