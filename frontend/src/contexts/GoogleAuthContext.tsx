@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CredentialResponse } from '@react-oauth/google';
+import { useData } from "./DataContext";
 
 interface GoogleUser {
   email: string;
@@ -23,6 +24,7 @@ const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
 
 export function GoogleAuthProvider({ children }: { children: React.ReactNode }) {
   const [googleUser, setGoogleUser] = useState<GoogleUser | null>(null);
+  const { login, register } = useData();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,6 +68,8 @@ export function GoogleAuthProvider({ children }: { children: React.ReactNode }) 
 
       setGoogleUser(user);
       localStorage.setItem('googleUser', JSON.stringify(user));
+      // Sync with DataContext
+      register(user.name, user.email, 'google-oauth');
       navigate('/'); // Redirect to home page after successful login
     } catch (error) {
       console.error('Error processing Google login:', error);
