@@ -19,6 +19,8 @@ interface GoogleAuthContextType {
 
 const GoogleAuthContext = createContext<GoogleAuthContextType | undefined>(undefined);
 
+const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
+
 export function GoogleAuthProvider({ children }: { children: React.ReactNode }) {
   const [googleUser, setGoogleUser] = useState<GoogleUser | null>(null);
   const navigate = useNavigate();
@@ -49,7 +51,7 @@ export function GoogleAuthProvider({ children }: { children: React.ReactNode }) 
 
       // POST user info to backend
       try {
-        await fetch('/api/users', {
+        await fetch(`${API_BASE_URL}/api/users`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
