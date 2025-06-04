@@ -46,6 +46,7 @@ export default function Jobs() {
 
   const handleJobSubmit = async (e) => {
     e.preventDefault();
+    console.log('Submitting job:', jobForm, user?.email || "anon");
     try {
       await fetch(`${API_BASE_URL}/api/jobs`, {
         method: "POST",

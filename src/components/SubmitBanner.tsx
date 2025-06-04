@@ -26,6 +26,8 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
+
   useImperativeHandle(ref, () => ({
     open: (tab = 'submit') => {
       setActiveTab(tab);
@@ -49,7 +51,7 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
     try {
       if (activeTab === 'advertise') {
         // Join waitlist/contact from subscription page
-        await fetch('/api/contact-messages', {
+        await fetch(`${API_BASE_URL}/api/contact-messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
