@@ -12,9 +12,7 @@ const locations = [
   "San Francisco, CA", "Remote, US", "New York, NY", "London, UK", "Berlin, Germany", "Toronto, Canada", "Sydney, Australia", "Bangalore, India", "Paris, France", "Tokyo, Japan", "Pomfret, Charles County", "Nationwide, US", "Enon, VA", "Spotsylvania County, VA", "Fredericksburg City, VA"
 ];
 
-const API_BASE_URL = import.meta.env.PROD
-  ? "https://backend-service-production-3bc1.up.railway.app"
-  : "";
+const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
 
 export default function Jobs() {
   const { user } = useData();

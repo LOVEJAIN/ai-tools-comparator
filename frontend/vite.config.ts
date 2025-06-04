@@ -9,9 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     proxy: {
-      '/api': process.env.NODE_ENV === 'production'
-        ? 'https://backend-service-production-3bc1.up.railway.app'
-        : 'http://localhost:8081'
+      '/api': 'https://backend-service-production-3bc1.up.railway.app'
     }
   },
   plugins: [
