@@ -4,6 +4,7 @@ import { useData } from "@/contexts/DataContext";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend
 } from 'recharts';
+import { mockTraffic } from "@/data/mockTraffic";
 
 const Admin: React.FC = () => {
   const { user, analytics, items } = useData();
