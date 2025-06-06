@@ -55,7 +55,7 @@ const FeaturedCarousel: React.FC = () => {
                 <CarouselItem
                   key={tool.id}
                   className="w-[260px] max-w-[260px] flex-shrink-0"
-                  style={{ flex: '0 0 20%' }} // 5 visible at once
+                  style={{ flex: '0 0 20%' }}
                 >
                   <ItemCard item={tool} />
                 </CarouselItem>

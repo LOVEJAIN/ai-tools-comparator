@@ -89,10 +89,10 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="bg-gradient-to-br from-[#f8fafc] via-[#e0e7ef] to-[#f1f5f9] border-t mt-12 pt-10">
-      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10 pb-10">
+      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 pb-10">
         {/* Contact Us & Rate Us */}
-        <div className="flex flex-col gap-8">
-          <div className="rounded-xl shadow bg-white/80 p-6 border border-gray-100 mb-2">
+        <div className="flex flex-col gap-6 md:gap-8">
+          <div className="rounded-xl shadow bg-white/80 p-4 md:p-6 border border-gray-100 mb-2">
             <div className="flex items-center gap-2 mb-2">
               <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 10.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"/><path d="M21 10.5V17a2 2 0 0 1-2 2h-7"/><path d="M21 10.5l-9 6.5-9-6.5"/></svg>
               <h3 className="font-bold text-lg">Contact Us</h3>
@@ -109,7 +109,7 @@ const Footer: React.FC = () => {
               </form>
             )}
           </div>
-          <div className="rounded-xl shadow bg-white/80 p-6 border border-gray-100">
+          <div className="rounded-xl shadow bg-white/80 p-4 md:p-6 border border-gray-100">
             <div className="flex items-center gap-2 mb-2">
               <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
               <h3 className="font-bold text-lg">Rate Us</h3>
@@ -144,8 +144,8 @@ const Footer: React.FC = () => {
           </div>
         </div>
         {/* Socials, FAQ, Trusted By, User Reviews */}
-        <div className="flex flex-col gap-8">
-          <div className="rounded-xl shadow bg-white/80 p-6 border border-gray-100 mb-2">
+        <div className="flex flex-col gap-6 md:gap-8">
+          <div className="rounded-xl shadow bg-white/80 p-4 md:p-6 border border-gray-100 mb-2">
             <div className="flex items-center gap-2 mb-2">
               <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 2h-3a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-5V6a2 2 0 0 1 2-2h3"/></svg>
               <h3 className="font-bold text-lg">Follow Us</h3>
@@ -184,7 +184,7 @@ const Footer: React.FC = () => {
             </div>
             <div className="flex gap-4 items-center mb-4 flex-nowrap overflow-x-auto pb-2">
               {trustedBy.map((c, i) => (
-                <img key={i} src={c.logo} alt={c.name} title={c.name} className="h-8 w-auto bg-white rounded shadow p-1 min-w-[70px]" />
+                <img key={i} src={c.logo} alt={c.name} title={c.name} className="h-6 md:h-8 w-auto bg-white rounded shadow p-1 min-w-[50px] md:min-w-[70px]" />
               ))}
             </div>
             <div className="border-t my-4" />
@@ -201,12 +201,12 @@ const Footer: React.FC = () => {
           </div>
         </div>
         {/* About Us */}
-        <div className="rounded-xl shadow bg-white/80 p-6 flex flex-col gap-4 border border-gray-100">
+        <div className="rounded-xl shadow bg-white/80 p-4 md:p-6 flex flex-col gap-4 border border-gray-100">
           <div className="flex items-center gap-2 mb-2">
             <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M12 4v16m0 0H3m9 0a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/></svg>
             <h3 className="font-bold text-lg">About Us</h3>
           </div>
-          <p className="text-gray-500 text-lg mb-6 max-w-2xl">
+          <p className="text-gray-500 text-base md:text-lg mb-6 max-w-2xl">
             At Aikin, we make it easy to find the right AI solution. As a leading directory of top-rated AI tools, we help individuals and businesses discover, compare, and review the latest technologies—all in one place. From automation and analytics to creative AI, Aikin guides you to the best fit for your needs.
           </p>
           <div className="flex items-center gap-2 mt-2">
