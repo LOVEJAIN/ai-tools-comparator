@@ -14,4 +14,6 @@ public class Job {
     private String location;
     private String description;
     private String postedBy;
+    private String level;
+    private String sector;
 } 
