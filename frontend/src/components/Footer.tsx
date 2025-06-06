@@ -91,7 +91,7 @@ const Footer: React.FC = () => {
     <footer className="bg-gradient-to-br from-[#f8fafc] via-[#e0e7ef] to-[#f1f5f9] border-t mt-12 pt-10">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 pb-10">
         {/* Contact Us & Rate Us */}
-        <div className="flex flex-col gap-8 h-[250px]">
+        <div className="flex flex-col gap-8 ">
           <div className="rounded-xl shadow bg-white/80 p-6 border border-gray-100 mb-2">
             <div className="flex items-center gap-2 mb-2">
               <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 10.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"/><path d="M21 10.5V17a2 2 0 0 1-2 2h-7"/><path d="M21 10.5l-9 6.5-9-6.5"/></svg>
