@@ -9,10 +9,10 @@ const trustedBy = [
 ];
 
 const userReviews = [
-  { name: "Amit S.", review: "An excellent directory of AI tools—truly helped accelerate my startup's growth." },
-  { name: "Priya R.", review: "Impressed by the clean interface and the wide range of AI tools available." },
-  { name: "John D.", review: "Found the ideal AI solution for my business thanks to this platform." },
-  { name: "Sara K.", review: "User reviews and ratings made it easy to choose the right tool with confidence." },
+  { name: "Naman Goyal", review: "An excellent directory of AI tools—truly helped accelerate my startup's growth." },
+  { name: "Shubhangi Tyagi", review: "Impressed by the clean interface and the wide range of AI tools available." },
+  { name: "P Utkarsh", review: "Found the ideal AI solution for my business thanks to this platform." },
+  { name: "Iti Jain", review: "User reviews and ratings made it easy to choose the right tool with confidence." },
 ];
 
 const faqs = [
@@ -151,8 +151,8 @@ const Footer: React.FC = () => {
               <h3 className="font-bold text-lg">Follow Us</h3>
             </div>
             <div className="flex gap-4 mb-4">
-              <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">Twitter</a>
-              <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">LinkedIn</a>
+              <a href="https://x.com/aikin_in" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">Twitter</a>
+              <a href="https://www.linkedin.com/company/aikin-in/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">LinkedIn</a>
               <div className="flex items-center gap-4">
                 <a href="/error" className="text-gray-500 hover:text-gray-700">
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
