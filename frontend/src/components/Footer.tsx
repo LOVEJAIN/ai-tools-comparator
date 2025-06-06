@@ -12,7 +12,7 @@ const faqs = [
   { q: "How do I submit my AI tool?", a: "Simply click the \"Submit AI Tool\" button at the top of the page and complete the submission form." },
   { q: "Is listing free?", a: "Yes, a basic listing is free. For added visibility, we offer paid options like featured and verified listings." },
   { q: "How are ratings calculated?", a: "Ratings are calculated based on user reviews and community feedback to ensure authenticity and relevance." },
-  { q: "How can I contact support?", a: "Email us at contact@aitoolsexplorer.com." },
+  { q: "How can I contact support?", a: "Email us at adminuser@aikin.in" },
 ];
 
 const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
@@ -145,7 +145,7 @@ const Footer: React.FC = () => {
             <div className="text-sm text-gray-700 mb-2">At Aikin, we make it easy to find the right AI solution. As a leading directory of top-rated AI tools, we help individuals and businesses discover, compare, and review the latest technologies—all in one place. From automation and analytics to creative AI, Aikin guides you to the best fit for your needs.</div>
           </div>
           <div className="text-xs text-gray-500 mt-2">
-            <div>Version: <span className="font-mono">1.0.0</span></div>
+            <div>Version: <span className="font-mono">1.5.0</span></div>
             <div>Made in India 🇮🇳</div>
           </div>
         </div>
