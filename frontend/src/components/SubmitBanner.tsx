@@ -66,7 +66,7 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
         setFormData({ name: '', email: '', mobile: '', itemName: '', itemUrl: '', description: '' });
       } else {
         // Tool submission
-        await fetch('/api/tool-submissions', {
+        await fetch(`${API_BASE_URL}/api/tool-submissions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

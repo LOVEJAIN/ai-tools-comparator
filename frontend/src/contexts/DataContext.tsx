@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Category, Item, Review, User, Analytics } from '../types';
-import { mockItems, mockReviews, mockAnalytics } from '../data/mockData';
 import { toast } from "@/components/ui/sonner";
 import { aiTools } from '../data/aiTools';
+import { mockReviews } from '../data/mockReviews';
 
 interface DataContextType {
   user: User | null;

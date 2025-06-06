@@ -24,7 +24,7 @@ export default function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showJobDialog, setShowJobDialog] = useState(false);
-  const [jobForm, setJobForm] = useState({ title: '', company: '', location: '', description: '' });
+  const [jobForm, setJobForm] = useState({ title: '', company: '', location: '', description: '', level: '', sector: '' });
   const [jobSuccess, setJobSuccess] = useState(false);
   const navigate = useNavigate();
 
@@ -55,7 +55,7 @@ export default function Jobs() {
       });
       setJobSuccess(true);
       setShowJobDialog(false);
-      setJobForm({ title: '', company: '', location: '', description: '' });
+      setJobForm({ title: '', company: '', location: '', description: '', level: '', sector: '' });
       fetchJobs();
       setTimeout(() => setJobSuccess(false), 2000);
     } catch (err) {
@@ -107,6 +107,14 @@ export default function Jobs() {
                 <input className="border rounded px-3 py-2" placeholder="Job Title" value={jobForm.title} onChange={e => setJobForm({ ...jobForm, title: e.target.value })} required />
                 <input className="border rounded px-3 py-2" placeholder="Company Name" value={jobForm.company} onChange={e => setJobForm({ ...jobForm, company: e.target.value })} required />
                 <input className="border rounded px-3 py-2" placeholder="Location" value={jobForm.location} onChange={e => setJobForm({ ...jobForm, location: e.target.value })} required />
+                <select className="border rounded px-3 py-2" value={jobForm.level} onChange={e => setJobForm({ ...jobForm, level: e.target.value })} required>
+                  <option value="">Select Level</option>
+                  {levels.map(l => <option key={l} value={l}>{l}</option>)}
+                </select>
+                <select className="border rounded px-3 py-2" value={jobForm.sector} onChange={e => setJobForm({ ...jobForm, sector: e.target.value })} required>
+                  <option value="">Select Sector</option>
+                  {sectors.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
                 <textarea className="border rounded px-3 py-2" placeholder="Job Description" value={jobForm.description} onChange={e => setJobForm({ ...jobForm, description: e.target.value })} required />
                 <Button type="submit" className="bg-primary text-white w-full mt-2">Submit Job</Button>
               </form>
@@ -145,7 +153,7 @@ export default function Jobs() {
                       </button>
                     )}
                   </div>
-                  <div className="text-gray-600 text-sm">{job.company} &bull; {job.location}</div>
+                  <div className="text-gray-600 text-sm">{job.company} &bull; {job.location} &bull; {job.level} &bull; {job.sector}</div>
                   <p className="text-gray-700 mt-2">{job.description}</p>
                   {job.postedBy && <div className="text-xs text-gray-400 mt-2">Posted by: {job.postedBy}</div>}
                 </div>

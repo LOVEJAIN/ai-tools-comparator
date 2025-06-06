@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from '@/components/ui/separator';
 import SubmitToolModal, { SubmitToolModalHandle } from "./SubmitBanner";
 import AikinLogo from "../assets/aikin-logo.png";
+import { Menu, X } from 'lucide-react';
 
 interface HeaderProps {
   searchValue: string;
@@ -39,6 +40,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
   const [jobForm, setJobForm] = useState({ title: '', company: '', location: '', description: '' });
   const [jobSuccess, setJobSuccess] = useState(false);
   const location = window.location.pathname;
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -101,7 +103,8 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
             className="max-w-lg w-full rounded-lg border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-        <div className="flex items-center gap-4">
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-4">
           <Button asChild variant="outline" className="header-btn-outline">
             <Link to="/jobs">Jobs</Link>
           </Button>
@@ -257,7 +260,41 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
             </div>
           )}
         </div>
+        {/* Mobile Hamburger */}
+        <button className="md:hidden flex items-center justify-center p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </div>
+      {/* Mobile Dropdown Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-white border-b shadow z-50 absolute left-0 right-0 top-16">
+          <div className="flex flex-col gap-2 p-4">
+            <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/jobs">Jobs</Link>
+            </Button>
+            <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/subscription">Advertise</Link>
+            </Button>
+            <Button variant="outline" onClick={() => { submitModalRef.current?.open("submit"); setMobileMenuOpen(false); }} className="header-btn-outline w-full">
+              Submit AI Tool
+            </Button>
+            {currentUser && currentUser.isAdmin && (
+              <Button variant="outline" onClick={() => { navigate("/admin"); setMobileMenuOpen(false); }} className="w-full">Dashboard</Button>
+            )}
+            {(currentUser && (currentUser.isAdmin || (user && user.isVerified))) && (
+              <Button variant="outline" onClick={() => { setShowJobDialog(true); setMobileMenuOpen(false); }} className="w-full">Submit Job</Button>
+            )}
+            {!currentUser ? (
+              <>
+                <Button className="header-btn w-full" onClick={() => { setIsDialogOpen(true); setIsSignUp(false); setMobileMenuOpen(false); }}>Log in</Button>
+                <Button variant="outline" className="header-btn-outline w-full" onClick={() => { setIsDialogOpen(true); setIsSignUp(true); setMobileMenuOpen(false); }}>Sign up</Button>
+              </>
+            ) : (
+              <Button className="header-btn w-full" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>Sign out</Button>
+            )}
+          </div>
+        </div>
+      )}
       <SubmitToolModal ref={submitModalRef} />
       <Dialog open={showJobDialog} onOpenChange={setShowJobDialog}>
         <DialogContent className="sm:max-w-[500px]">

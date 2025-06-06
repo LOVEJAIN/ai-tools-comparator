@@ -497,9 +497,9 @@ function Index() {
             </div>
           </section>
           {/* Main 3-column layout */}
-          <div className="grid grid-cols-12 gap-4" style={{ minHeight: '70vh' }}>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4" style={{ minHeight: '70vh' }}>
             {/* Left Column - Comparator */}
-            <div className="col-span-3 min-w-0">
+            <div className="col-span-1 md:col-span-3 min-w-0">
               <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)]">
                 <CardHeader>
                   <CardTitle>Compare AI Tools</CardTitle>
@@ -629,7 +629,7 @@ function Index() {
               </Card>
             </div>
             {/* Middle Column - AI Tools Grid with Search/Filter */}
-            <div className="col-span-6 min-w-0">
+            <div className="col-span-1 md:col-span-6 min-w-0">
               <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)]">
                 <CardHeader>
                   <CardTitle>AI Tools</CardTitle>
@@ -766,7 +766,7 @@ function Index() {
               </Card>
             </div>
             {/* Right Column - News Section */}
-            <div className="col-span-3 min-w-0">
+            <div className="col-span-1 md:col-span-3 min-w-0">
               <Card className="h-full overflow-y-auto max-h-[calc(100vh-12rem)]">
                 <CardHeader>
                   <CardTitle>AI News & Articles</CardTitle>
@@ -819,7 +819,7 @@ function Index() {
           <div className={`flex flex-row gap-8 max-w-5xl mx-auto mt-12 mb-8 ${user ? 'justify-center' : 'justify-center'}`}>
             {/* Private Lists Card - left of Public Lists */}
             {user && (
-              <section className="w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between">
+              <section className="w-full md:w-[400px] md:min-w-[320px] md:max-w-[400px] bg-white rounded-2xl shadow-xl border p-4 md:p-8 flex flex-col justify-between">
                 <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
                   <CardHeader>
                     <CardTitle className="text-2xl font-bold text-primary">Private Lists</CardTitle>
@@ -870,7 +870,7 @@ function Index() {
               </section>
             )}
             {/* Public Lists Card - right of Private Lists */}
-            <section className={`w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between ${!user ? 'mx-auto' : ''}`}>
+            <section className={`w-full md:w-[400px] md:min-w-[320px] md:max-w-[400px] bg-white rounded-2xl shadow-xl border p-4 md:p-8 flex flex-col justify-between ${!user ? 'mx-auto' : ''}`}>
               <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-primary">Public Lists</CardTitle>
@@ -985,9 +985,9 @@ function Index() {
                   <h2 className="text-2xl font-bold mb-6 text-center">AI Tool Blends: Combine Tools for Powerful Workflows</h2>
                   {/* Horizontally scrollable blends carousel */}
                   <div className="overflow-x-auto pb-2">
-                    <div className="flex gap-8 min-w-[700px]">
+                    <div className="flex flex-col md:flex-row gap-8 w-full md:min-w-[700px]">
                       {/* Example Blend 1 */}
-                      <div className="bg-gradient-to-br from-blue-50 to-purple-100 rounded-2xl shadow-lg p-6 flex flex-col gap-3 min-w-[350px] max-w-[400px]">
+                      <div className="bg-gradient-to-br from-blue-50 to-purple-100 rounded-2xl shadow-lg p-4 md:p-6 flex flex-col gap-3 w-full md:min-w-[350px] md:max-w-[400px]">
                         <div className="flex items-center gap-3 mb-2">
                           <span className="text-lg font-bold text-blue-700">Video Editing Workflow</span>
                           <span className="ml-auto text-xs bg-blue-200 text-blue-800 px-3 py-1 rounded-full">Content Creation</span>
@@ -1002,7 +1002,7 @@ function Index() {
                         <p className="text-gray-700 text-sm">Generate a script with Synthesia, edit and enhance audio/video with Descript, then add AI-powered effects or remove backgrounds using Runway. Perfect for YouTube, marketing, or training videos.</p>
                       </div>
                       {/* Example Blend 2 */}
-                      <div className="bg-gradient-to-br from-pink-50 to-yellow-100 rounded-2xl shadow-lg p-6 flex flex-col gap-3 min-w-[350px] max-w-[400px]">
+                      <div className="bg-gradient-to-br from-pink-50 to-yellow-100 rounded-2xl shadow-lg p-4 md:p-6 flex flex-col gap-3 w-full md:min-w-[350px] md:max-w-[400px]">
                         <div className="flex items-center gap-3 mb-2">
                           <span className="text-lg font-bold text-pink-700">AI-Powered Blog Creation</span>
                           <span className="ml-auto text-xs bg-pink-200 text-pink-800 px-3 py-1 rounded-full">Writing</span>
@@ -1017,7 +1017,7 @@ function Index() {
                         <p className="text-gray-700 text-sm">Draft your article with ChatGPT, polish grammar and style with Grammarly, and design eye-catching blog images or infographics with Canva. Streamline your content pipeline!</p>
                       </div>
                       {/* Example Blend 3 */}
-                      <div className="bg-gradient-to-br from-green-50 to-teal-100 rounded-2xl shadow-lg p-6 flex flex-col gap-3 min-w-[350px] max-w-[400px]">
+                      <div className="bg-gradient-to-br from-green-50 to-teal-100 rounded-2xl shadow-lg p-4 md:p-6 flex flex-col gap-3 w-full md:min-w-[350px] md:max-w-[400px]">
                         <div className="flex items-center gap-3 mb-2">
                           <span className="text-lg font-bold text-green-700">Social Media Automation</span>
                           <span className="ml-auto text-xs bg-green-200 text-green-800 px-3 py-1 rounded-full">Productivity</span>
@@ -1032,7 +1032,7 @@ function Index() {
                         <p className="text-gray-700 text-sm">Create stunning visuals with Midjourney, generate engaging captions with Copy.ai, and schedule posts across platforms using Buffer. Boost your social presence with less effort!</p>
                       </div>
                       {/* Example Blend 4 */}
-                      <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-2xl shadow-lg p-6 flex flex-col gap-3 min-w-[350px] max-w-[400px]">
+                      <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-2xl shadow-lg p-4 md:p-6 flex flex-col gap-3 w-full md:min-w-[350px] md:max-w-[400px]">
                         <div className="flex items-center gap-3 mb-2">
                           <span className="text-lg font-bold text-yellow-700">AI Research Assistant</span>
                           <span className="ml-auto text-xs bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full">Research</span>
@@ -1202,21 +1202,21 @@ function Index() {
             </div>
           </div>
           {/* Newsletter Box (no map, not overlapping) */}
-          <div className="w-full md:w-[340px] min-w-[260px] max-w-[360px] flex flex-col items-center justify-center mt-8 md:mt-12 md:ml-4">
-            <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center w-full">
+          <div className="w-full md:w-[340px] md:min-w-[260px] md:max-w-[360px] flex flex-col items-center justify-center mt-8 md:mt-12 md:ml-4 px-4 md:px-0">
+            <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 flex flex-col items-center w-full">
               <div className="font-bold text-lg mb-2 text-center">Join our newsletter to get latest knowledge of AI events happening around you</div>
               <form className="flex flex-col gap-2 w-full items-center" onSubmit={handleNewsletterSubmit}>
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 md:px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
                   value={newsletterEmail}
                   onChange={e => setNewsletterEmail(e.target.value)}
                   required
                 />
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition text-sm md:text-base"
                 >
                   Subscribe
                 </button>

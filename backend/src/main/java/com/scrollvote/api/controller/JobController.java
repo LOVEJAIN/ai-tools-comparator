@@ -25,7 +25,9 @@ public class JobController {
             job.getCompany() == null || job.getCompany().isEmpty() ||
             job.getLocation() == null || job.getLocation().isEmpty() ||
             job.getDescription() == null || job.getDescription().isEmpty() ||
-            job.getPostedBy() == null || job.getPostedBy().isEmpty()) {
+            job.getPostedBy() == null || job.getPostedBy().isEmpty() ||
+            job.getLevel() == null || job.getLevel().isEmpty() ||
+            job.getSector() == null || job.getSector().isEmpty()) {
             return ResponseEntity.badRequest().body("All fields are required.");
         }
         return ResponseEntity.ok(jobRepository.save(job));

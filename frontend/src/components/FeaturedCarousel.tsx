@@ -54,8 +54,8 @@ const FeaturedCarousel: React.FC = () => {
               {topTools.map(tool => (
                 <CarouselItem
                   key={tool.id}
-                  className="w-[260px] max-w-[260px] flex-shrink-0"
-                  style={{ flex: '0 0 20%' }} // 5 visible at once
+                  className="w-[320px] max-w-[320px] flex-shrink-0"
+                  style={{ flex: '0 0 24%' }}
                 >
                   <ItemCard item={tool} />
                 </CarouselItem>
