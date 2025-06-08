@@ -43,27 +43,37 @@ const FeaturedCarousel: React.FC = () => {
     <section className="max-w-6xl mx-auto my-12">
       <h2 className="text-2xl font-bold mb-6 text-center">Featured AI Tools</h2>
       <div className="relative flex items-center justify-center">
-        <Carousel
-          opts={{ align: 'start', loop: true }}
-          setApi={api => (carouselApiRef.current = api)}
-          className="w-full"
-        >
-          <div className="flex items-center gap-6">
-            <CarouselPrevious className="mr-4" />
-            <CarouselContent className="flex gap-6">
-              {topTools.map(tool => (
-                <CarouselItem
-                  key={tool.id}
-                  className="w-[320px] max-w-[320px] flex-shrink-0"
-                  style={{ flex: '0 0 24%' }}
-                >
-                  <ItemCard item={tool} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselNext className="ml-4" />
+        {/* Responsive: vertical on mobile, horizontal on desktop */}
+        <div className="w-full">
+          <div className="flex flex-col sm:hidden gap-4 max-h-[400px] overflow-y-auto px-2">
+            {topTools.map(tool => (
+              <div key={tool.id} className="w-full max-w-sm mx-auto">
+                <ItemCard item={tool} />
+              </div>
+            ))}
           </div>
-        </Carousel>
+          <Carousel
+            opts={{ align: 'start', loop: true }}
+            setApi={api => (carouselApiRef.current = api)}
+            className="w-full hidden sm:block"
+          >
+            <div className="flex items-center gap-6">
+              <CarouselPrevious className="mr-4" />
+              <CarouselContent className="flex gap-6">
+                {topTools.map(tool => (
+                  <CarouselItem
+                    key={tool.id}
+                    className="w-[320px] max-w-[320px] flex-shrink-0"
+                    style={{ flex: '0 0 24%' }}
+                  >
+                    <ItemCard item={tool} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselNext className="ml-4" />
+            </div>
+          </Carousel>
+        </div>
       </div>
     </section>
   );

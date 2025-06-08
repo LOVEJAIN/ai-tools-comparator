@@ -394,6 +394,63 @@ function Index() {
     }
   }, [location.pathname, location.state, setActiveCategory, navigate]);
 
+  // Define the layout and sizes for the bubbles
+  const bubbleLayout = [4, 5, 4];
+  const bubbleSizes = [
+    [140, 120, 150, 130], // Row 1: 4 bubbles
+    [125, 145, 135, 155, 130], // Row 2: 5 bubbles
+    [140, 130, 150, 120] // Row 3: 4 bubbles
+  ];
+  const bubbleFontSizes = [
+    ["1.1rem", "1rem", "1.2rem", "1rem"],
+    ["1rem", "1.1rem", "1.05rem", "1.15rem", "1rem"],
+    ["1.1rem", "1rem", "1.2rem", "1rem"]
+  ];
+  const bubbleRows = [];
+  let catIdx = 0;
+  for (let row = 0; row < bubbleLayout.length; row++) {
+    const count = bubbleLayout[row];
+    const rowBubbles = [];
+    for (let i = 0; i < count; i++) {
+      if (!categories[catIdx]) break;
+      rowBubbles.push({
+        ...categories[catIdx],
+        size: bubbleSizes[row][i],
+        fontSize: bubbleFontSizes[row][i]
+      });
+      catIdx++;
+    }
+    bubbleRows.push(rowBubbles);
+  }
+
+  // Define the events array once
+  const aiEvents = [
+    {
+      title: "GIDS 2024",
+      description: "Global AI Developer Summit. April 10-12, 2024, Bengaluru, India.",
+      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+      link: "https://gids.ai/"
+    },
+    {
+      title: "NeurIPS 2024",
+      description: "Neural Information Processing Systems. Dec 9-15, 2024, Vancouver, Canada.",
+      image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
+      link: "https://neurips.cc/Conferences/2024"
+    },
+    {
+      title: "CVPR 2024",
+      description: "Computer Vision and Pattern Recognition. June 17-21, 2024, Seattle, USA.",
+      image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
+      link: "https://cvpr2024.thecvf.com/"
+    },
+    {
+      title: "AI Expo India",
+      description: "AI Expo & Conference. Aug 22-23, 2024, New Delhi, India.",
+      image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
+      link: "https://aiexpoindia.com/"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header 
@@ -416,35 +473,36 @@ function Index() {
                 className="flex flex-col items-center justify-center min-h-[60vh]"
               >
                 <h1 className="text-3xl font-bold mb-6 text-center">What are you interested in exploring today?</h1>
-                <div className="flex flex-wrap justify-center gap-8 w-full px-4">
-                  {categories.map((cat, i) => (
-                    <motion.button
-                      key={cat.id}
-                      className="rounded-full shadow-lg flex items-center justify-center text-xl font-semibold text-white focus:outline-none"
-                      style={{
-                        width: `${120 + (i % 3) * 20}px`, // Vary size
-                        height: `${120 + (i % 3) * 20}px`,
-                        background: "linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%)",
-                      }}
-                      whileHover={{ scale: 1.18, boxShadow: "0 8px 32px rgba(80,80,200,0.25)" }}
-                      whileTap={{ scale: 0.95 }}
-                      initial={{ scale: 0, opacity: 0, y: 30 }}
-                      animate={{
-                        scale: 1,
-                        opacity: 1,
-                        y: [0, -8, 0, 8, 0], // floating effect
-                        transition: {
-                          delay: i * 0.07,
-                          repeat: Infinity,
-                          repeatType: "reverse",
-                          duration: 2 + (i % 3) * 0.3,
-                        }
-                      }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      onClick={() => handleBubbleSelect(cat.id)}
-                    >
-                      {cat.name}
-                    </motion.button>
+                <div className="flex flex-col items-center gap-6 w-full px-2 sm:px-4">
+                  {bubbleRows.map((row, rowIdx) => (
+                    <div key={rowIdx} className="flex flex-row flex-wrap justify-center gap-4 sm:gap-8 w-full">
+                      {row.map((cat, i) => (
+                        <motion.button
+                          key={cat.id}
+                          className="rounded-full shadow-lg flex items-center justify-center text-xl font-semibold text-white focus:outline-none"
+                          style={{
+                            width: `${cat.size}px`,
+                            height: `${cat.size}px`,
+                            minWidth: 90,
+                            minHeight: 90,
+                            maxWidth: 180,
+                            maxHeight: 180,
+                            background: "linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%)",
+                            whiteSpace: 'normal',
+                            textAlign: 'center',
+                            padding: '0 10px',
+                            lineHeight: 1.2,
+                            fontSize: cat.fontSize
+                          }}
+                          whileHover={{ scale: 1.08 }}
+                          whileTap={{ scale: 0.97 }}
+                          transition={{ duration: 0.25, ease: 'easeOut' }}
+                          onClick={() => handleBubbleSelect(cat.id)}
+                        >
+                          {cat.name}
+                        </motion.button>
+                      ))}
+                    </div>
                   ))}
                 </div>
                 <p className="mt-8 text-gray-500 text-center max-w-xl">Select a category bubble to see the best AI tools for that area. This helps you focus and not get overwhelmed by all the options!</p>
@@ -1115,36 +1173,35 @@ function Index() {
         <section className="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 min-w-0">
             <h2 className="text-2xl font-bold mb-4 text-center">AI Events</h2>
-            <div className="relative">
-              <Carousel opts={{ align: "start", loop: true }}>
+            <div className="relative w-full">
+              {/* Responsive: vertical on mobile, horizontal on desktop */}
+              <div className="flex flex-col sm:hidden gap-4 max-h-[400px] overflow-y-auto px-2">
+                {aiEvents.map((event, idx) => (
+                  <div key={idx} className="w-full max-w-sm mx-auto">
+                    <div className="bg-white rounded-xl shadow-lg border flex flex-col items-center p-4 h-full">
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="rounded-lg mb-3 w-full h-32 object-cover bg-gray-50"
+                      />
+                      <div className="font-bold text-lg mb-1 text-center">{event.title}</div>
+                      <div className="text-sm text-muted-foreground mb-4 text-center">{event.description}</div>
+                      <a
+                        href={event.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full"
+                      >
+                        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">Register</button>
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Carousel opts={{ align: "start", loop: true }} className="w-full hidden sm:block">
                 <CarouselPrevious />
                 <CarouselContent>
-                  {[
-                    {
-                      title: "GIDS 2024",
-                      description: "Global AI Developer Summit. April 10-12, 2024, Bengaluru, India.",
-                      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-                      link: "https://gids.ai/"
-                    },
-                    {
-                      title: "NeurIPS 2024",
-                      description: "Neural Information Processing Systems. Dec 9-15, 2024, Vancouver, Canada.",
-                      image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
-                      link: "https://neurips.cc/Conferences/2024"
-                    },
-                    {
-                      title: "CVPR 2024",
-                      description: "Computer Vision and Pattern Recognition. June 17-21, 2024, Seattle, USA.",
-                      image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
-                      link: "https://cvpr2024.thecvf.com/"
-                    },
-                    {
-                      title: "AI Expo India",
-                      description: "AI Expo & Conference. Aug 22-23, 2024, New Delhi, India.",
-                      image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
-                      link: "https://aiexpoindia.com/"
-                    }
-                  ].map((event, idx, arr) => (
+                  {aiEvents.map((event, idx, arr) => (
                     <CarouselItem key={idx} className={`px-2 w-[320px] max-w-[320px] flex-shrink-0${idx === arr.length - 1 ? ' pl-2' : ''}`}>
                       <div className="bg-white rounded-xl shadow-lg border flex flex-col items-center p-4 h-full">
                         <img
