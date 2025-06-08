@@ -32,6 +32,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import NewsCard from "@/components/NewsCard";
 
 type PublicList = {
   id: string;
@@ -775,39 +776,7 @@ function Index() {
                   <ScrollArea className="h-[calc(100vh-12rem)]">
                     <div className="space-y-4">
                       {newsData.map((news) => (
-                        <Card key={news.url}>
-                          <CardContent className="p-4">
-                            {news.urlToImage && (
-                              <img
-                                src={news.urlToImage}
-                                alt={news.title}
-                                className="w-full h-48 object-cover rounded-lg mb-4"
-                              />
-                            )}
-                            <h3 className="font-semibold mb-2 hover:text-primary">
-                              <a href={news.url} target="_blank" rel="noopener noreferrer">
-                                {news.title}
-                              </a>
-                            </h3>
-                            {news.description && (
-                              <p className="text-sm text-muted-foreground mb-2">
-                                {news.description}
-                              </p>
-                            )}
-                            <div className="mt-2 text-xs text-muted-foreground flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span>{news.source.name}</span>
-                                {news.author && (
-                                  <>
-                                    <span>•</span>
-                                    <span>{news.author}</span>
-                                  </>
-                                )}
-                              </div>
-                              <span>{new Date(news.publishedAt).toLocaleDateString()}</span>
-                            </div>
-                          </CardContent>
-                        </Card>
+                        <NewsCard key={news.url} news={news} />
                       ))}
                     </div>
                   </ScrollArea>
