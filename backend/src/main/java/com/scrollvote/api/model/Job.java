@@ -1,11 +1,9 @@
 package com.scrollvote.api.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Data
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,4 +18,21 @@ public class Job {
     private String postedBy;
     private String level;
     private String sector;
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getCompany() { return company; }
+    public void setCompany(String company) { this.company = company; }
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public String getPostedBy() { return postedBy; }
+    public void setPostedBy(String postedBy) { this.postedBy = postedBy; }
+    public String getLevel() { return level; }
+    public void setLevel(String level) { this.level = level; }
+    public String getSector() { return sector; }
+    public void setSector(String sector) { this.sector = sector; }
 } 

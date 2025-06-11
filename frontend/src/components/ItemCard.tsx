@@ -78,7 +78,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
             </div>
           )}
         </div>
-        <CardContent className="p-4">
+        <CardContent className="p-4 h-32 flex flex-col">
           <h3 className="text-lg font-semibold mb-1 line-clamp-2">{item.title}</h3>
           <p className="text-sm text-gray-600 line-clamp-2 mb-2">{item.description}</p>
           <div className="flex items-center">
