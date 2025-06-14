@@ -41,6 +41,15 @@ type PublicList = {
   toolIds: string[];
 };
 
+interface AIEvent {
+  title: string;
+  description: string;
+  image: string;
+  link: string;
+  date: string;
+  location: string;
+}
+
 function StarRating({ value, onChange, readOnly = false }: { value: number; onChange?: (v: number) => void; readOnly?: boolean }) {
   return (
     <div className="flex items-center gap-1">
@@ -111,6 +120,7 @@ function Index() {
   const [showMainContent, setShowMainContent] = useState(false);
   const [editingList, setEditingList] = useState<PublicList | null>(null);
   const [editingPrivateList, setEditingPrivateList] = useState<PublicList | null>(null);
+  const [expandedEvents, setExpandedEvents] = useState<{[key: string]: boolean}>({});
 
   const filteredTools = useMemo(() => {
     return aiTools.filter(tool => {
@@ -429,27 +439,42 @@ function Index() {
       title: "GIDS 2024",
       description: "Global AI Developer Summit. April 10-12, 2024, Bengaluru, India.",
       image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-      link: "https://gids.ai/"
+      link: "https://gids.ai/",
+      date: "April 10-12, 2024",
+      location: "Bengaluru, India"
     },
     {
       title: "NeurIPS 2024",
       description: "Neural Information Processing Systems. Dec 9-15, 2024, Vancouver, Canada.",
       image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
-      link: "https://neurips.cc/Conferences/2024"
+      link: "https://neurips.cc/Conferences/2024",
+      date: "December 9-15, 2024",
+      location: "Vancouver, Canada"
     },
     {
       title: "CVPR 2024",
       description: "Computer Vision and Pattern Recognition. June 17-21, 2024, Seattle, USA.",
       image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
-      link: "https://cvpr2024.thecvf.com/"
+      link: "https://cvpr2024.thecvf.com/",
+      date: "June 17-21, 2024",
+      location: "Seattle, USA"
     },
     {
       title: "AI Expo India",
       description: "AI Expo & Conference. Aug 22-23, 2024, New Delhi, India.",
       image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
-      link: "https://aiexpoindia.com/"
+      link: "https://aiexpoindia.com/",
+      date: "August 22-23, 2024",
+      location: "New Delhi, India"
     }
   ];
+
+  const toggleExpand = (title: string) => {
+    setExpandedEvents(prevState => ({
+      ...prevState,
+      [title]: !prevState[title]
+    }));
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -828,7 +853,7 @@ function Index() {
             <div className="col-span-1 md:col-span-3 min-w-0">
               <Card className="h-full overflow-y-auto max-h-[calc(100vh-12rem)]">
                 <CardHeader>
-                  <CardTitle>AI News & Articles</CardTitle>
+                  <CardTitle>Headlines</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[calc(100vh-12rem)]">
@@ -1009,7 +1034,7 @@ function Index() {
         </main>
                 {/* AI Tool Blends Section (replaces YoutubeCarousel) */}
                 <section className="max-w-5xl mx-auto mb-12">
-                  <h2 className="text-2xl font-bold mb-6 text-center">AI Tool Blends: Combine Tools for Powerful Workflows</h2>
+                  <h2 className="text-2xl font-bold mb-6 text-center">Blends: Combine Tools for Powerful Workflows</h2>
                   {/* Horizontally scrollable blends carousel */}
                   <div className="overflow-x-auto pb-2">
                     <div className="flex flex-col md:flex-row gap-8 w-full md:min-w-[700px]">
@@ -1172,7 +1197,7 @@ function Index() {
                 </section>
         <section className="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 min-w-0">
-            <h2 className="text-2xl font-bold mb-4 text-center">AI Events</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">Mark Your Calendar</h2>
             <div className="relative w-full">
               {/* Responsive: vertical on mobile, horizontal on desktop */}
               <div className="flex flex-col sm:hidden gap-4 max-h-[400px] overflow-y-auto px-2">
@@ -1185,14 +1210,19 @@ function Index() {
                         className="rounded-lg mb-3 w-full h-32 object-cover bg-gray-50"
                       />
                       <div className="font-bold text-lg mb-1 text-center">{event.title}</div>
-                      <div className="text-sm text-muted-foreground mb-4 text-center">{event.description}</div>
+                      <div
+                        className={`text-sm text-muted-foreground mb-4 text-center ${expandedEvents[event.title] ? '' : 'line-clamp-2'}`}
+                        onClick={() => toggleExpand(event.title)}
+                      >
+                        {event.description}
+                      </div>
                       <a
                         href={event.link}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-full"
                       >
-                        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">Register</button>
+                        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">Visit</button>
                       </a>
                     </div>
                   </div>
@@ -1210,14 +1240,19 @@ function Index() {
                           className="rounded-lg mb-3 w-full h-32 object-cover bg-gray-50"
                         />
                         <div className="font-bold text-lg mb-1 text-center">{event.title}</div>
-                        <div className="text-sm text-muted-foreground mb-4 text-center">{event.description}</div>
+                        <div
+                          className={`text-sm text-muted-foreground mb-4 text-center ${expandedEvents[event.title] ? '' : 'line-clamp-2'}`}
+                          onClick={() => toggleExpand(event.title)}
+                        >
+                          {event.description}
+                        </div>
                         <a
                           href={event.link}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-full"
                         >
-                          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">Register</button>
+                          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition">Visit</button>
                         </a>
                       </div>
                     </CarouselItem>
