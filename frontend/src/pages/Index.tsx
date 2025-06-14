@@ -589,24 +589,19 @@ function Index() {
                         if (draggedToolId) setTool1(draggedToolId);
                         setDraggedToolId(null);
                       }}
-                      className={`border rounded px-2 py-1 w-full mb-2 bg-gray-50 transition ${draggedToolId ? 'ring-2 ring-primary' : ''}`}
-                      style={{ minHeight: 38 }}
                     >
-                      {tool1
-                        ? aiTools.find(t => t.id === tool1)?.name
-                        : <span className="text-gray-400">Drag tool here or select</span>}
+                      <select
+                        value={tool1}
+                        onChange={e => setTool1(e.target.value)}
+                        className="border rounded px-2 py-1 w-full"
+                        disabled={!activeCategory}
+                      >
+                        <option value="">Select Tool 1</option>
+                        {toolsInCategory.map(tool => (
+                          <option key={tool.id} value={tool.id}>{tool.name}</option>
+                        ))}
+                      </select>
                     </div>
-                    <select
-                      value={tool1}
-                      onChange={e => setTool1(e.target.value)}
-                      className="border rounded px-2 py-1 w-full"
-                      disabled={!activeCategory}
-                    >
-                      <option value="">Select Tool 1</option>
-                      {toolsInCategory.map(tool => (
-                        <option key={tool.id} value={tool.id}>{tool.name}</option>
-                      ))}
-                    </select>
                   </div>
                   <div className="mb-2">
                     <label className="block text-sm font-medium mb-1">Tool 2</label>
@@ -616,25 +611,34 @@ function Index() {
                         if (draggedToolId) setTool2(draggedToolId);
                         setDraggedToolId(null);
                       }}
-                      className={`border rounded px-2 py-1 w-full mb-2 bg-gray-50 transition ${draggedToolId ? 'ring-2 ring-primary' : ''}`}
-                      style={{ minHeight: 38 }}
                     >
-                      {tool2
-                        ? aiTools.find(t => t.id === tool2)?.name
-                        : <span className="text-gray-400">Drag tool here or select</span>}
+                      <select
+                        value={tool2}
+                        onChange={e => setTool2(e.target.value)}
+                        className="border rounded px-2 py-1 w-full"
+                        disabled={!activeCategory}
+                      >
+                        <option value="">Select Tool 2</option>
+                        {toolsInCategory.map(tool => (
+                          <option key={tool.id} value={tool.id}>{tool.name}</option>
+                        ))}
+                      </select>
                     </div>
-                    <select
-                      value={tool2}
-                      onChange={e => setTool2(e.target.value)}
-                      className="border rounded px-2 py-1 w-full"
-                      disabled={!activeCategory}
-                    >
-                      <option value="">Select Tool 2</option>
-                      {toolsInCategory.map(tool => (
-                        <option key={tool.id} value={tool.id}>{tool.name}</option>
-                      ))}
-                    </select>
                   </div>
+                  {/* Clear/Reset button */}
+                  {(activeCategory !== 'all' || tool1 || tool2) && (
+                    <button
+                      className="border rounded px-2 py-1 w-full mb-2 bg-gray-100 hover:bg-gray-200 transition"
+                      onClick={() => {
+                        setActiveCategory('all');
+                        setTool1("");
+                        setTool2("");
+                      }}
+                      type="button"
+                    >
+                      Clear Selection
+                    </button>
+                  )}
                   {/* Filters (rating, review count, etc.) */}
                   <div className="flex gap-2 mb-2">
                     <span className="text-xs">Filters:</span>
