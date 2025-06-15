@@ -95,7 +95,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
         <div className="flex-1 flex justify-center">
           <Input
             type="text"
-            placeholder="Search for items..."
+            placeholder="adding a verified tool every hour.."
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
             onKeyDown={onSearchKeyDown}
