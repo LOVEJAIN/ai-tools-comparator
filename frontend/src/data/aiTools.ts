@@ -355,7 +355,7 @@ export const aiTools: AITool[] =
       "id": "35",
       "name": "Nexus AI",
       "description": "Nexus AI is a generative cutting-edge AI Platform for writing, coding, voiceovers, research, image creation and beyond.",
-      "url": "https://nexus.ai/",
+      "url": "https://mynexusai.com",
       "category": "Writing assistants",
       "imageUrl": "https://dummyimage.com/600x400/8b5cf6/fff&text=Nexus+AI",
       "rating": 4.3,
