@@ -3,6 +3,7 @@ import { Category, Item, Review, User, Analytics } from '../types';
 import { toast } from "@/components/ui/sonner";
 import { aiTools } from '../data/aiTools';
 import { mockReviews } from '../data/mockReviews';
+import { categories as staticCategories } from '../data/aiTools';
 
 interface DataContextType {
   user: User | null;
@@ -25,7 +26,12 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-const ADMIN_EMAILS = ["admin@example.com"]; // Add more admin emails as needed
+const ADMIN_EMAILS = ["admin@example.com", "admin2@example.com", "admin3@example.com"]; // Add more admin emails as needed
+const ADMIN_CREDENTIALS = {
+  "admin@example.com": "password",
+  "admin2@example.com": "password2",
+  "admin3@example.com": "password3"
+};
 const VERIFIED_EMAILS = ["verified@example.com", "specialuser@example.com"]; // Add more verified emails as needed
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -43,11 +49,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       numRaters: 0,
     }))
   );
-  // Dynamically generate categories from items
+  // Use static categories from aiTools.ts
   const categories = React.useMemo(() => {
-    const unique = Array.from(new Set(items.map(item => item.category)));
-    return unique.map(cat => ({ id: cat, name: cat, slug: cat.toLowerCase().replace(/\s+/g, '-') }));
-  }, [items]);
+    return staticCategories.map(cat => ({ id: cat, name: cat, slug: cat.toLowerCase().replace(/\s+/g, '-') }));
+  }, []);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [sortOrder, setSortOrder] = useState<'popular' | 'latest' | 'rating'>('popular');
 
@@ -88,10 +93,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Mock login for demonstration purposes
     let isAdmin = ADMIN_EMAILS.includes(email);
     let isVerified = isAdmin || VERIFIED_EMAILS.includes(email);
-    if (email === 'admin@example.com' && password === 'password') {
+    
+    // Check if it's an admin login
+    if (isAdmin && ADMIN_CREDENTIALS[email] === password) {
       const adminUser: User = {
-        id: '1',
-        username: 'Admin User',
+        id: `admin-${email}`,
+        username: `Admin ${email.split('@')[0]}`,
         email: email,
         isAdmin,
         isVerified
