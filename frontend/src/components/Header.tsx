@@ -63,8 +63,9 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
   const handleLogout = () => {
     if (googleUser) {
       googleLogout();
+    } else {
+      logout();
     }
-    logout();
   };
 
   const currentUser = googleUser || user;
