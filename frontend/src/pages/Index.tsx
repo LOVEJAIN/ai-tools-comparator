@@ -404,18 +404,11 @@ function Index() {
     }
   }, [location.pathname, location.state, setActiveCategory, navigate]);
 
-  // Define the layout and sizes for the bubbles
+  // All bubbles same size and font size
+  const BUBBLE_SIZE = 130;
+  const BUBBLE_FONT_SIZE = '1.1rem';
+  // Arrange categories into rows (same as before)
   const bubbleLayout = [4, 5, 4];
-  const bubbleSizes = [
-    [140, 120, 150, 130], // Row 1: 4 bubbles
-    [125, 145, 135, 155, 130], // Row 2: 5 bubbles
-    [140, 130, 150, 120] // Row 3: 4 bubbles
-  ];
-  const bubbleFontSizes = [
-    ["1.1rem", "1rem", "1.2rem", "1rem"],
-    ["1rem", "1.1rem", "1.05rem", "1.15rem", "1rem"],
-    ["1.1rem", "1rem", "1.2rem", "1rem"]
-  ];
   const bubbleRows = [];
   let catIdx = 0;
   for (let row = 0; row < bubbleLayout.length; row++) {
@@ -425,8 +418,8 @@ function Index() {
       if (!categories[catIdx]) break;
       rowBubbles.push({
         ...categories[catIdx],
-        size: bubbleSizes[row][i],
-        fontSize: bubbleFontSizes[row][i]
+        size: BUBBLE_SIZE,
+        fontSize: BUBBLE_FONT_SIZE
       });
       catIdx++;
     }
