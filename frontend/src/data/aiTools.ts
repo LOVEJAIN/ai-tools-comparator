@@ -4960,8 +4960,8 @@ export const categories = [
   "Meeting assistants",
   "Academia",
   "Customer Support",
-  "Other text generators",
-  "Developer tools",
+  "Video Generation",
+  "Speech",
   "Code",
   "Image"
 ];
