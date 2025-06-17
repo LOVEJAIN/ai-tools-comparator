@@ -117,7 +117,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
             <img 
               src={imageSrc} 
               alt={item.title}
-              className="object-cover w-full h-full m-6"
+              className="object-contain max-h-40 max-w-full p-2"
               onError={handleImageError}
             />
           ) : (
