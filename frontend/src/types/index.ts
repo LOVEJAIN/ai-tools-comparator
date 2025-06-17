@@ -19,6 +19,7 @@ export interface Item {
   description: string;
   category: string;
   imageUrl: string;
+  logoUrl?: string;
   url: string;
   votes: number;
   reviewsCount: number;
