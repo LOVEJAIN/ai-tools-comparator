@@ -101,8 +101,8 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
     setImageError(true);
   };
 
-  // Use the image path from the item or the fallback if there's an error
-  const imageSrc = imageError ? FALLBACK_IMAGE : item.imageUrl;
+  // Use the logoUrl if present, otherwise fallback to imageUrl or the fallback image
+  const imageSrc = item.logoUrl && item.logoUrl.trim() !== '' ? item.logoUrl : (imageError ? FALLBACK_IMAGE : item.imageUrl);
 
   return (
     <>
@@ -117,7 +117,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
             <img 
               src={imageSrc} 
               alt={item.title}
-              className="object-cover w-full h-full"
+              className="object-contain max-h-40 max-w-full p-2"
               onError={handleImageError}
             />
           ) : (
