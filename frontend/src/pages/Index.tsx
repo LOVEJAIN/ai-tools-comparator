@@ -121,6 +121,7 @@ function Index() {
   const [editingList, setEditingList] = useState<PublicList | null>(null);
   const [editingPrivateList, setEditingPrivateList] = useState<PublicList | null>(null);
   const [expandedEvents, setExpandedEvents] = useState<{[key: string]: boolean}>({});
+  const [showLoginToCreateListMsg, setShowLoginToCreateListMsg] = useState(false);
 
   const filteredTools = useMemo(() => {
     return aiTools.filter(tool => {
@@ -919,7 +920,7 @@ function Index() {
               </section>
             )}
             {/* Public Lists Card - right of Private Lists */}
-            <section className={`w-full md:w-[400px] md:min-w-[320px] md:max-w-[400px] bg-white rounded-2xl shadow-xl border p-4 md:p-8 flex flex-col justify-between ${!user ? 'mx-auto' : ''}`}>
+            <section className={`w-full md:w-[400px] md:min-w-[320px] md:max-w-[400px] bg-white rounded-2xl shadow-xl border p-1 md:p-2 flex flex-col justify-between`}>
               <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-primary">Public Lists</CardTitle>
@@ -943,7 +944,7 @@ function Index() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
+                <CardContent className="flex-1 flex flex-col p-2">
                   <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
                     {filteredPublicLists.length === 0 && (<div className="text-lg text-muted-foreground mb-2">No public lists found.</div>)}
                     {filteredPublicLists.map(list => (
@@ -1016,13 +1017,20 @@ function Index() {
                       </Modal>
                     </>
                   ) : (
-                    <button
-                      className={`mt-6 w-full rounded-xl px-6 py-4 font-bold text-xl flex items-center justify-center gap-2 transition shadow-lg bg-gray-300 text-gray-500 cursor-not-allowed opacity-60`}
-                      disabled
-                      title="You must be logged in to create a list"
-                    >
-                      <span className="text-2xl">➕</span> Create List
-                    </button>
+                    <>
+                      <button
+                        className={`mt-6 w-full rounded-xl px-6 py-4 font-bold text-xl flex items-center justify-center gap-2 transition shadow-lg bg-blue-500 text-white hover:bg-blue-600`}
+                        onClick={() => {
+                          setShowLoginToCreateListMsg(true);
+                          setTimeout(() => setShowLoginToCreateListMsg(false), 2000);
+                        }}
+                      >
+                        <span className="text-2xl">➕</span> Create List
+                      </button>
+                      {showLoginToCreateListMsg && (
+                        <div className="text-sm text-red-600 text-center mt-2">Please log in and become verified to create a list.</div>
+                      )}
+                    </>
                   )}
                 </CardContent>
               </Card>
