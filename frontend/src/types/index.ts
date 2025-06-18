@@ -1,9 +1,10 @@
 export interface User {
-  id: string;
+  id: string | number;
   username: string;
   email: string;
   isAdmin: boolean;
   isVerified?: boolean;
+  googleId?: string;
 }
 
 export interface Category {

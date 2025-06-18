@@ -31,12 +31,14 @@ const CreateListForm: React.FC<CreateListFormProps> = ({ onSubmit, onCancel, ini
       setError("Select at least one tool.");
       return;
     }
+    let userId: string | number = user.googleId || user.id;
     const newList = {
       id: initialValues?.id || Date.now().toString(),
       title,
       creator: user?.email || "anon",
       toolIds: selected,
       isPublic,
+      userId,
     };
     onSubmit(newList);
   };
