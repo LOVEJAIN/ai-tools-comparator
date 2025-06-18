@@ -17,4 +17,8 @@ public class User {
     private String name;
     private Timestamp createdAt;
     private Timestamp lastLogin;
+
+    public String getEmail() {
+        return this.email;
+    }
 } 

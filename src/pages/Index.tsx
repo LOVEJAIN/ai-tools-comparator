@@ -33,6 +33,7 @@ type PublicList = {
 
 const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
 
+
 function useAIVideos() {
   const [videos, setVideos] = useState([]);
   useEffect(() => {
@@ -78,6 +79,8 @@ function Index() {
   const location = useLocation();
   const [showCreateListModal, setShowCreateListModal] = useState(false);
   const [showMainContent, setShowMainContent] = useState(false);
+  const [editingList, setEditingList] = useState<PublicList | null>(null);
+  const [editingPrivateList, setEditingPrivateList] = useState<PublicList | null>(null);
 
   // Unique categories for filter dropdown
   const uniqueCategories = categories;
@@ -285,30 +288,41 @@ function Index() {
     }
   };
 
+  // Fetch public lists from backend (with toolIds)
+  const fetchPublicLists = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/lists/public-with-tools`);
+      const data = await res.json();
+      setPublicLists(data);
+    } catch (err) {
+      setPublicLists([]);
+    }
+  };
+  // Fetch private lists for logged-in user
+  const fetchPrivateLists = async (userId: string) => {
+    try {
+      const res2 = await fetch(`${API_BASE_URL}/api/lists/private/${userId}`);
+      const data2 = await res2.json();
+      setPrivateLists(data2);
+    } catch (err) {
+      setPrivateLists([]);
+    }
+  };
+
   useEffect(() => {
-    // Fetch public lists from backend
-    const fetchPublicLists = async () => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/lists/public`);
-        const data = await res.json();
-        setPublicLists(data);
-      } catch (err) {
-        setPublicLists([]);
-      }
-    };
-    // Fetch private lists for logged-in user
-    const fetchPrivateLists = async (userId: string) => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/lists/private/${userId}`);
-        const data = await res.json();
-        setPrivateLists(data);
-      } catch (err) {
-        setPrivateLists([]);
-      }
-    };
     fetchPublicLists();
     if (user?.id) fetchPrivateLists(user.id);
   }, [user]);
+
+  // Helper to create a list with tools and refresh public lists
+  const createListWithTools = async (listData) => {
+    await fetch(`${API_BASE_URL}/api/lists/full`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(listData),
+    });
+    await fetchPublicLists();
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -999,8 +1013,38 @@ function Index() {
             </div>
           </div>
         )}
-        <Modal open={showCreateListModal} onClose={() => setShowCreateListModal(false)}>
-          <CreateListForm onSubmit={handleAddList} onCancel={() => setShowCreateListModal(false)} />
+        <Modal open={showCreateListModal} onClose={() => {
+          setShowCreateListModal(false);
+          setEditingList(null);
+          setEditingPrivateList(null);
+        }}>
+          <CreateListForm
+            onSubmit={async (list) => {
+              await createListWithTools({
+                userId: user.id,
+                title: list.title,
+                isPublic: list.isPublic,
+                toolIds: list.toolIds || list.selected || [],
+              });
+              setShowCreateListModal(false);
+              setEditingList(null);
+              setEditingPrivateList(null);
+            }}
+            onCancel={() => {
+              setShowCreateListModal(false);
+              setEditingList(null);
+              setEditingPrivateList(null);
+            }}
+            initialValues={editingList ? {
+              title: editingList.title,
+              selected: editingList.toolIds,
+              isPublic: true
+            } : editingPrivateList ? {
+              title: editingPrivateList.title,
+              selected: editingPrivateList.toolIds,
+              isPublic: false
+            } : undefined}
+          />
         </Modal>
     </div>
   );

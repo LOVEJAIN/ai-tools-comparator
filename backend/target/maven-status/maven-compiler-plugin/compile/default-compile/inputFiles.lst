@@ -25,5 +25,6 @@
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/controller/UserController.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/model/NewsletterSubscriber.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/model/UserList.java
+/Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/repository/UserRepository.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/repository/UserListRepository.java
 /Users/lovejain/ai-tool/scroll-vote-explore/backend/src/main/java/com/scrollvote/api/controller/UserListController.java

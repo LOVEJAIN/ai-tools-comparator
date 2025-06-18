@@ -10,14 +10,17 @@ com/scrollvote/api/controller/NewsletterSubscriberController.class
 com/scrollvote/api/WebConfig.class
 com/scrollvote/api/model/ToolSubmission.class
 com/scrollvote/api/repository/NewsletterSubscriberRepository.class
+com/scrollvote/api/repository/UserRepository.class
 com/scrollvote/api/model/Job.class
 com/scrollvote/api/repository/UserListRepository.class
 com/scrollvote/api/controller/WaitlistEntryController.class
 com/scrollvote/api/repository/WaitlistEntryRepository.class
 com/scrollvote/api/controller/SiteRatingController.class
 com/scrollvote/api/SecurityConfig.class
+com/scrollvote/api/controller/UserListController$PublicListWithTools.class
 com/scrollvote/api/controller/ListToolController.class
 com/scrollvote/api/controller/JobController.class
+com/scrollvote/api/controller/UserListController$CreateListWithToolsRequest.class
 com/scrollvote/api/model/Product.class
 com/scrollvote/api/controller/UserController.class
 com/scrollvote/api/controller/ContactMessageController.class
