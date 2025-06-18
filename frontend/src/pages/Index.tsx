@@ -243,7 +243,9 @@ function Index() {
   // Fetch public lists from backend
   const fetchPublicLists = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/lists/public-with-tools`);
+      const res = await fetch(`${API_BASE_URL}/api/lists/public-with-tools`, {
+        credentials: 'include',
+      });
       const data = await res.json();
       setPublicLists(data);
     } catch (err) {
@@ -255,7 +257,9 @@ function Index() {
   // Fetch private lists for logged-in user
   const fetchPrivateLists = async (userId: string) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/lists/private/${userId}`);
+      const res = await fetch(`${API_BASE_URL}/api/lists/private/${userId}`, {
+        credentials: 'include',
+      });
       const data = await res.json();
       setPrivateLists(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -271,6 +275,7 @@ function Index() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(listData),
+        credentials: 'include',
       });
       await fetchPublicLists();
     } catch (err) {
@@ -283,6 +288,7 @@ function Index() {
     try {
       await fetch(`${API_BASE_URL}/api/lists/${listId}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
       // Refresh lists after deletion
       await fetchPublicLists();
