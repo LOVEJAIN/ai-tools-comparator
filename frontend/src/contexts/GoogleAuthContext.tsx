@@ -66,10 +66,30 @@ export function GoogleAuthProvider({ children }: { children: React.ReactNode }) 
         console.error('Failed to sync user with backend:', err);
       }
 
+      // Fetch user from backend by email to get numeric id
+      let backendUser = null;
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/users?email=${encodeURIComponent(user.email)}`);
+        backendUser = await res.json();
+      } catch (err) {
+        console.error('Failed to fetch user from backend:', err);
+      }
+
       setGoogleUser(user);
       localStorage.setItem('googleUser', JSON.stringify(user));
-      // Sync with DataContext
-      register(user.name, user.email, 'google-oauth');
+      // Sync with DataContext using backend user (with numeric id)
+      if (backendUser && backendUser.id) {
+        register(backendUser);
+      } else {
+        // fallback to Google user if backend user not found
+        register({
+          id: user.sub,
+          username: user.name,
+          email: user.email,
+          isAdmin: false,
+          isVerified: false
+        });
+      }
       navigate('/'); // Redirect to home page after successful login
     } catch (error) {
       console.error('Error processing Google login:', error);
