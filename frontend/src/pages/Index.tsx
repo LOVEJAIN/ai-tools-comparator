@@ -81,38 +81,7 @@ function Index() {
   const [toolClicks, setToolClicks] = useState<{ [id: string]: number }>({});
   const [reviews, setReviews] = useState<{ [toolId: string]: { user: string; rating: number; text: string }[] }>({});
   const navigate = useNavigate();
-  const [publicLists, setPublicLists] = useState<PublicList[]>([
-    {
-      id: '1',
-      title: '20 AI Tools for ML Projects',
-      creator: 'demo@user.com',
-      toolIds: ['1', '2', '3', '4', '5']
-    },
-    {
-      id: '2',
-      title: 'Best Free AI Tools',
-      creator: 'freebie@user.com',
-      toolIds: ['6', '7', '8']
-    },
-    {
-      id: '3',
-      title: 'AI for Content Creation',
-      creator: 'content@user.com',
-      toolIds: ['13', '14', '15']
-    },
-    {
-      id: '4',
-      title: 'AI for Developers',
-      creator: 'dev@user.com',
-      toolIds: ['6', '1', '9']
-    },
-    {
-      id: '5',
-      title: 'AI for Productivity',
-      creator: 'productivity@user.com',
-      toolIds: ['7', '5', '10']
-    }
-  ]);
+  const [publicLists, setPublicLists] = useState<PublicList[]>([]);
   const [listDialog, setListDialog] = useState<{ open: boolean; list: PublicList | null }>({ open: false, list: null });
   const location = useLocation();
   const [showCreateListModal, setShowCreateListModal] = useState(false);
@@ -268,23 +237,86 @@ function Index() {
   // Calculate total clicks and submissions
   const totalClicks = Object.values(toolClicks).reduce((a, b) => a + b, 0);
 
-  // Add new list from navigation state if present
-  useEffect(() => {
-    if (location.state && location.state.newList) {
-      setPublicLists(prev => [location.state.newList, ...prev]);
-      // Clear the state so it doesn't add again on refresh
-      navigate("/", { replace: true, state: {} });
+  // Backend integration
+  const API_BASE_URL = "http://localhost:8081";
+
+  // Fetch public lists from backend
+  const fetchPublicLists = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/lists/public-with-tools`);
+      const data = await res.json();
+      setPublicLists(data);
+    } catch (err) {
+      console.error('Error fetching public lists:', err);
+      setPublicLists([]);
     }
-  }, [location.state, navigate]);
+  };
+
+  // Fetch private lists for logged-in user
+  const fetchPrivateLists = async (userId: string) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/lists/private/${userId}`);
+      const data = await res.json();
+      setPrivateLists(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error fetching private lists:', err);
+      setPrivateLists([]);
+    }
+  };
+
+  // Create list with tools and refresh public lists
+  const createListWithTools = async (listData) => {
+    try {
+      await fetch(`${API_BASE_URL}/api/lists/full`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(listData),
+      });
+      await fetchPublicLists();
+    } catch (err) {
+      console.error('Error creating list:', err);
+    }
+  };
+
+  // Delete list from backend
+  const deleteList = async (listId: string, isPublic: boolean) => {
+    try {
+      await fetch(`${API_BASE_URL}/api/lists/${listId}`, {
+        method: 'DELETE',
+      });
+      // Refresh lists after deletion
+      await fetchPublicLists();
+      if (user?.id) {
+        await fetchPrivateLists(user.id);
+      }
+    } catch (err) {
+      console.error('Error deleting list:', err);
+    }
+  };
+
+  // Fetch lists on component mount and when user changes
+  useEffect(() => {
+    fetchPublicLists();
+    if (user?.id) {
+      fetchPrivateLists(user.id);
+    }
+  }, [user]);
 
   // Add new list from CreateListForm
-  const handleAddList = (list) => {
-    if (list.isPublic) {
-      setPublicLists(prev => [list, ...prev]);
-    } else {
-      setPrivateLists(prev => [list, ...prev]);
+  const handleAddList = async (list) => {
+    try {
+      await createListWithTools(list);
+      setShowCreateListModal(false);
+    } catch (err) {
+      console.error('Error adding list:', err);
+      // Fallback to local state if backend fails
+      if (list.isPublic) {
+        setPublicLists(prev => [list, ...prev]);
+      } else {
+        setPrivateLists(prev => [list, ...prev]);
+      }
+      setShowCreateListModal(false);
     }
-    setShowCreateListModal(false);
   };
 
   // Handler for bubble click
@@ -876,44 +908,46 @@ function Index() {
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col">
                     <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
-                      {privateLists.filter(list => list.creator === user.email).length === 0 && (
-                        <div className="text-lg text-muted-foreground mb-2">No private lists yet.</div>
-                      )}
-                      {privateLists.filter(list => list.creator === user.email).map(list => (
-                        <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition">
-                          <div className="font-bold text-lg mb-1">{list.title}</div>
-                          <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {list.toolIds.slice(0, 3).map(tid => {
-                              const tool = aiTools.find(t => t.id === tid);
-                              return tool ? (<span key={tid} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>) : null;
-                            })}
-                            {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
+                      {Array.isArray(privateLists) ?
+                        privateLists.filter(list => list.creator === user.email).length === 0 && (
+                          <div className="text-lg text-muted-foreground mb-2">No private lists yet.</div>
+                        ) : null}
+                      {Array.isArray(privateLists) ?
+                        privateLists.filter(list => list.creator === user.email).map(list => (
+                          <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition">
+                            <div className="font-bold text-lg mb-1">{list.title}</div>
+                            <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
+                            <div className="flex flex-wrap gap-2 mt-1">
+                              {list.toolIds.slice(0, 3).map(tid => {
+                                const tool = aiTools.find(t => t.id === tid);
+                                return tool ? (<span key={tid} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>) : null;
+                              })}
+                              {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
+                            </div>
+                            <div className="flex gap-2 mt-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEditPrivateList(list);
+                                }}
+                                className="text-blue-600 hover:text-blue-800 text-sm"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (window.confirm('Are you sure you want to delete this list?')) {
+                                    deleteList(list.id, false);
+                                  }
+                                }}
+                                className="text-red-600 hover:text-red-800 text-sm"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex gap-2 mt-2">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEditPrivateList(list);
-                              }}
-                              className="text-blue-600 hover:text-blue-800 text-sm"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (window.confirm('Are you sure you want to delete this list?')) {
-                                  setPrivateLists(prev => prev.filter(l => l.id !== list.id));
-                                }
-                              }}
-                              className="text-red-600 hover:text-red-800 text-sm"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                        )) : null}
                     </div>
                   </CardContent>
                 </Card>
@@ -973,7 +1007,7 @@ function Index() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (window.confirm('Are you sure you want to delete this list?')) {
-                                  setPublicLists(prev => prev.filter(l => l.id !== list.id));
+                                  deleteList(list.id, true);
                                 }
                               }}
                               className="text-red-600 hover:text-red-800 text-sm"
