@@ -238,7 +238,7 @@ function Index() {
   const totalClicks = Object.values(toolClicks).reduce((a, b) => a + b, 0);
 
   // Backend integration
-  const API_BASE_URL = "http://localhost:8081";
+  const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
 
   // Fetch public lists from backend
   const fetchPublicLists = async () => {
