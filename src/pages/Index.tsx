@@ -30,6 +30,9 @@ type PublicList = {
   creator: string;
   toolIds: string[];
 };
+
+const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
+
 function useAIVideos() {
   const [videos, setVideos] = useState([]);
   useEffect(() => {
@@ -69,42 +72,11 @@ function Index() {
   const [toolClicks, setToolClicks] = useState<{ [id: string]: number }>({});
   const [reviews, setReviews] = useState<{ [toolId: string]: { user: string; rating: number; text: string }[] }>({});
   const navigate = useNavigate();
-  const [publicLists, setPublicLists] = useState<PublicList[]>([
-    {
-      id: '1',
-      title: '20 AI Tools for ML Projects',
-      creator: 'demo@user.com',
-      toolIds: ['1', '2', '3', '4', '5']
-    },
-    {
-      id: '2',
-      title: 'Best Free AI Tools',
-      creator: 'freebie@user.com',
-      toolIds: ['6', '7', '8']
-    },
-    {
-      id: '3',
-      title: 'AI for Content Creation',
-      creator: 'content@user.com',
-      toolIds: ['13', '14', '15']
-    },
-    {
-      id: '4',
-      title: 'AI for Developers',
-      creator: 'dev@user.com',
-      toolIds: ['6', '1', '9']
-    },
-    {
-      id: '5',
-      title: 'AI for Productivity',
-      creator: 'productivity@user.com',
-      toolIds: ['7', '5', '10']
-    }
-  ]);
+  const [publicLists, setPublicLists] = useState<PublicList[]>([]);
+  const [privateLists, setPrivateLists] = useState<PublicList[]>([]);
   const [listDialog, setListDialog] = useState<{ open: boolean; list: PublicList | null }>({ open: false, list: null });
   const location = useLocation();
   const [showCreateListModal, setShowCreateListModal] = useState(false);
-  const [privateLists, setPrivateLists] = useState<PublicList[]>([]);
   const [showMainContent, setShowMainContent] = useState(false);
 
   // Unique categories for filter dropdown
@@ -312,6 +284,31 @@ function Index() {
       alert("Failed to subscribe. Please try again.");
     }
   };
+
+  useEffect(() => {
+    // Fetch public lists from backend
+    const fetchPublicLists = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/lists/public`);
+        const data = await res.json();
+        setPublicLists(data);
+      } catch (err) {
+        setPublicLists([]);
+      }
+    };
+    // Fetch private lists for logged-in user
+    const fetchPrivateLists = async (userId: string) => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/lists/private/${userId}`);
+        const data = await res.json();
+        setPrivateLists(data);
+      } catch (err) {
+        setPrivateLists([]);
+      }
+    };
+    fetchPublicLists();
+    if (user?.id) fetchPrivateLists(user.id);
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -628,13 +625,13 @@ function Index() {
           <div className={`flex flex-row gap-8 max-w-5xl mx-auto mt-12 mb-8 ${user ? 'justify-center' : 'justify-center'}`}>
             {/* Private Lists Card - left of Public Lists */}
             {user && (
-              <section className="w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between">
+              <section className="w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-1 flex flex-col justify-between">
                 <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
                   <CardHeader>
                     <CardTitle className="text-2xl font-bold text-primary">Private Lists</CardTitle>
                   </CardHeader>
-                  <CardContent className="flex-1 flex flex-col">
-                    <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
+                  <CardContent className="flex-1 flex flex-col p-1">
+                    <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-1">
                       {privateLists.filter(list => list.creator === user.email).length === 0 && (
                         <div className="text-lg text-muted-foreground mb-2">No private lists yet.</div>
                       )}
@@ -657,13 +654,13 @@ function Index() {
               </section>
             )}
             {/* Public Lists Card - right of Private Lists */}
-            <section className={`w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-8 flex flex-col justify-between ${!user ? 'mx-auto' : ''}`}>
+            <section className={`w-[400px] min-w-[320px] max-w-[400px] bg-white rounded-2xl shadow-xl border p-1 flex flex-col justify-between ${!user ? 'mx-auto' : ''}`}>
               <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-primary">Public Lists</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
+                <CardContent className="flex-1 flex flex-col p-1">
+                  <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-1">
                     {publicLists.length === 0 && (<div className="text-lg text-muted-foreground mb-2">No public lists yet.</div>)}
                     {publicLists.map(list => (
                       <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition" onClick={() => setListDialog({ open: true, list })}>
