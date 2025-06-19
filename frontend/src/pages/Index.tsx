@@ -429,36 +429,36 @@ function Index() {
   // Define the events array once
   const aiEvents = [
     {
-      title: "GIDS 2024",
-      description: "Global AI Developer Summit. April 10-12, 2024, Bengaluru, India.",
+      title: "ICSCSP 2025",
+      description: "International Conference on Soft Computing and Signal Processing",
       image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-      link: "https://gids.ai/",
-      date: "April 10-12, 2024",
-      location: "Bengaluru, India"
+      link: "https://www.icscsp.com/",
+      date: "June 20-21, 2025",
+      location: "Hyderabad, India"
     },
     {
-      title: "NeurIPS 2024",
-      description: "Neural Information Processing Systems. Dec 9-15, 2024, Vancouver, Canada.",
+      title: "AIST 2025",
+      description: "International Conference on AI & Smart Transportation, IIMT, , India",
       image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
-      link: "https://neurips.cc/Conferences/2024",
-      date: "December 9-15, 2024",
-      location: "Vancouver, Canada"
+      link: "https://interscience.ac.in/AIST2025/",
+      date: "June 28-29, 2025",
+      location: "Bhubaneswar, India"
     },
     {
-      title: "CVPR 2024",
-      description: "Computer Vision and Pattern Recognition. June 17-21, 2024, Seattle, USA.",
+      title: "ICACECS 2025",
+      description: "International Conference on Advances in Computer Engineering and Communication Systems 2025",
       image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
-      link: "https://cvpr2024.thecvf.com/",
-      date: "June 17-21, 2024",
-      location: "Seattle, USA"
+      link: "https://icacecs.org/",
+      date: "August 06-08, 2025",
+      location: "Assam, India"
     },
     {
-      title: "AI Expo India",
-      description: "AI Expo & Conference. Aug 22-23, 2024, New Delhi, India.",
+      title: "ICEIMLCB 2025",
+      description: "International Conference on Emerging Innovations in Machine Learning, Cybersecurity and Blockchain 2025",
       image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
-      link: "https://aiexpoindia.com/",
-      date: "August 22-23, 2024",
-      location: "New Delhi, India"
+      link: "https://ghrcemp.raisoni.net/icisml/",
+      date: "July 23-24, 2025",
+      location: "Pune, India"
     }
   ];
 
