@@ -31,7 +31,14 @@ const CreateListForm: React.FC<CreateListFormProps> = ({ onSubmit, onCancel, ini
       setError("Select at least one tool.");
       return;
     }
-    let userId: string | number = user.googleId || user.id;
+    
+    let userId;
+    if (user.isAdmin) {
+      userId = "admin";
+    } else {
+      userId = user.id; // Use the numeric ID for regular users
+    }
+
     const newList = {
       id: initialValues?.id || Date.now().toString(),
       title,

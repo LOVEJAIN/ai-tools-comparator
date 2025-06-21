@@ -38,6 +38,10 @@ public class UserListController {
     // Create a new list
     @PostMapping
     public UserList createList(@RequestBody UserList list) {
+        if (list.getUserId() == null) {
+            // Handle admin case or other defaults
+            list.setUserId(0L); // Default admin user ID
+        }
         return userListRepository.save(list);
     }
 
@@ -64,12 +68,24 @@ public class UserListController {
     // New endpoint to create a list with tools in one go
     @PostMapping("/full")
     public PublicListWithTools createListWithTools(@RequestBody CreateListWithToolsRequest req) {
+        Long userId;
+        if ("admin".equalsIgnoreCase(req.userId)) {
+            userId = 0L; // Special ID for admin
+        } else {
+            try {
+                userId = Long.parseLong(req.userId);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid userId format");
+            }
+        }
+
         // 1. Create the list
         UserList list = new UserList();
-        list.setUserId(req.userId);
+        list.setUserId(userId);
         list.setTitle(req.title);
         list.setIsPublic(req.isPublic);
         list = userListRepository.save(list);
+
         // 2. Add tools
         for (String toolId : req.toolIds) {
             ListTool lt = new ListTool();
@@ -77,15 +93,16 @@ public class UserListController {
             lt.setToolId(toolId);
             listToolRepository.save(lt);
         }
+
         // 3. Get creator email
-        User user = userRepository.findById(req.userId).orElse(null);
-        String creator = user != null ? user.getEmail() : String.valueOf(req.userId);
+        User user = userRepository.findById(userId).orElse(null);
+        String creator = user != null ? user.getEmail() : "admin"; // Default to "admin" if user not found
         return new PublicListWithTools(list.getId(), list.getTitle(), creator, req.toolIds);
     }
 
     // DTO for createListWithTools
     public static class CreateListWithToolsRequest {
-        public Long userId;
+        public String userId; // Changed to String to handle "admin"
         public String title;
         public Boolean isPublic;
         public java.util.List<String> toolIds;
@@ -103,8 +120,48 @@ public class UserListController {
                 toolIds.add(tool.getToolId());
             }
             // Get creator email from User table
-            User user = userRepository.findById(list.getUserId()).orElse(null);
-            String creator = user != null ? user.getEmail() : String.valueOf(list.getUserId());
+            String creator;
+            if (list.getUserId() == null) {
+                creator = "unknown";
+            } else if (list.getUserId() == 0L) {
+                creator = "admin";
+            } else {
+                User user = userRepository.findById(list.getUserId()).orElse(null);
+                creator = user != null ? user.getEmail() : "unknown";
+            }
+            result.add(new PublicListWithTools(list.getId(), list.getTitle(), creator, toolIds));
+        }
+        return result;
+    }
+
+    // Get all private lists for a user by email
+    @GetMapping("/private/by-email/{email}")
+    public List<PublicListWithTools> getPrivateListsByEmail(@PathVariable String email) {
+        List<UserList> lists;
+        Long userId = null;
+
+        if ("newadmin@example.com".equalsIgnoreCase(email) || "admin".equalsIgnoreCase(email)) {
+            userId = 0L;
+            lists = userListRepository.findByUserIdAndIsPublicFalse(userId);
+        } else {
+            java.util.Optional<User> userOpt = userRepository.findByEmail(email);
+            if (userOpt.isPresent()) {
+                userId = userOpt.get().getId();
+                lists = userListRepository.findByUserIdAndIsPublicFalse(userId);
+            } else {
+                lists = java.util.Collections.emptyList();
+            }
+        }
+
+        List<PublicListWithTools> result = new java.util.ArrayList<>();
+        for (UserList list : lists) {
+            List<ListTool> tools = listToolRepository.findByListId(list.getId());
+            List<String> toolIds = tools.stream().map(ListTool::getToolId).collect(java.util.stream.Collectors.toList());
+            
+            String creator = "admin".equalsIgnoreCase(email) || "newadmin@example.com".equalsIgnoreCase(email)
+                ? email
+                : userRepository.findById(list.getUserId()).map(User::getEmail).orElse("unknown");
+
             result.add(new PublicListWithTools(list.getId(), list.getTitle(), creator, toolIds));
         }
         return result;

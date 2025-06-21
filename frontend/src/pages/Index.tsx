@@ -38,7 +38,7 @@ type PublicList = {
   id: string;
   title: string;
   creator: string;
-  toolIds: string[];
+  tools: { id: string, name: string }[];
 };
 
 interface AIEvent {
@@ -85,10 +85,10 @@ function Index() {
   const [listDialog, setListDialog] = useState<{ open: boolean; list: PublicList | null }>({ open: false, list: null });
   const location = useLocation();
   const [showCreateListModal, setShowCreateListModal] = useState(false);
-  const [privateLists, setPrivateLists] = useState<PublicList[]>([]);
+  const [privateLists, setPrivateLists] = useState<any[]>([]);
   const [showMainContent, setShowMainContent] = useState(false);
   const [editingList, setEditingList] = useState<PublicList | null>(null);
-  const [editingPrivateList, setEditingPrivateList] = useState<PublicList | null>(null);
+  const [editingPrivateList, setEditingPrivateList] = useState<any | null>(null);
   const [expandedEvents, setExpandedEvents] = useState<{[key: string]: boolean}>({});
   const [showLoginToCreateListMsg, setShowLoginToCreateListMsg] = useState(false);
 
@@ -244,7 +244,15 @@ function Index() {
   const fetchPublicLists = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/lists/public-with-tools`);
-      const data = await res.json();
+      let data = await res.json();
+      // Map toolIds to full tool objects
+      data = data.map(list => ({
+        ...list,
+        tools: list.toolIds.map(toolId => {
+          const tool = initialAiTools.find(t => t.id === toolId);
+          return tool ? { id: tool.id, name: tool.name } : null;
+        }).filter(Boolean)
+      }));
       setPublicLists(data);
     } catch (err) {
       console.error('Error fetching public lists:', err);
@@ -253,10 +261,18 @@ function Index() {
   };
 
   // Fetch private lists for logged-in user
-  const fetchPrivateLists = async (userId: string) => {
+  const fetchPrivateLists = async (userEmail: string) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/lists/private/${userId}`);
-      const data = await res.json();
+      const res = await fetch(`${API_BASE_URL}/api/lists/private/by-email/${userEmail}`);
+      let data = await res.json();
+      // Map toolIds to full tool objects for private lists as well
+      data = data.map(list => ({
+        ...list,
+        tools: list.toolIds.map(toolId => {
+          const tool = initialAiTools.find(t => t.id === toolId);
+          return tool ? { id: tool.id, name: tool.name } : null;
+        }).filter(Boolean)
+      }));
       setPrivateLists(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error fetching private lists:', err);
@@ -267,12 +283,24 @@ function Index() {
   // Create list with tools and refresh public lists
   const createListWithTools = async (listData) => {
     try {
+      const payload = {
+        userId: listData.userId,
+        title: listData.title,
+        isPublic: listData.isPublic,
+        toolIds: listData.toolIds,
+      };
+
       await fetch(`${API_BASE_URL}/api/lists/full`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(listData),
+        body: JSON.stringify(payload),
       });
+
+      // Refresh lists after creation
       await fetchPublicLists();
+      if (user?.email) {
+        await fetchPrivateLists(user.email);
+      }
     } catch (err) {
       console.error('Error creating list:', err);
     }
@@ -286,8 +314,8 @@ function Index() {
       });
       // Refresh lists after deletion
       await fetchPublicLists();
-      if (user?.id) {
-        await fetchPrivateLists(user.id.toString());
+      if (user?.email) {
+        await fetchPrivateLists(user.email);
       }
     } catch (err) {
       console.error('Error deleting list:', err);
@@ -297,8 +325,8 @@ function Index() {
   // Fetch lists on component mount and when user changes
   useEffect(() => {
     fetchPublicLists();
-    if (user?.id) {
-      fetchPrivateLists(user.id.toString());
+    if (user?.email) {
+      fetchPrivateLists(user.email);
     }
   }, [user]);
 
@@ -908,21 +936,18 @@ function Index() {
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col">
                     <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
-                      {Array.isArray(privateLists) ?
-                        privateLists.filter(list => list.creator === user.email).length === 0 && (
+                      {Array.isArray(privateLists) && privateLists.length === 0 && (
                           <div className="text-lg text-muted-foreground mb-2">No private lists yet.</div>
-                        ) : null}
-                      {Array.isArray(privateLists) ?
-                        privateLists.filter(list => list.creator === user.email).map(list => (
+                      )}
+                      {Array.isArray(privateLists) && privateLists.map(list => (
                           <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition">
                             <div className="font-bold text-lg mb-1">{list.title}</div>
                             <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
                             <div className="flex flex-wrap gap-2 mt-1">
-                              {list.toolIds.slice(0, 3).map(tid => {
-                                const tool = aiTools.find(t => t.id === tid);
-                                return tool ? (<span key={tid} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>) : null;
-                              })}
-                              {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
+                               {list.tools && list.tools.slice(0, 3).map(tool => (
+                                 <span key={tool.id} className="bg-gray-200 text-gray-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>
+                              ))}
+                              {list.tools && list.tools.length > 3 && (<span className="text-sm text-muted-foreground">+{list.tools.length - 3} more</span>)}
                             </div>
                             <div className="flex gap-2 mt-2">
                               <button
@@ -947,7 +972,7 @@ function Index() {
                               </button>
                             </div>
                           </div>
-                        )) : null}
+                        ))}
                     </div>
                   </CardContent>
                 </Card>
@@ -986,11 +1011,10 @@ function Index() {
                         <div className="font-bold text-lg mb-1">{list.title}</div>
                         <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
                         <div className="flex flex-wrap gap-2 mt-1">
-                          {list.toolIds.slice(0, 3).map(tid => {
-                            const tool = aiTools.find(t => t.id === tid);
-                            return tool ? (<span key={tid} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>) : null;
-                          })}
-                          {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
+                          {list.tools && list.tools.slice(0, 3).map(tool => (
+                             <span key={tool.id} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>
+                          ))}
+                          {list.tools && list.tools.length > 3 && (<span className="text-sm text-muted-foreground">+{list.tools.length - 3} more</span>)}
                         </div>
                         {user && list.creator === user.email && (
                           <div className="flex gap-2 mt-2">
@@ -1342,14 +1366,14 @@ function Index() {
               <h3 className="text-lg font-semibold mb-2">{listDialog.list.title}</h3>
               <div className="text-xs text-muted-foreground mb-4">by {listDialog.list.creator}</div>
               <div className="space-y-2">
-                {listDialog.list.toolIds.map(tid => {
-                  const tool = aiTools.find(t => t.id === tid);
-                  return tool ? (
-                    <div key={tid} className="border rounded p-2 flex items-center gap-2">
-                      {tool.imageUrl && <img src={tool.imageUrl} alt={tool.name} className="w-8 h-8 rounded" />}
+                {listDialog.list.tools && listDialog.list.tools.map(tool => {
+                  const fullTool = aiTools.find(t => t.id === tool.id);
+                  return fullTool ? (
+                    <div key={tool.id} className="border rounded p-2 flex items-center gap-2">
+                      {fullTool.imageUrl && <img src={fullTool.imageUrl} alt={fullTool.name} className="w-8 h-8 rounded" />}
                       <div>
-                        <div className="font-medium">{tool.name}</div>
-                        <div className="text-xs text-muted-foreground">{tool.description}</div>
+                        <div className="font-medium">{fullTool.name}</div>
+                        <div className="text-xs text-muted-foreground">{fullTool.description}</div>
                       </div>
                     </div>
                   ) : null;
@@ -1373,12 +1397,12 @@ function Index() {
             initialValues={editingList ? {
               id: editingList.id,
               title: editingList.title,
-              selected: editingList.toolIds,
+              selected: editingList.tools.map(t => t.id),
               isPublic: true
             } : editingPrivateList ? {
               id: editingPrivateList.id,
               title: editingPrivateList.title,
-              selected: editingPrivateList.toolIds,
+              selected: (editingPrivateList as any).toolIds || [],
               isPublic: false
             } : undefined}
           />
