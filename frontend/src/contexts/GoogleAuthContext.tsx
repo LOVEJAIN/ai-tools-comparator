@@ -53,7 +53,7 @@ export function GoogleAuthProvider({ children }: { children: React.ReactNode }) 
 
       // POST user info to backend
       try {
-        await fetch(`${API_BASE_URL}/api/users`, {
+        const response = await fetch(`${API_BASE_URL}/api/users`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -62,26 +62,28 @@ export function GoogleAuthProvider({ children }: { children: React.ReactNode }) 
             name: user.name
           })
         });
+
+        if (response.ok) {
+          const backendUser = await response.json();
+          user.isAdmin = backendUser.admin; // Make sure 'admin' is the correct field name
+          setGoogleUser(user);
+          localStorage.setItem('googleUser', JSON.stringify(user));
+          
+          // Sync with DataContext using backend user
+          register({
+            id: backendUser.id.toString(), // Ensure id is a string for DataContext
+            username: backendUser.name,
+            email: backendUser.email,
+            isAdmin: backendUser.admin,
+            isVerified: true, // Assuming verification if they logged in
+          });
+
+        } else {
+          throw new Error("Failed to sync user with backend");
+        }
       } catch (err) {
         console.error('Failed to sync user with backend:', err);
-      }
-
-      // Fetch user from backend by email to get numeric id
-      let backendUser = null;
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/users?email=${encodeURIComponent(user.email)}`);
-        backendUser = await res.json();
-      } catch (err) {
-        console.error('Failed to fetch user from backend:', err);
-      }
-
-      setGoogleUser(user);
-      localStorage.setItem('googleUser', JSON.stringify(user));
-      // Sync with DataContext using backend user (with numeric id)
-      if (backendUser && backendUser.id) {
-        register(backendUser);
-      } else {
-        // fallback to Google user if backend user not found
+        // Fallback to Google user if backend sync fails
         register({
           id: user.sub,
           username: user.name,
@@ -90,6 +92,7 @@ export function GoogleAuthProvider({ children }: { children: React.ReactNode }) 
           isVerified: false
         });
       }
+
       navigate('/'); // Redirect to home page after successful login
     } catch (error) {
       console.error('Error processing Google login:', error);

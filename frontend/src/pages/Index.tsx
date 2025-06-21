@@ -287,7 +287,7 @@ function Index() {
       // Refresh lists after deletion
       await fetchPublicLists();
       if (user?.id) {
-        await fetchPrivateLists(user.id);
+        await fetchPrivateLists(user.id.toString());
       }
     } catch (err) {
       console.error('Error deleting list:', err);
@@ -298,7 +298,7 @@ function Index() {
   useEffect(() => {
     fetchPublicLists();
     if (user?.id) {
-      fetchPrivateLists(user.id);
+      fetchPrivateLists(user.id.toString());
     }
   }, [user]);
 
