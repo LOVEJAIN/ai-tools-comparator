@@ -26,11 +26,9 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-const ADMIN_EMAILS = ["admin@example.com", "admin2@example.com", "admin3@example.com"]; // Add more admin emails as needed
+const ADMIN_EMAILS = ["newadmin@example.com"];
 const ADMIN_CREDENTIALS = {
-  "admin@example.com": "password",
-  "admin2@example.com": "password2",
-  "admin3@example.com": "password3"
+  "newadmin@example.com": "aVerySecurePassword123!"
 };
 const VERIFIED_EMAILS = ["verified@example.com", "specialuser@example.com"]; // Add more verified emails as needed
 
@@ -192,7 +190,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Add the new review to the reviews list
     const newReview: Review = {
       id: `review-${Date.now()}`,
-      userId: user.id,
+      userId: user.id.toString(),
       username: user.username,
       itemId,
       rating,

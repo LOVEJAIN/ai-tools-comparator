@@ -898,10 +898,10 @@ function Index() {
             </div>
           </div>
           {/* Lists Side-by-Side */}
-          <div className={`flex flex-row gap-8 max-w-5xl mx-auto mt-12 mb-8 ${user ? 'justify-center' : 'justify-center'}`}>
+          <div className={`flex flex-col md:flex-row gap-8 max-w-5xl mx-auto mt-12 mb-8 w-full px-4 ${user ? 'justify-center' : 'justify-center'}`}>
             {/* Private Lists Card - left of Public Lists */}
             {user && (
-              <section className="w-full md:w-[400px] md:min-w-[320px] md:max-w-[400px] bg-white rounded-2xl shadow-xl border p-4 md:p-8 flex flex-col justify-between">
+              <section className="w-full md:w-1/2 bg-white rounded-2xl shadow-xl border p-4 md:p-8 flex flex-col justify-between">
                 <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
                   <CardHeader>
                     <CardTitle className="text-2xl font-bold text-primary">Private Lists</CardTitle>
@@ -954,7 +954,7 @@ function Index() {
               </section>
             )}
             {/* Public Lists Card - right of Private Lists */}
-            <section className={`w-full md:w-[400px] md:min-w-[320px] md:max-w-[400px] bg-white rounded-2xl shadow-xl border p-1 md:p-2 flex flex-col justify-between`}>
+            <section className={`w-full ${user ? 'md:w-1/2' : 'md:w-full'} bg-white rounded-2xl shadow-xl border p-1 md:p-2 flex flex-col justify-between`}>
               <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-primary">Public Lists</CardTitle>
