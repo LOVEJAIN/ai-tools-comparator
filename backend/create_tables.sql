@@ -45,4 +45,23 @@ CREATE TABLE jobs (
     level VARCHAR(50),
     sector VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-); 
+);
+
+-- Table for user-created lists (public and private)
+CREATE TABLE user_lists (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    is_public BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table for tools in a list (many-to-many relationship)
+CREATE TABLE list_tools (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    list_id BIGINT NOT NULL,
+    tool_id VARCHAR(255) NOT NULL
+);
+
+-- Add job posting link to jobs table
+ALTER TABLE jobs ADD COLUMN link VARCHAR(500); 

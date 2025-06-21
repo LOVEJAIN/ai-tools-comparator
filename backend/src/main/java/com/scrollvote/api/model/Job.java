@@ -18,6 +18,7 @@ public class Job {
     private String postedBy;
     private String level;
     private String sector;
+    private String link;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -35,4 +36,6 @@ public class Job {
     public void setLevel(String level) { this.level = level; }
     public String getSector() { return sector; }
     public void setSector(String sector) { this.sector = sector; }
+    public String getLink() { return link; }
+    public void setLink(String link) { this.link = link; }
 } 

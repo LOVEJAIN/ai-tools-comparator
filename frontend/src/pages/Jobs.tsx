@@ -9,7 +9,13 @@ import { useNavigate } from "react-router-dom";
 const levels = ["Entry", "Mid", "Senior"];
 const sectors = ["Engineering Jobs", "AI Research", "Machine Learning", "NLP", "Data Science", "Robotics"];
 const locations = [
-  "San Francisco, CA", "Remote, US", "New York, NY", "London, UK", "Berlin, Germany", "Toronto, Canada", "Sydney, Australia", "Bangalore, India", "Paris, France", "Tokyo, Japan", "Pomfret, Charles County", "Nationwide, US", "Enon, VA", "Spotsylvania County, VA", "Fredericksburg City, VA"
+  "Remote",
+  "India Bangalore",
+  "India Hyderabad",
+  "India Gurugram",
+  "India Pune",
+  "India Mumbai",
+  "Outside India"
 ];
 
 const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
@@ -24,7 +30,7 @@ export default function Jobs() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showJobDialog, setShowJobDialog] = useState(false);
-  const [jobForm, setJobForm] = useState({ title: '', company: '', location: '', description: '', level: '', sector: '' });
+  const [jobForm, setJobForm] = useState({ title: '', company: '', location: '', description: '', level: '', sector: '', link: '' });
   const [jobSuccess, setJobSuccess] = useState(false);
   const navigate = useNavigate();
 
@@ -55,7 +61,7 @@ export default function Jobs() {
       });
       setJobSuccess(true);
       setShowJobDialog(false);
-      setJobForm({ title: '', company: '', location: '', description: '', level: '', sector: '' });
+      setJobForm({ title: '', company: '', location: '', description: '', level: '', sector: '', link: '' });
       fetchJobs();
       setTimeout(() => setJobSuccess(false), 2000);
     } catch (err) {
@@ -115,6 +121,7 @@ export default function Jobs() {
                   <option value="">Select Sector</option>
                   {sectors.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
+                <input className="border rounded px-3 py-2" placeholder="Job Posting Link" type="url" value={jobForm.link} onChange={e => setJobForm({ ...jobForm, link: e.target.value })} required />
                 <textarea className="border rounded px-3 py-2" placeholder="Job Description" value={jobForm.description} onChange={e => setJobForm({ ...jobForm, description: e.target.value })} required />
                 <Button type="submit" className="bg-primary text-white w-full mt-2">Submit Job</Button>
               </form>

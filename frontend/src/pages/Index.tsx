@@ -38,7 +38,7 @@ type PublicList = {
   id: string;
   title: string;
   creator: string;
-  toolIds: string[];
+  tools: { id: string, name: string }[];
 };
 
 interface AIEvent {
@@ -81,46 +81,16 @@ function Index() {
   const [toolClicks, setToolClicks] = useState<{ [id: string]: number }>({});
   const [reviews, setReviews] = useState<{ [toolId: string]: { user: string; rating: number; text: string }[] }>({});
   const navigate = useNavigate();
-  const [publicLists, setPublicLists] = useState<PublicList[]>([
-    {
-      id: '1',
-      title: '20 AI Tools for ML Projects',
-      creator: 'demo@user.com',
-      toolIds: ['1', '2', '3', '4', '5']
-    },
-    {
-      id: '2',
-      title: 'Best Free AI Tools',
-      creator: 'freebie@user.com',
-      toolIds: ['6', '7', '8']
-    },
-    {
-      id: '3',
-      title: 'AI for Content Creation',
-      creator: 'content@user.com',
-      toolIds: ['13', '14', '15']
-    },
-    {
-      id: '4',
-      title: 'AI for Developers',
-      creator: 'dev@user.com',
-      toolIds: ['6', '1', '9']
-    },
-    {
-      id: '5',
-      title: 'AI for Productivity',
-      creator: 'productivity@user.com',
-      toolIds: ['7', '5', '10']
-    }
-  ]);
+  const [publicLists, setPublicLists] = useState<PublicList[]>([]);
   const [listDialog, setListDialog] = useState<{ open: boolean; list: PublicList | null }>({ open: false, list: null });
   const location = useLocation();
   const [showCreateListModal, setShowCreateListModal] = useState(false);
-  const [privateLists, setPrivateLists] = useState<PublicList[]>([]);
+  const [privateLists, setPrivateLists] = useState<any[]>([]);
   const [showMainContent, setShowMainContent] = useState(false);
   const [editingList, setEditingList] = useState<PublicList | null>(null);
-  const [editingPrivateList, setEditingPrivateList] = useState<PublicList | null>(null);
+  const [editingPrivateList, setEditingPrivateList] = useState<any | null>(null);
   const [expandedEvents, setExpandedEvents] = useState<{[key: string]: boolean}>({});
+  const [showLoginToCreateListMsg, setShowLoginToCreateListMsg] = useState(false);
 
   const filteredTools = useMemo(() => {
     return aiTools.filter(tool => {
@@ -267,23 +237,114 @@ function Index() {
   // Calculate total clicks and submissions
   const totalClicks = Object.values(toolClicks).reduce((a, b) => a + b, 0);
 
-  // Add new list from navigation state if present
-  useEffect(() => {
-    if (location.state && location.state.newList) {
-      setPublicLists(prev => [location.state.newList, ...prev]);
-      // Clear the state so it doesn't add again on refresh
-      navigate("/", { replace: true, state: {} });
+  // Backend integration
+  const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
+
+  // Fetch public lists from backend
+  const fetchPublicLists = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/lists/public-with-tools`);
+      let data = await res.json();
+      // Map toolIds to full tool objects
+      data = data.map(list => ({
+        ...list,
+        tools: list.toolIds.map(toolId => {
+          const tool = initialAiTools.find(t => t.id === toolId);
+          return tool ? { id: tool.id, name: tool.name } : null;
+        }).filter(Boolean)
+      }));
+      setPublicLists(data);
+    } catch (err) {
+      console.error('Error fetching public lists:', err);
+      setPublicLists([]);
     }
-  }, [location.state, navigate]);
+  };
+
+  // Fetch private lists for logged-in user
+  const fetchPrivateLists = async (userEmail: string) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/lists/private/by-email/${userEmail}`);
+      let data = await res.json();
+      // Map toolIds to full tool objects for private lists as well
+      data = data.map(list => ({
+        ...list,
+        tools: list.toolIds.map(toolId => {
+          const tool = initialAiTools.find(t => t.id === toolId);
+          return tool ? { id: tool.id, name: tool.name } : null;
+        }).filter(Boolean)
+      }));
+      setPrivateLists(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error fetching private lists:', err);
+      setPrivateLists([]);
+    }
+  };
+
+  // Create list with tools and refresh public lists
+  const createListWithTools = async (listData) => {
+    try {
+      const payload = {
+        userId: listData.userId,
+        title: listData.title,
+        isPublic: listData.isPublic,
+        toolIds: listData.toolIds,
+      };
+
+      await fetch(`${API_BASE_URL}/api/lists/full`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      // Refresh lists after creation
+      await fetchPublicLists();
+      if (user?.email) {
+        await fetchPrivateLists(user.email);
+      }
+    } catch (err) {
+      console.error('Error creating list:', err);
+    }
+  };
+
+  // Delete list from backend
+  const deleteList = async (listId: string, isPublic: boolean) => {
+    try {
+      await fetch(`${API_BASE_URL}/api/lists/${listId}`, {
+        method: 'DELETE',
+      });
+      // Refresh lists after deletion
+      await fetchPublicLists();
+      if (user?.email) {
+        await fetchPrivateLists(user.email);
+      }
+    } catch (err) {
+      console.error('Error deleting list:', err);
+    }
+  };
+
+  // Fetch lists on component mount and when user changes
+  useEffect(() => {
+    fetchPublicLists();
+    if (user?.email) {
+      fetchPrivateLists(user.email);
+    }
+  }, [user]);
 
   // Add new list from CreateListForm
-  const handleAddList = (list) => {
-    if (list.isPublic) {
-      setPublicLists(prev => [list, ...prev]);
-    } else {
-      setPrivateLists(prev => [list, ...prev]);
+  const handleAddList = async (list) => {
+    try {
+      await createListWithTools(list);
+      setShowCreateListModal(false);
+    } catch (err) {
+      console.error('Error adding list:', err);
+      // Fallback to local state if backend fails
+      if (list.isPublic) {
+        setPublicLists(prev => [list, ...prev]);
+      } else {
+        setPrivateLists(prev => [list, ...prev]);
+      }
+      setShowCreateListModal(false);
     }
-    setShowCreateListModal(false);
   };
 
   // Handler for bubble click
@@ -429,36 +490,36 @@ function Index() {
   // Define the events array once
   const aiEvents = [
     {
-      title: "GIDS 2024",
-      description: "Global AI Developer Summit. April 10-12, 2024, Bengaluru, India.",
+      title: "ICSCSP 2025",
+      description: "International Conference on Soft Computing and Signal Processing",
       image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-      link: "https://gids.ai/",
-      date: "April 10-12, 2024",
-      location: "Bengaluru, India"
+      link: "https://www.icscsp.com/",
+      date: "June 20-21, 2025",
+      location: "Hyderabad, India"
     },
     {
-      title: "NeurIPS 2024",
-      description: "Neural Information Processing Systems. Dec 9-15, 2024, Vancouver, Canada.",
+      title: "AIST 2025",
+      description: "International Conference on AI & Smart Transportation, IIMT, , India",
       image: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80",
-      link: "https://neurips.cc/Conferences/2024",
-      date: "December 9-15, 2024",
-      location: "Vancouver, Canada"
+      link: "https://interscience.ac.in/AIST2025/",
+      date: "June 28-29, 2025",
+      location: "Bhubaneswar, India"
     },
     {
-      title: "CVPR 2024",
-      description: "Computer Vision and Pattern Recognition. June 17-21, 2024, Seattle, USA.",
+      title: "ICACECS 2025",
+      description: "International Conference on Advances in Computer Engineering and Communication Systems 2025",
       image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
-      link: "https://cvpr2024.thecvf.com/",
-      date: "June 17-21, 2024",
-      location: "Seattle, USA"
+      link: "https://icacecs.org/",
+      date: "August 06-08, 2025",
+      location: "Assam, India"
     },
     {
-      title: "AI Expo India",
-      description: "AI Expo & Conference. Aug 22-23, 2024, New Delhi, India.",
+      title: "ICEIMLCB 2025",
+      description: "International Conference on Emerging Innovations in Machine Learning, Cybersecurity and Blockchain 2025",
       image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
-      link: "https://aiexpoindia.com/",
-      date: "August 22-23, 2024",
-      location: "New Delhi, India"
+      link: "https://ghrcemp.raisoni.net/icisml/",
+      date: "July 23-24, 2025",
+      location: "Pune, India"
     }
   ];
 
@@ -865,61 +926,60 @@ function Index() {
             </div>
           </div>
           {/* Lists Side-by-Side */}
-          <div className={`flex flex-row gap-8 max-w-5xl mx-auto mt-12 mb-8 ${user ? 'justify-center' : 'justify-center'}`}>
+          <div className={`flex flex-col md:flex-row gap-8 max-w-5xl mx-auto mt-12 mb-8 w-full px-4 ${user ? 'justify-center' : 'justify-center'}`}>
             {/* Private Lists Card - left of Public Lists */}
             {user && (
-              <section className="w-full md:w-[400px] md:min-w-[320px] md:max-w-[400px] bg-white rounded-2xl shadow-xl border p-4 md:p-8 flex flex-col justify-between">
+              <section className="w-full md:w-1/2 bg-white rounded-2xl shadow-xl border p-4 md:p-8 flex flex-col justify-between">
                 <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
                   <CardHeader>
                     <CardTitle className="text-2xl font-bold text-primary">Private Lists</CardTitle>
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col">
                     <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
-                      {privateLists.filter(list => list.creator === user.email).length === 0 && (
-                        <div className="text-lg text-muted-foreground mb-2">No private lists yet.</div>
+                      {Array.isArray(privateLists) && privateLists.length === 0 && (
+                          <div className="text-lg text-muted-foreground mb-2">No private lists yet.</div>
                       )}
-                      {privateLists.filter(list => list.creator === user.email).map(list => (
-                        <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition">
-                          <div className="font-bold text-lg mb-1">{list.title}</div>
-                          <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {list.toolIds.slice(0, 3).map(tid => {
-                              const tool = aiTools.find(t => t.id === tid);
-                              return tool ? (<span key={tid} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>) : null;
-                            })}
-                            {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
+                      {Array.isArray(privateLists) && privateLists.map(list => (
+                          <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition">
+                            <div className="font-bold text-lg mb-1">{list.title}</div>
+                            <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
+                            <div className="flex flex-wrap gap-2 mt-1">
+                               {list.tools && list.tools.slice(0, 3).map(tool => (
+                                 <span key={tool.id} className="bg-gray-200 text-gray-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>
+                              ))}
+                              {list.tools && list.tools.length > 3 && (<span className="text-sm text-muted-foreground">+{list.tools.length - 3} more</span>)}
+                            </div>
+                            <div className="flex gap-2 mt-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEditPrivateList(list);
+                                }}
+                                className="text-blue-600 hover:text-blue-800 text-sm"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (window.confirm('Are you sure you want to delete this list?')) {
+                                    deleteList(list.id, false);
+                                  }
+                                }}
+                                className="text-red-600 hover:text-red-800 text-sm"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex gap-2 mt-2">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEditPrivateList(list);
-                              }}
-                              className="text-blue-600 hover:text-blue-800 text-sm"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (window.confirm('Are you sure you want to delete this list?')) {
-                                  setPrivateLists(prev => prev.filter(l => l.id !== list.id));
-                                }
-                              }}
-                              className="text-red-600 hover:text-red-800 text-sm"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </CardContent>
                 </Card>
               </section>
             )}
             {/* Public Lists Card - right of Private Lists */}
-            <section className={`w-full md:w-[400px] md:min-w-[320px] md:max-w-[400px] bg-white rounded-2xl shadow-xl border p-4 md:p-8 flex flex-col justify-between ${!user ? 'mx-auto' : ''}`}>
+            <section className={`w-full ${user ? 'md:w-1/2' : 'md:w-full'} bg-white rounded-2xl shadow-xl border p-1 md:p-2 flex flex-col justify-between`}>
               <Card className="h-full flex flex-col bg-transparent shadow-none border-none">
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-primary">Public Lists</CardTitle>
@@ -943,7 +1003,7 @@ function Index() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
+                <CardContent className="flex-1 flex flex-col p-2">
                   <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-1 bg-gray-50 rounded-xl p-3">
                     {filteredPublicLists.length === 0 && (<div className="text-lg text-muted-foreground mb-2">No public lists found.</div>)}
                     {filteredPublicLists.map(list => (
@@ -951,11 +1011,10 @@ function Index() {
                         <div className="font-bold text-lg mb-1">{list.title}</div>
                         <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
                         <div className="flex flex-wrap gap-2 mt-1">
-                          {list.toolIds.slice(0, 3).map(tid => {
-                            const tool = aiTools.find(t => t.id === tid);
-                            return tool ? (<span key={tid} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>) : null;
-                          })}
-                          {list.toolIds.length > 3 && (<span className="text-sm text-muted-foreground">+{list.toolIds.length - 3} more</span>)}
+                          {list.tools && list.tools.slice(0, 3).map(tool => (
+                             <span key={tool.id} className="bg-blue-100 text-blue-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>
+                          ))}
+                          {list.tools && list.tools.length > 3 && (<span className="text-sm text-muted-foreground">+{list.tools.length - 3} more</span>)}
                         </div>
                         {user && list.creator === user.email && (
                           <div className="flex gap-2 mt-2">
@@ -972,7 +1031,7 @@ function Index() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (window.confirm('Are you sure you want to delete this list?')) {
-                                  setPublicLists(prev => prev.filter(l => l.id !== list.id));
+                                  deleteList(list.id, true);
                                 }
                               }}
                               className="text-red-600 hover:text-red-800 text-sm"
@@ -1016,13 +1075,20 @@ function Index() {
                       </Modal>
                     </>
                   ) : (
-                    <button
-                      className={`mt-6 w-full rounded-xl px-6 py-4 font-bold text-xl flex items-center justify-center gap-2 transition shadow-lg bg-gray-300 text-gray-500 cursor-not-allowed opacity-60`}
-                      disabled
-                      title="You must be logged in to create a list"
-                    >
-                      <span className="text-2xl">➕</span> Create List
-                    </button>
+                    <>
+                      <button
+                        className={`mt-6 w-full rounded-xl px-6 py-4 font-bold text-xl flex items-center justify-center gap-2 transition shadow-lg bg-blue-500 text-white hover:bg-blue-600`}
+                        onClick={() => {
+                          setShowLoginToCreateListMsg(true);
+                          setTimeout(() => setShowLoginToCreateListMsg(false), 2000);
+                        }}
+                      >
+                        <span className="text-2xl">➕</span> Create List
+                      </button>
+                      {showLoginToCreateListMsg && (
+                        <div className="text-sm text-red-600 text-center mt-2">Please log in and become verified to create a list.</div>
+                      )}
+                    </>
                   )}
                 </CardContent>
               </Card>
@@ -1300,14 +1366,14 @@ function Index() {
               <h3 className="text-lg font-semibold mb-2">{listDialog.list.title}</h3>
               <div className="text-xs text-muted-foreground mb-4">by {listDialog.list.creator}</div>
               <div className="space-y-2">
-                {listDialog.list.toolIds.map(tid => {
-                  const tool = aiTools.find(t => t.id === tid);
-                  return tool ? (
-                    <div key={tid} className="border rounded p-2 flex items-center gap-2">
-                      {tool.imageUrl && <img src={tool.imageUrl} alt={tool.name} className="w-8 h-8 rounded" />}
+                {listDialog.list.tools && listDialog.list.tools.map(tool => {
+                  const fullTool = aiTools.find(t => t.id === tool.id);
+                  return fullTool ? (
+                    <div key={tool.id} className="border rounded p-2 flex items-center gap-2">
+                      {fullTool.imageUrl && <img src={fullTool.imageUrl} alt={fullTool.name} className="w-8 h-8 rounded" />}
                       <div>
-                        <div className="font-medium">{tool.name}</div>
-                        <div className="text-xs text-muted-foreground">{tool.description}</div>
+                        <div className="font-medium">{fullTool.name}</div>
+                        <div className="text-xs text-muted-foreground">{fullTool.description}</div>
                       </div>
                     </div>
                   ) : null;
@@ -1331,12 +1397,12 @@ function Index() {
             initialValues={editingList ? {
               id: editingList.id,
               title: editingList.title,
-              selected: editingList.toolIds,
+              selected: editingList.tools.map(t => t.id),
               isPublic: true
             } : editingPrivateList ? {
               id: editingPrivateList.id,
               title: editingPrivateList.title,
-              selected: editingPrivateList.toolIds,
+              selected: (editingPrivateList as any).toolIds || [],
               isPublic: false
             } : undefined}
           />

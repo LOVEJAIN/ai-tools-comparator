@@ -16,7 +16,7 @@ interface DataContextType {
   setActiveCategory: (categoryId: string) => void;
   login: (email: string, password: string) => void;
   logout: () => void;
-  register: (username: string, email: string, password: string) => void;
+  register: ((username: string, email: string, password: string) => void) & ((user: User) => void);
   voteItem: (itemId: string, direction: 'up' | 'down') => void;
   addReview: (itemId: string, rating: number, comment: string) => void;
   trackItemClick: (itemId: string) => void;
@@ -26,11 +26,9 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-const ADMIN_EMAILS = ["admin@example.com", "admin2@example.com", "admin3@example.com"]; // Add more admin emails as needed
+const ADMIN_EMAILS = ["newadmin@example.com"];
 const ADMIN_CREDENTIALS = {
-  "admin@example.com": "password",
-  "admin2@example.com": "password2",
-  "admin3@example.com": "password3"
+  "newadmin@example.com": "aVerySecurePassword123!"
 };
 const VERIFIED_EMAILS = ["verified@example.com", "specialuser@example.com"]; // Add more verified emails as needed
 
@@ -133,8 +131,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     toast.info("Logged out successfully");
   };
 
-  const register = (username: string, email: string, password: string) => {
-    // In a real app, this would register the user in a backend
+  const register = (arg1: any, arg2?: any, arg3?: any) => {
+    if (typeof arg1 === 'object' && arg1 !== null && 'id' in arg1) {
+      // Register with full user object (from Google Auth backend fetch)
+      setUser(arg1);
+      localStorage.setItem('user', JSON.stringify(arg1));
+      toast.success('Logged in successfully');
+      return;
+    }
+    // Fallback to old signature
+    const username = arg1;
+    const email = arg2;
+    const password = arg3;
     let isAdmin = ADMIN_EMAILS.includes(email);
     let isVerified = isAdmin || VERIFIED_EMAILS.includes(email);
     const newUser: User = {
@@ -146,7 +154,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     setUser(newUser);
     localStorage.setItem('user', JSON.stringify(newUser));
-    toast.success("Registered successfully");
+    toast.success('Registered successfully');
   };
 
   const voteItem = (itemId: string, direction: 'up' | 'down') => {
@@ -182,7 +190,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Add the new review to the reviews list
     const newReview: Review = {
       id: `review-${Date.now()}`,
-      userId: user.id,
+      userId: user.id.toString(),
       username: user.username,
       itemId,
       rating,

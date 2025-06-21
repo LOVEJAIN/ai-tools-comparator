@@ -37,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
   });
   const submitModalRef = useRef<SubmitToolModalHandle>(null);
   const [showJobDialog, setShowJobDialog] = useState(false);
-  const [jobForm, setJobForm] = useState({ title: '', company: '', location: '', description: '' });
+  const [jobForm, setJobForm] = useState({ title: '', company: '', location: '', description: '', link: '' });
   const [jobSuccess, setJobSuccess] = useState(false);
   const location = window.location.pathname;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -116,7 +116,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
           {currentUser && currentUser.isAdmin && (
             <Button variant="outline" onClick={() => navigate("/admin")}>Dashboard</Button>
           )}
-          {(currentUser && (currentUser.isAdmin || (user && user.isVerified))) && (
+          {(currentUser && (currentUser.isAdmin ? location !== "/" : (user && user.isVerified))) && (
             <Button variant="outline" onClick={() => setShowJobDialog(true)}>Submit Job</Button>
           )}
           {!currentUser ? (
@@ -280,7 +280,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
             {currentUser && currentUser.isAdmin && (
               <Button variant="outline" onClick={() => { navigate("/admin"); setMobileMenuOpen(false); }} className="w-full">Dashboard</Button>
             )}
-            {(currentUser && (currentUser.isAdmin || (user && user.isVerified))) && (
+            {(currentUser && (currentUser.isAdmin ? location !== "/" : (user && user.isVerified))) && (
               <Button variant="outline" onClick={() => { setShowJobDialog(true); setMobileMenuOpen(false); }} className="w-full">Submit Job</Button>
             )}
             {!currentUser ? (
@@ -308,11 +308,12 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
               setJobSuccess(true);
               setTimeout(() => setJobSuccess(false), 2000);
               setShowJobDialog(false);
-              setJobForm({ title: '', company: '', location: '', description: '' });
+              setJobForm({ title: '', company: '', location: '', description: '', link: '' });
             }}>
               <input className="border rounded px-3 py-2" placeholder="Job Title" value={jobForm.title} onChange={e => setJobForm({ ...jobForm, title: e.target.value })} required />
               <input className="border rounded px-3 py-2" placeholder="Company Name" value={jobForm.company} onChange={e => setJobForm({ ...jobForm, company: e.target.value })} required />
               <input className="border rounded px-3 py-2" placeholder="Location" value={jobForm.location} onChange={e => setJobForm({ ...jobForm, location: e.target.value })} required />
+              <input className="border rounded px-3 py-2" placeholder="Job Posting Link" type="url" value={jobForm.link} onChange={e => setJobForm({ ...jobForm, link: e.target.value })} required />
               <textarea className="border rounded px-3 py-2" placeholder="Job Description" value={jobForm.description} onChange={e => setJobForm({ ...jobForm, description: e.target.value })} required />
               <Button type="submit" className="bg-primary text-white w-full mt-2">Submit Job</Button>
             </form>
