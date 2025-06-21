@@ -243,8 +243,16 @@ function Index() {
   // Fetch public lists from backend
   const fetchPublicLists = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/lists/public`);
-      const data = await res.json();
+      const res = await fetch(`${API_BASE_URL}/api/lists/public-with-tools`);
+      let data = await res.json();
+      // Map toolIds to full tool objects
+      data = data.map(list => ({
+        ...list,
+        tools: list.toolIds.map(toolId => {
+          const tool = initialAiTools.find(t => t.id === toolId);
+          return tool ? { id: tool.id, name: tool.name } : null;
+        }).filter(Boolean)
+      }));
       setPublicLists(data);
     } catch (err) {
       console.error('Error fetching public lists:', err);
@@ -255,8 +263,16 @@ function Index() {
   // Fetch private lists for logged-in user
   const fetchPrivateLists = async (userEmail: string) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/lists/user/${userEmail}`);
-      const data = await res.json();
+      const res = await fetch(`${API_BASE_URL}/api/lists/private/by-email/${userEmail}`);
+      let data = await res.json();
+      // Map toolIds to full tool objects for private lists as well
+      data = data.map(list => ({
+        ...list,
+        tools: list.toolIds.map(toolId => {
+          const tool = initialAiTools.find(t => t.id === toolId);
+          return tool ? { id: tool.id, name: tool.name } : null;
+        }).filter(Boolean)
+      }));
       setPrivateLists(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error fetching private lists:', err);
@@ -267,25 +283,24 @@ function Index() {
   // Create list with tools and refresh public lists
   const createListWithTools = async (listData) => {
     try {
-      // Find tool names from the initial tool list
-      const toolNames = listData.toolIds.map(id => {
-        const tool = initialAiTools.find(t => t.id === id);
-        return tool ? tool.name : '';
-      }).filter(name => name); // Filter out any empty names
-
       const payload = {
+        userId: listData.userId,
         title: listData.title,
-        userEmail: listData.creator,
         isPublic: listData.isPublic,
-        toolNames: toolNames
+        toolIds: listData.toolIds,
       };
 
-      await fetch(`${API_BASE_URL}/api/lists`, {
+      await fetch(`${API_BASE_URL}/api/lists/full`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+
+      // Refresh lists after creation
       await fetchPublicLists();
+      if (user?.email) {
+        await fetchPrivateLists(user.email);
+      }
     } catch (err) {
       console.error('Error creating list:', err);
     }
@@ -927,9 +942,12 @@ function Index() {
                       {Array.isArray(privateLists) && privateLists.map(list => (
                           <div key={list.id} className="border rounded-xl p-3 cursor-pointer hover:bg-blue-50 transition">
                             <div className="font-bold text-lg mb-1">{list.title}</div>
-                            <div className="text-xs text-muted-foreground mb-2">by {list.userEmail}</div>
+                            <div className="text-xs text-muted-foreground mb-2">by {list.creator}</div>
                             <div className="flex flex-wrap gap-2 mt-1">
-                               {/* Private lists do not have detailed tools, so we can't display them here yet */}
+                               {list.tools && list.tools.slice(0, 3).map(tool => (
+                                 <span key={tool.id} className="bg-gray-200 text-gray-800 rounded px-3 py-1 text-sm font-semibold">{tool.name}</span>
+                              ))}
+                              {list.tools && list.tools.length > 3 && (<span className="text-sm text-muted-foreground">+{list.tools.length - 3} more</span>)}
                             </div>
                             <div className="flex gap-2 mt-2">
                               <button
