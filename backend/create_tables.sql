@@ -64,4 +64,15 @@ CREATE TABLE list_tools (
 );
 
 -- Add job posting link to jobs table
-ALTER TABLE jobs ADD COLUMN link VARCHAR(500); 
+ALTER TABLE jobs ADD COLUMN link VARCHAR(500);
+
+-- Create simple blends table
+CREATE TABLE blends (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    tools TEXT,
+    use_case_tag VARCHAR(255),
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
