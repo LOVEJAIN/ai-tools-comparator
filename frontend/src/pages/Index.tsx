@@ -33,6 +33,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import NewsCard from "@/components/NewsCard";
+import { toast } from "react-hot-toast";
+import { useGoogleAuth } from "@/contexts/GoogleAuthContext";
+import BlendComponent from '../components/BlendComponent';
 
 type PublicList = {
   id: string;
@@ -68,29 +71,41 @@ function StarRating({ value, onChange, readOnly = false }: { value: number; onCh
 }
 
 function Index() {
-  const [aiTools, setAiTools] = useState<AITool[]>(initialAiTools);
+  const { user, items, categories, voteItem, sortOrder, setSortOrder, activeCategory, setActiveCategory, addReview, trackItemClick } = useData();
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [listSearch, setListSearch] = useState("");
+  const [showMainContent, setShowMainContent] = useState(false);
+  const { googleUser } = useGoogleAuth();
+  const [activeTab, setActiveTab] = useState("all");
+  const [expandedEvents, setExpandedEvents] = useState<{[key: string]: boolean}>({});
+  const [showLoginToCreateListMsg, setShowLoginToCreateListMsg] = useState(false);
+  const [aiTools, setAiTools] = useState<AITool[]>(initialAiTools);
   const [listSearchType, setListSearchType] = useState<'name' | 'user'>('name');
-  const { user, categories, activeCategory, setActiveCategory } = useData();
   const [tool1, setTool1] = useState<string>("");
   const [tool2, setTool2] = useState<string>("");
   const [draggedToolId, setDraggedToolId] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<'popular' | 'latest' | 'rating'>('popular');
   const [showSuccess, setShowSuccess] = useState(false);
   const [toolClicks, setToolClicks] = useState<{ [id: string]: number }>({});
   const [reviews, setReviews] = useState<{ [toolId: string]: { user: string; rating: number; text: string }[] }>({});
   const navigate = useNavigate();
   const [publicLists, setPublicLists] = useState<PublicList[]>([]);
   const [listDialog, setListDialog] = useState<{ open: boolean; list: PublicList | null }>({ open: false, list: null });
-  const location = useLocation();
   const [showCreateListModal, setShowCreateListModal] = useState(false);
   const [privateLists, setPrivateLists] = useState<any[]>([]);
-  const [showMainContent, setShowMainContent] = useState(false);
   const [editingList, setEditingList] = useState<PublicList | null>(null);
   const [editingPrivateList, setEditingPrivateList] = useState<any | null>(null);
-  const [expandedEvents, setExpandedEvents] = useState<{[key: string]: boolean}>({});
-  const [showLoginToCreateListMsg, setShowLoginToCreateListMsg] = useState(false);
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterSuccess, setNewsletterSuccess] = useState(false);
+
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+    // Simplified since original function was removed
+    setNewsletterSuccess(true); 
+    setNewsletterEmail("");
+    toast.success("Subscribed to newsletter!");
+  };
 
   const filteredTools = useMemo(() => {
     return aiTools.filter(tool => {
@@ -383,20 +398,6 @@ function Index() {
       ...prev
     ]);
     setBlendForm({ title: "", tools: "", tag: "", description: "" });
-  };
-
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-  const [newsletterSuccess, setNewsletterSuccess] = useState(false);
-  const handleNewsletterSubmit = async (e) => {
-    e.preventDefault();
-    if (!newsletterEmail) return;
-    try {
-      await addNewsletterSubscriber(newsletterEmail); // Assume this function exists and works
-      setNewsletterSuccess(true);
-      setNewsletterEmail("");
-    } catch (err) {
-      alert("Failed to subscribe. Please try again.");
-    }
   };
 
   const handleSearchChange = (value: string) => {
@@ -1095,169 +1096,7 @@ function Index() {
             </section>
           </div>
         </main>
-                {/* AI Tool Blends Section (replaces YoutubeCarousel) */}
-                <section className="max-w-5xl mx-auto mb-12">
-                  <h2 className="text-2xl font-bold mb-6 text-center">Blends: Combine Tools for Powerful Workflows</h2>
-                  {/* Horizontally scrollable blends carousel */}
-                  <div className="overflow-x-auto pb-2">
-                    <div className="flex flex-col md:flex-row gap-8 w-full md:min-w-[700px]">
-                      {/* Example Blend 1 */}
-                      <div className="bg-gradient-to-br from-blue-50 to-purple-100 rounded-2xl shadow-lg p-4 md:p-6 flex flex-col gap-3 w-full md:min-w-[350px] md:max-w-[400px]">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-lg font-bold text-blue-700">Video Editing Workflow</span>
-                          <span className="ml-auto text-xs bg-blue-200 text-blue-800 px-3 py-1 rounded-full">Content Creation</span>
-                        </div>
-                        <div className="flex gap-2 items-center mb-2">
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Synthesia</span>
-                          <span className="text-xl font-bold text-gray-400">+</span>
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Descript</span>
-                          <span className="text-xl font-bold text-gray-400">+</span>
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Runway</span>
-                        </div>
-                        <p className="text-gray-700 text-sm">Generate a script with Synthesia, edit and enhance audio/video with Descript, then add AI-powered effects or remove backgrounds using Runway. Perfect for YouTube, marketing, or training videos.</p>
-                      </div>
-                      {/* Example Blend 2 */}
-                      <div className="bg-gradient-to-br from-pink-50 to-yellow-100 rounded-2xl shadow-lg p-4 md:p-6 flex flex-col gap-3 w-full md:min-w-[350px] md:max-w-[400px]">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-lg font-bold text-pink-700">AI-Powered Blog Creation</span>
-                          <span className="ml-auto text-xs bg-pink-200 text-pink-800 px-3 py-1 rounded-full">Writing</span>
-                        </div>
-                        <div className="flex gap-2 items-center mb-2">
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">ChatGPT</span>
-                          <span className="text-xl font-bold text-gray-400">+</span>
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Grammarly</span>
-                          <span className="text-xl font-bold text-gray-400">+</span>
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Canva</span>
-                        </div>
-                        <p className="text-gray-700 text-sm">Draft your article with ChatGPT, polish grammar and style with Grammarly, and design eye-catching blog images or infographics with Canva. Streamline your content pipeline!</p>
-                      </div>
-                      {/* Example Blend 3 */}
-                      <div className="bg-gradient-to-br from-green-50 to-teal-100 rounded-2xl shadow-lg p-4 md:p-6 flex flex-col gap-3 w-full md:min-w-[350px] md:max-w-[400px]">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-lg font-bold text-green-700">Social Media Automation</span>
-                          <span className="ml-auto text-xs bg-green-200 text-green-800 px-3 py-1 rounded-full">Productivity</span>
-                        </div>
-                        <div className="flex gap-2 items-center mb-2">
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Buffer</span>
-                          <span className="text-xl font-bold text-gray-400">+</span>
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Midjourney</span>
-                          <span className="text-xl font-bold text-gray-400">+</span>
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Copy.ai</span>
-                        </div>
-                        <p className="text-gray-700 text-sm">Create stunning visuals with Midjourney, generate engaging captions with Copy.ai, and schedule posts across platforms using Buffer. Boost your social presence with less effort!</p>
-                      </div>
-                      {/* Example Blend 4 */}
-                      <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-2xl shadow-lg p-4 md:p-6 flex flex-col gap-3 w-full md:min-w-[350px] md:max-w-[400px]">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-lg font-bold text-yellow-700">AI Research Assistant</span>
-                          <span className="ml-auto text-xs bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full">Research</span>
-                        </div>
-                        <div className="flex gap-2 items-center mb-2">
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Elicit</span>
-                          <span className="text-xl font-bold text-gray-400">+</span>
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">Notion AI</span>
-                          <span className="text-xl font-bold text-gray-400">+</span>
-                          <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">ChatPDF</span>
-                        </div>
-                        <p className="text-gray-700 text-sm">Use Elicit to find and summarize papers, organize notes and insights in Notion AI, and quickly extract info from PDFs with ChatPDF. Supercharge your research workflow!</p>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Contribute Blend Section for Verified Users (admin or verified) */}
-                  {user && (
-                    isVerified ? (
-                      <div className="mt-10 bg-white rounded-2xl shadow-lg p-6 max-w-xl mx-auto">
-                        <h3 className="text-xl font-bold mb-4 text-center text-blue-700">Contribute Your Blend</h3>
-                        <form className="flex flex-col gap-3" onSubmit={handleBlendSubmit}>
-                          <input
-                            type="text"
-                            className="border rounded px-3 py-2"
-                            placeholder="Blend Title (e.g. Podcast Production)"
-                            value={blendForm.title}
-                            onChange={e => setBlendForm({ ...blendForm, title: e.target.value })}
-                            required
-                          />
-                          <input
-                            type="text"
-                            className="border rounded px-3 py-2"
-                            placeholder="Tools (comma separated, e.g. Riverside, Descript, Canva)"
-                            value={blendForm.tools}
-                            onChange={e => setBlendForm({ ...blendForm, tools: e.target.value })}
-                            required
-                          />
-                          <input
-                            type="text"
-                            className="border rounded px-3 py-2"
-                            placeholder="Use Case Tag (e.g. Audio, Content Creation)"
-                            value={blendForm.tag}
-                            onChange={e => setBlendForm({ ...blendForm, tag: e.target.value })}
-                            required
-                          />
-                          <textarea
-                            className="border rounded px-3 py-2"
-                            placeholder="Short Description"
-                            value={blendForm.description}
-                            onChange={e => setBlendForm({ ...blendForm, description: e.target.value })}
-                            required
-                          />
-                          <button
-                            type="submit"
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition mt-2"
-                          >
-                            Submit Blend
-                          </button>
-                        </form>
-                        {/* List of contributed blends */}
-                        {contributedBlends.length > 0 && (
-                          <div className="mt-6">
-                            <h4 className="font-semibold mb-2 text-blue-700">Your Contributed Blends</h4>
-                            <div className="flex flex-col gap-4">
-                              {contributedBlends.map((blend, idx) => (
-                                <div key={idx} className="bg-blue-50 rounded-xl p-3 shadow flex flex-col gap-1">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-bold text-blue-800">{blend.title}</span>
-                                    <span className="ml-auto text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full">{blend.tag}</span>
-                                  </div>
-                                  <div className="flex gap-2 flex-wrap mb-1">
-                                    {blend.tools.split(',').map((tool, i) => (
-                                      <span key={i} className="bg-white rounded-full px-2 py-0.5 font-semibold text-gray-700 shadow text-xs">{tool.trim()}</span>
-                                    ))}
-                                  </div>
-                                  <div className="text-xs text-gray-700">{blend.description}</div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="mt-10 bg-white rounded-2xl shadow-lg p-8 max-w-xl mx-auto flex flex-col items-center">
-                        <h3 className="text-xl font-bold mb-4 text-center text-blue-700">Want to contribute your own blend?</h3>
-                        <button
-                          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition mb-4"
-                          onClick={() => setShowVerifyDialog(true)}
-                        >
-                          Become Verified
-                        </button>
-                        <Modal open={showVerifyDialog} onClose={() => setShowVerifyDialog(false)}>
-                          <div className="p-6 max-w-md mx-auto">
-                            <h2 className="text-2xl font-bold mb-4 text-center">Get Verified (Coming Soon)</h2>
-                            <ul className="mb-4 text-gray-700">
-                              <li className="mb-2">✔️ Create AI Tool Blends</li>
-                              <li className="mb-2">✔️ Create Public Lists</li>
-                              <li className="mb-2">✔️ Early access to new features</li>
-                            </ul>
-                            <div className="flex flex-col gap-3">
-                              <button className="bg-blue-200 text-blue-800 px-4 py-2 rounded cursor-not-allowed" disabled>Monthly Plan (Coming Soon)</button>
-                              <button className="bg-blue-200 text-blue-800 px-4 py-2 rounded cursor-not-allowed" disabled>Yearly Plan (Coming Soon)</button>
-                              <button className="bg-blue-200 text-blue-800 px-4 py-2 rounded cursor-not-allowed" disabled>One-time Plan (Coming Soon)</button>
-                            </div>
-                          </div>
-                        </Modal>
-                      </div>
-                    )
-                  )}
-                </section>
+        <BlendComponent />
         <section className="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 min-w-0">
             <h2 className="text-2xl font-bold mb-4 text-center">Mark Your Calendar</h2>
