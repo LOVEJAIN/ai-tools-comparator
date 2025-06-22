@@ -29,4 +29,43 @@ public class UserController {
     public List<Map<String, Object>> getAllUsers() {
         return jdbcTemplate.queryForList("SELECT * FROM users");
     }
+
+    @GetMapping("/{email}")
+    public Map<String, Object> getUserByEmail(@PathVariable String email) {
+        List<Map<String, Object>> users = jdbcTemplate.queryForList(
+            "SELECT * FROM users WHERE email = ?", 
+            email
+        );
+        return users.isEmpty() ? null : users.get(0);
+    }
+
+    @PutMapping("/{email}/verify")
+    public void verifyUser(@PathVariable String email, @RequestBody Map<String, Object> body) {
+        Boolean isVerified = (Boolean) body.get("isVerified");
+        jdbcTemplate.update(
+            "UPDATE users SET is_verified = ? WHERE email = ?",
+            isVerified,
+            email
+        );
+    }
+
+    @PutMapping("/{email}/admin")
+    public void setAdminStatus(@PathVariable String email, @RequestBody Map<String, Object> body) {
+        Boolean isAdmin = (Boolean) body.get("isAdmin");
+        jdbcTemplate.update(
+            "UPDATE users SET is_admin = ? WHERE email = ?",
+            isAdmin,
+            email
+        );
+    }
+
+    @GetMapping("/verified")
+    public List<Map<String, Object>> getVerifiedUsers() {
+        return jdbcTemplate.queryForList("SELECT * FROM users WHERE is_verified = true");
+    }
+
+    @GetMapping("/admins")
+    public List<Map<String, Object>> getAdminUsers() {
+        return jdbcTemplate.queryForList("SELECT * FROM users WHERE is_admin = true");
+    }
 } 
