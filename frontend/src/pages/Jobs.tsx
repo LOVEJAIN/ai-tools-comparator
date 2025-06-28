@@ -162,6 +162,16 @@ export default function Jobs() {
                   </div>
                   <div className="text-gray-600 text-sm">{job.company} &bull; {job.location} &bull; {job.level} &bull; {job.sector}</div>
                   <p className="text-gray-700 mt-2">{job.description}</p>
+                  {job.link && (
+                    <a
+                      href={job.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-block text-blue-600 hover:underline text-sm font-medium"
+                    >
+                      View Job Posting
+                    </a>
+                  )}
                   {job.postedBy && <div className="text-xs text-gray-400 mt-2">Posted by: {job.postedBy}</div>}
                 </div>
               ))}

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CredentialResponse } from '@react-oauth/google';
-import { useData } from "./DataContext";
+import { useData, VERIFIED_EMAILS } from "./DataContext";
 
 interface GoogleUser {
   email: string;
@@ -75,7 +75,7 @@ export function GoogleAuthProvider({ children }: { children: React.ReactNode }) 
             username: backendUser.name,
             email: backendUser.email,
             isAdmin: backendUser.admin,
-            isVerified: true, // Assuming verification if they logged in
+            isVerified: VERIFIED_EMAILS.includes(backendUser.email), // Use VERIFIED_EMAILS
           });
 
         } else {
@@ -89,7 +89,7 @@ export function GoogleAuthProvider({ children }: { children: React.ReactNode }) 
           username: user.name,
           email: user.email,
           isAdmin: false,
-          isVerified: false
+          isVerified: VERIFIED_EMAILS.includes(user.email) // Use VERIFIED_EMAILS
         });
       }
 

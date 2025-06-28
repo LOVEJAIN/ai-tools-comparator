@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from '@/components/ui/separator';
 import SubmitToolModal, { SubmitToolModalHandle } from "./SubmitBanner";
 import AikinLogo from "../assets/aikin-logo.png";
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 
 interface HeaderProps {
   searchValue: string;
@@ -41,6 +41,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
   const [jobSuccess, setJobSuccess] = useState(false);
   const location = window.location.pathname;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showFeaturesDropdown, setShowFeaturesDropdown] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -103,21 +104,41 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
           />
         </div>
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4 relative">
           <Button asChild variant="outline" className="header-btn-outline">
-            <Link to="/jobs">Jobs</Link>
+            <Link to="/ai-agents">AI Agents</Link>
           </Button>
           <Button asChild variant="outline" className="header-btn-outline">
-            <Link to="/subscription">Advertise</Link>
+            <Link to="/mcp-servers">MCP Servers</Link>
           </Button>
-          <Button variant="outline" onClick={() => submitModalRef.current?.open("submit")} className="header-btn-outline">
-            Submit AI Tool
-          </Button>
+          <div
+            className="relative"
+            onMouseEnter={() => setShowFeaturesDropdown(true)}
+            onMouseLeave={() => setShowFeaturesDropdown(false)}
+            style={{ display: 'flex', alignItems: 'center', height: '100%' }}
+          >
+            <Button
+              variant="outline"
+              className="header-btn-outline flex items-center gap-1"
+              type="button"
+            >
+              More Features <ChevronDown className="w-4 h-4" />
+            </Button>
+            {showFeaturesDropdown && (
+              <div className="absolute top-full left-0 mt-0 w-48 bg-white border rounded shadow-lg z-50 flex flex-col"
+                style={{ minWidth: '160px' }}
+              >
+                <Link to="/jobs" className="px-4 py-2 hover:bg-gray-100 text-left" onClick={() => setShowFeaturesDropdown(false)}>Jobs</Link>
+                <Link to="/subscription" className="px-4 py-2 hover:bg-gray-100 text-left" onClick={() => setShowFeaturesDropdown(false)}>Advertise</Link>
+                <button className="px-4 py-2 hover:bg-gray-100 text-left" onClick={() => { submitModalRef.current?.open("submit"); setShowFeaturesDropdown(false); }}>Submit AI Tool</button>
+                {(currentUser && (currentUser.isAdmin ? location !== "/" : (user && user.isVerified))) && (
+                  <button className="px-4 py-2 hover:bg-gray-100 text-left" onClick={() => { setShowJobDialog(true); setShowFeaturesDropdown(false); }}>Submit Job</button>
+                )}
+              </div>
+            )}
+          </div>
           {currentUser && currentUser.isAdmin && (
             <Button variant="outline" onClick={() => navigate("/admin")}>Dashboard</Button>
-          )}
-          {(currentUser && (currentUser.isAdmin ? location !== "/" : (user && user.isVerified))) && (
-            <Button variant="outline" onClick={() => setShowJobDialog(true)}>Submit Job</Button>
           )}
           {!currentUser ? (
             <>
