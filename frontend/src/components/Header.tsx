@@ -290,6 +290,12 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
         <div className="md:hidden bg-white border-b shadow z-50 absolute left-0 right-0 top-16">
           <div className="flex flex-col gap-2 p-4">
             <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/ai-agents">AI Agents</Link>
+            </Button>
+            <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/mcp-servers">MCP Servers</Link>
+            </Button>
+            <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
               <Link to="/jobs">Jobs</Link>
             </Button>
             <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
