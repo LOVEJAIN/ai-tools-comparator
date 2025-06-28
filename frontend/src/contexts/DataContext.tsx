@@ -30,7 +30,7 @@ const ADMIN_EMAILS = ["newadmin@example.com"];
 const ADMIN_CREDENTIALS = {
   "newadmin@example.com": "aVerySecurePassword123!"
 };
-const VERIFIED_EMAILS = ["verified@example.com", "specialuser@example.com"]; // Add more verified emails as needed
+export const VERIFIED_EMAILS = ["riyuzaki9894@gmail.com", "jainlove050702@gmail.com"]; // Add more verified emails as needed
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);

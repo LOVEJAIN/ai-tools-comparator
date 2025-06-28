@@ -14,6 +14,8 @@ import CreateList from "./pages/CreateList";
 import Jobs from "./pages/Jobs";
 import Subscription from "./pages/Subscription";
 import ToolDetail from "./pages/ToolDetail";
+import McpServers from "./pages/McpServers";
+import AiAgents from "./pages/AiAgents";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +38,8 @@ const App = () => (
                 <Route path="/jobs" element={<Jobs />} />
                 <Route path="/subscription" element={<Subscription />} />
                 <Route path="/tools/:id" element={<ToolDetail />} />
+                <Route path="/mcp-servers" element={<McpServers />} />
+                <Route path="/ai-agents" element={<AiAgents />} />
                 <Route path="/error" element={<ErrorPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
