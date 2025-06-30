@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { aiAgents } from '../data/aiAgents';
+import { useNavigate } from 'react-router-dom';
 
 const AGENTS_PER_PAGE = 28;
 
@@ -9,14 +10,14 @@ const getUniqueCategories = (agents: any[]) => {
 };
 
 function getPagination(current: number, total: number) {
-  const delta = 2;
+  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
   const range = [];
-  for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
-    range.push(i);
+  range.push(1);
+  if (current > 3) range.push('...');
+  for (let i = Math.max(2, current - 2); i <= Math.min(total - 1, current + 2); i++) {
+    if (i !== 1 && i !== total) range.push(i);
   }
-  if (current - delta > 2) range.unshift('...');
-  if (current + delta < total - 1) range.push('...');
-  range.unshift(1);
+  if (current < total - 2) range.push('...');
   if (total > 1) range.push(total);
   return range;
 }
@@ -24,6 +25,7 @@ function getPagination(current: number, total: number) {
 const AiAgents: React.FC = () => {
   const [page, setPage] = useState(1);
   const [category, setCategory] = useState('All Categories');
+  const navigate = useNavigate();
 
   const categories = useMemo(() => getUniqueCategories(aiAgents), []);
 
@@ -52,9 +54,19 @@ const AiAgents: React.FC = () => {
         <div className="flex items-center gap-2">
           <span className="text-sm text-zinc-400">Showing {(page-1)*AGENTS_PER_PAGE+1}-{Math.min(page*AGENTS_PER_PAGE, filteredAgents.length)} of {filteredAgents.length} agents</span>
         </div>
-        <div>
+        <div className="flex items-center gap-2">
+          <button
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-zinc-800 border border-zinc-300 shadow-sm hover:bg-zinc-100 hover:shadow-md transition font-medium"
+            onClick={() => navigate('/')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l9-9 9 9" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 10.5v9a1.5 1.5 0 001.5 1.5h3.75a.75.75 0 00.75-.75V15a.75.75 0 01.75-.75h1.5A.75.75 0 0114.25 15v5.25c0 .414.336.75.75.75h3.75a1.5 1.5 0 001.5-1.5v-9" />
+            </svg>
+            Home
+          </button>
           <select
-            className="border border-zinc-700 bg-zinc-900 text-white rounded px-3 py-2"
+            className="border border-zinc-300 bg-white text-zinc-800 rounded-full px-4 py-2 shadow-sm hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
             value={category}
             onChange={handleCategoryChange}
           >
@@ -94,29 +106,30 @@ const AiAgents: React.FC = () => {
       {/* Pagination Controls */}
       <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
         <button
-          className="px-3 py-1 rounded bg-zinc-800 text-white disabled:opacity-50"
+          className="flex items-center gap-1 px-3 py-1 rounded text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 disabled:opacity-50 border-none bg-transparent"
           onClick={() => setPage(page - 1)}
           disabled={page === 1}
         >
-          Previous
+          <span className="text-lg">&lt;</span> Previous
         </button>
         {pagination.map((num, idx) =>
           num === '...'
             ? <span key={idx} className="px-2 text-zinc-400">...</span>
             : <button
                 key={num}
-                className={`px-3 py-1 rounded ${num === page ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-white'}`}
+                className={`px-3 py-1 rounded-lg mx-1 min-w-[36px] text-base transition border border-transparent ${num === page ? 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 shadow text-zinc-900 dark:text-white font-semibold' : 'bg-transparent text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
+                style={{ boxShadow: num === page ? '0 0 0 2px #e5e7eb' : undefined }}
                 onClick={() => setPage(Number(num))}
               >
                 {num}
               </button>
         )}
         <button
-          className="px-3 py-1 rounded bg-zinc-800 text-white disabled:opacity-50"
+          className="flex items-center gap-1 px-3 py-1 rounded text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 disabled:opacity-50 border-none bg-transparent"
           onClick={() => setPage(page + 1)}
           disabled={page === totalPages}
         >
-          Next
+          Next <span className="text-lg">&gt;</span>
         </button>
       </div>
     </div>
