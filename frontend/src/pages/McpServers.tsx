@@ -84,21 +84,18 @@ const McpServers: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="bg-zinc-800 border border-zinc-200 rounded-xl p-5 flex flex-col gap-3 hover:shadow-lg transition-shadow duration-200 h-full text-zinc-100"
+            style={{ position: 'relative' }}
           >
             <div className="flex items-center gap-3 mb-2">
               <img src={tool.logoUrl || tool.imageUrl} alt={tool.name} className="w-10 h-10 rounded bg-white object-contain" />
               <div className="font-semibold text-lg text-zinc-100">{tool.name}</div>
             </div>
             <div className="text-zinc-300 text-sm mb-2 line-clamp-3">{tool.description}</div>
-            <div className="flex flex-wrap gap-2 mb-2">
-              <span className="bg-zinc-700 text-xs px-2 py-1 rounded text-zinc-200">{tool.category}</span>
-            </div>
-            <div className="flex items-center gap-2 mt-auto">
-              <span className="text-yellow-400 font-bold">★ {tool.rating}</span>
-              <span className="text-xs text-zinc-400">({tool.reviewCount} reviews)</span>
-            </div>
             <div className="flex justify-end mt-2">
               <span className="text-blue-400 text-xs underline">Visit &rarr;</span>
+            </div>
+            <div className="absolute left-5 bottom-5">
+              <span className="bg-zinc-700 text-xs px-2 py-1 rounded text-zinc-200">{tool.category}</span>
             </div>
           </a>
         ))}

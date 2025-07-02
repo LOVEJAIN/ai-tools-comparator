@@ -51,7 +51,7 @@ export const aiTools: AITool[] = [
     "url": "https://huggingface.co/bigscience/bloom",
     "category": "Models",
     "imageUrl": "https://dummyimage.com/600x400/ff6b35/fff&text=Bloom",
-    "logoUrl": "https://huggingface.co/bigscience/bloom/front/assets/huggingface_logo-noborder.svg",
+    "logoUrl": "",
     "rating": 4.6,
     "reviewCount": 567
   },
@@ -449,7 +449,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/7c3aed/fff&text=Hypotenuse+AI",
     "rating": 4.3,
     "reviewCount": 456,
-    "logoUrl": "https://cdn.prod.website-files.com/5f23b456c81e6bebb921e9cb/67078e04d34ec132a93b7106_nav-chevron-down.svg"
+    "logoUrl": ""
   },
   {
     "id": "41",
@@ -603,7 +603,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/0f172a/fff&text=DeepL+Write",
     "rating": 4.6,
     "reviewCount": 892,
-    "logoUrl": "https://www.deepl.com/write/img/logo/deepl-logo-blue.svg"
+    "logoUrl": ""
   },
   {
     "id": "55",
@@ -779,7 +779,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/10b981/fff&text=Taskade",
     "rating": 4.5,
     "reviewCount": 892,
-    "logoUrl": "https://www.taskade.com/static_images/landing/dropdown-caret.svg"
+    "logoUrl": ""
   },
   {
     "id": "71",
@@ -790,7 +790,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=Notion+AI",
     "rating": 4.7,
     "reviewCount": 1567,
-    "logoUrl": "https://www.notion.so/product/ai/_next/image?url=%2Ffront-static%2Fmeta%2Fstartups_background.png&w=384&q=75"
+    "logoUrl": ""
   },
   {
     "id": "72",
@@ -2422,7 +2422,7 @@ export const aiTools: AITool[] = [
   },
   {
     "id": "220",
-    "name": "elevenlabs",
+    "name": "Elevenlabs",
     "description": "Known for ultra-realistic voice cloning and emotion modeling, setting a new standard in AI-driven voice synthesis.",
     "url": "https://elevenlabs.io",
     "category": "Voice Cloning",
@@ -2793,17 +2793,6 @@ export const aiTools: AITool[] = [
     "rating": 4.3,
     "reviewCount": 167,
     "logoUrl": "https://rosie.ai/styles/default/xenforo/xenforo-logo.svg"
-  },
-  {
-    "id": "254",
-    "name": "eleven-labs",
-    "description": "AI voice generator.",
-    "url": "https://elevenlabs.io",
-    "category": "Speech",
-    "imageUrl": "https://dummyimage.com/600x400/000/fff&text=eleven-labs",
-    "rating": 4.8,
-    "reviewCount": 623,
-    "logoUrl": ""
   },
   {
     "id": "256",
@@ -3431,17 +3420,6 @@ export const aiTools: AITool[] = [
     "rating": 4.1,
     "reviewCount": 167,
     "logoUrl": "https://rosie.ai/styles/default/xenforo/xenforo-logo.svg"
-  },
-  {
-    "id": "313",
-    "name": "eleven-labs-speech",
-    "description": "AI voice generator. High-quality text-to-speech and voice synthesis technology.",
-    "url": "https://elevenlabs.io",
-    "category": "Speech",
-    "imageUrl": "https://dummyimage.com/600x400/000/fff&text=eleven-labs-speech",
-    "rating": 4.8,
-    "reviewCount": 1567,
-    "logoUrl": ""
   },
   {
     "id": "314",
