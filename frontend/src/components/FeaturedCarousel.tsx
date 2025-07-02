@@ -18,7 +18,7 @@ const topTools = [...aiTools]
     title: tool.name,
     description: tool.description,
     category: tool.category,
-    imageUrl: tool.imageUrl || '',
+    imageUrl: (tool.logoUrl && tool.logoUrl.trim() !== '') ? tool.logoUrl : (tool.imageUrl || ''),
     url: tool.url,
     votes: 0,
     reviewsCount: tool.reviewCount,
