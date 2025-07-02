@@ -19,7 +19,7 @@ export const aiTools: AITool[] = [
     "category": "Models",
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=OpenAI+API",
     "logoUrl": "",
-    "rating": 4.9,
+    "rating": 4.8,
     "reviewCount": 1250
   },
   {
@@ -328,7 +328,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/6366f1/fff&text=quivr",
     "rating": 4.3,
     "reviewCount": 356,
-    "logoUrl": "https://framerusercontent.com/images/5RlXjISAoh2vfp5MeLPNxQZkTE.svg"
+    "logoUrl": ""
   },
   {
     "id": "30",
@@ -337,7 +337,7 @@ export const aiTools: AITool[] = [
     "url": "https://www.jasper.ai/",
     "category": "Writing assistants",
     "imageUrl": "https://dummyimage.com/600x400/7c3aed/fff&text=Jasper",
-    "rating": 4.7,
+    "rating": 4.9,
     "reviewCount": 1567,
     "logoUrl": "https://cdn.prod.website-files.com/6807ee8d73c233fb82842313/682b3e5e42a8eb60207aefc1_cta-user.avif"
   },
@@ -381,8 +381,8 @@ export const aiTools: AITool[] = [
     "url": "https://hyperwriteai.com/",
     "category": "Writing assistants",
     "imageUrl": "https://dummyimage.com/600x400/f59e0b/fff&text=HyperWrite",
-    "rating": 4.5,
-    "reviewCount": 567,
+    "rating": 4.8,
+    "reviewCount": 5670,
     "logoUrl": "https://cdn.prod.website-files.com/63fcd79d410b22ddf397e1b8/6758a3e45c8f1b8e11f20ef1_image%20homepage.webp"
   },
   {
@@ -458,7 +458,7 @@ export const aiTools: AITool[] = [
     "url": "https://www.lavender.ai/",
     "category": "Writing assistants",
     "imageUrl": "https://dummyimage.com/600x400/a855f7/fff&text=Lavender",
-    "rating": 4.7,
+    "rating": 4.9,
     "reviewCount": 623,
     "logoUrl": "https://cdn.prod.website-files.com/658433a0cbce340e298ba330/6596ac27dfade96ac3c765aa_lavender-hero.webp"
   },
@@ -810,8 +810,8 @@ export const aiTools: AITool[] = [
     "url": "https://elephas.app/",
     "category": "Productivity",
     "imageUrl": "https://dummyimage.com/600x400/6b7280/fff&text=Elephas",
-    "rating": 4.4,
-    "reviewCount": 456,
+    "rating": 4.8,
+    "reviewCount": 4560,
     "logoUrl": "https://elephas.app/./images/elephas/elephas-logo.png"
   },
   {
@@ -1032,7 +1032,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/2563eb/fff&text=Otter.ai",
     "rating": 4.7,
     "reviewCount": 1456,
-    "logoUrl": "https://cdn.prod.website-files.com/618e9316785b3582a5178502/61a414dfabe653bd5ac4cd29_dropdown-arrow.svg"
+    "logoUrl": ""
   },
   {
     "id": "94",
@@ -1151,8 +1151,8 @@ export const aiTools: AITool[] = [
     "url": "https://sitegpt.ai/",
     "category": "Customer Support",
     "imageUrl": "https://dummyimage.com/600x400/dc2626/fff&text=SiteGPT",
-    "rating": 4.7,
-    "reviewCount": 425,
+    "rating": 4.9,
+    "reviewCount": 9250,
     "logoUrl": "https://sitegpt.ai/cdn-cgi/imagedelivery/hQTLE0NTlcNyb_tOYFnnyA/e3888de9-3054-40f4-6699-889189a48500/square"
   },
   {
@@ -1560,7 +1560,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/ea580c/fff&text=Mintlify",
     "rating": 4.6,
     "reviewCount": 398,
-    "logoUrl": "https://cdn.prod.website-files.com/plugins/Basic/assets/placeholder.60f9b1840c.svg"
+    "logoUrl": ""
   },
   {
     "id": "142",
@@ -1723,7 +1723,7 @@ export const aiTools: AITool[] = [
     "url": "https://midjourney.com/",
     "category": "Image",
     "imageUrl": "https://dummyimage.com/600x400/7c3aed/fff&text=Midjourney",
-    "rating": 4.9,
+    "rating": 4.7,
     "reviewCount": 3421,
     "logoUrl": ""
   },
@@ -2988,8 +2988,8 @@ export const aiTools: AITool[] = [
     "url": "https://clickable.so",
     "category": "Miscellaneous",
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=clickable",
-    "rating": 4.5,
-    "reviewCount": 412,
+    "rating": 4.8,
+    "reviewCount": 4120,
     "logoUrl": "https://api.typedream.com/v0/document/public/2DtA3X6xA8W6K7Yo7mbdYtJnYPw_logo.png?bucket=document"
   },
   {
@@ -3001,7 +3001,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=scale-spellbook",
     "rating": 4.4,
     "reviewCount": 267,
-    "logoUrl": "https://scale.com/spellbook/_next/image?url=%2Fstatic%2FScale%20AI%20logo.svg&w=128&q=75"
+    "logoUrl": ""
   },
   {
     "id": "275",
@@ -3012,7 +3012,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=scenario",
     "rating": 4.3,
     "reviewCount": 298,
-    "logoUrl": "https://cdn.prod.website-files.com/64808ef3e6895ba2a0075c4a/65609fcfd1aa3c70248657bb_chevron-down.svg"
+    "logoUrl": ""
   },
   {
     "id": "276",
@@ -3098,7 +3098,7 @@ export const aiTools: AITool[] = [
     "url": "https://taplio.com",
     "category": "Miscellaneous",
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=taplio",
-    "rating": 4.6,
+    "rating": 4.9,
     "reviewCount": 512,
     "logoUrl": "https://taplio.com/wp-content/uploads/2025/06/Logo_taplio-1-1024x295.png"
   },
@@ -3199,7 +3199,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=ai-wedding-toast",
     "rating": 4.5,
     "reviewCount": 312,
-    "logoUrl": "https://aiweddingtoast.com/img/user3.webp"
+    "logoUrl": ""
   },
   {
     "id": "293",
@@ -3210,7 +3210,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=interviews-chat",
     "rating": 4.4,
     "reviewCount": 278,
-    "logoUrl": "https://interviewschat.com/_next/static/media/logo.0e8e62cc.svg"
+    "logoUrl": ""
   },
   {
     "id": "294",
@@ -3274,7 +3274,7 @@ export const aiTools: AITool[] = [
     "url": "https://interviewsolver.com",
     "category": "Productivity",
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=interview-solver",
-    "rating": 4.9,
+    "rating": 4.6,
     "reviewCount": 234,
     "logoUrl": ""
   },
@@ -3362,7 +3362,7 @@ export const aiTools: AITool[] = [
     "url": "https://fynk.com",
     "category": "Productivity",
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=fynk",
-    "rating": 4.7,
+    "rating": 4.9,
     "reviewCount": 134,
     "logoUrl": "https://fynk.com/images/fynk-logo.svg"
   },
@@ -3430,7 +3430,7 @@ export const aiTools: AITool[] = [
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=resemble-ai-speech",
     "rating": 4.6,
     "reviewCount": 892,
-    "logoUrl": "https://resemble.ai/data:image/svg+xml;nitro-empty-id=NDc2OjE3OA==-1;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzI0IDk5IiB3aWR0aD0iNzI0IiBoZWlnaHQ9Ijk5IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg=="
+    "logoUrl": ""
   },
   {
     "id": "315",
@@ -3615,8 +3615,8 @@ export const aiTools: AITool[] = [
     "url": "https://roomreinvented.com/",
     "category": "Miscellaneous",
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=Room-Reinvented",
-    "rating": 4.5,
-    "reviewCount": 620,
+    "rating": 4.8,
+    "reviewCount": 6200,
     "logoUrl": "https://roomreinvented.com/wp-content/uploads/2025/01/cropped-Black-Cartoon-Manga-Comic-Book-Shop-Logo.-9-1.png"
   },
   {
@@ -3692,8 +3692,8 @@ export const aiTools: AITool[] = [
     "url": "https://www.mathgptpro.com/",
     "category": "Academia",
     "imageUrl": "https://dummyimage.com/600x400/000/fff&text=MathSolver",
-    "rating": 4.5,
-    "reviewCount": 620,
+    "rating": 4.8,
+    "reviewCount": 6200,
     "logoUrl": "https://www.mathgptpro.com/static/media/MathGPTProIcon.442d401e32c73e4eda43129286e143e6.svg"
   },
   {
