@@ -106,69 +106,50 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
 
   return (
     <>
-      <Card 
-        className={`w-full overflow-hidden transition-all hover:shadow-lg hover:scale-[1.01] cursor-pointer ${
-          item.featured ? 'border-brand-purple' : ''
-        }`}
-        onClick={handleItemClick}
-      >
-        <div className="relative h-48 overflow-hidden bg-gray-100 flex justify-center items-center">
-          {!imageError ? (
-            <img 
-              src={imageSrc} 
+      <Card className="h-full flex flex-col overflow-hidden min-h-[210px]">
+        <CardContent className="flex-1 flex flex-col items-center justify-center p-2 pb-1">
+          <div className="w-full flex flex-col items-center">
+            <img
+              src={imageSrc}
               alt={item.title}
-              className="object-contain max-h-40 max-w-full p-2"
+              className="rounded-lg mb-1 w-14 h-14 object-contain bg-gray-50"
               onError={handleImageError}
             />
-          ) : (
-            <div className="flex flex-col items-center justify-center text-gray-400">
-              <ImageOff size={24} />
-              <span className="text-xs mt-1">{item.title}</span>
-            </div>
-          )}
-          {item.featured && (
-            <div className="absolute top-2 right-2 bg-brand-purple text-white px-2 py-1 text-xs rounded-full">
-              Featured
-            </div>
-          )}
-        </div>
-        <CardContent className="p-4 h-32 flex flex-col">
-          <h3 className="text-lg font-semibold mb-1 line-clamp-2">{item.title}</h3>
-          <p className="text-sm text-gray-600 line-clamp-2 mb-2">{item.description}</p>
-          <div className="flex items-center">
-            <div className="flex items-center">
-              <Star className="h-4 w-4 text-yellow-500 mr-1 fill-yellow-500" />
-              <span className="text-sm font-medium">{item.rating.toFixed(1)}</span>
-            </div>
+            <div className="font-bold text-sm text-center mb-0.5 line-clamp-1">{item.title}</div>
+            <div className="text-xs text-muted-foreground text-center mb-1 line-clamp-2 min-h-[24px]">{item.description}</div>
+          </div>
+          <div className="flex items-center gap-1 mb-0.5">
+            <Star className="h-3 w-3 text-yellow-400" />
+            <span className="text-xs font-semibold">{item.rating}</span>
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-0 flex justify-between items-center border-t mt-2">
+        <CardFooter className="p-2 pt-0 flex justify-between items-center border-t mt-1">
           <div className="flex space-x-1">
             <Button 
               variant="ghost" 
               size="sm" 
-              className={`h-8 px-2 ${liked ? 'text-red-500' : ''}`}
+              className={`h-6 px-1 ${liked ? 'text-red-500' : ''}`}
               onClick={handleUpvote}
             >
-              <ThumbsUp className="h-4 w-4 mr-1" />
+              <ThumbsUp className="h-3 w-3 mr-0.5" />
               <span className="text-xs font-semibold">{voteCount}</span>
             </Button>
             <Button 
               variant="ghost" 
               size="sm" 
-              className={`h-8 px-2 ${disliked ? 'text-red-500' : ''}`}
+              className={`h-6 px-1 ${disliked ? 'text-red-500' : ''}`}
               onClick={handleDownvote}
             >
-              <ThumbsDown className="h-4 w-4" />
+              <ThumbsDown className="h-3 w-3" />
             </Button>
           </div>
           <Button 
             variant="outline" 
             size="sm" 
-            className="h-8"
+            className="h-6 px-2"
             onClick={openReviewDialog}
           >
-            <MessageSquare className="h-4 w-4 mr-1" />
+            <MessageSquare className="h-3 w-3 mr-0.5" />
             <span className="text-xs">Reviews</span>
           </Button>
         </CardFooter>

@@ -41,7 +41,7 @@ const FeaturedCarousel: React.FC = () => {
 
   return (
     <section className="max-w-6xl mx-auto my-12">
-      <h2 className="text-2xl font-bold mb-6 text-center">Featured AI Tools</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center">Featured Tools</h2>
       <div className="relative flex items-center justify-center">
         {/* Responsive: vertical on mobile, horizontal on desktop */}
         <div className="w-full">

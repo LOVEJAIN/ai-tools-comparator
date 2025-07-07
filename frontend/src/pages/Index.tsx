@@ -120,7 +120,7 @@ function Index() {
   }, [search, activeCategory, aiTools, categories]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const toolsPerPage = 50;
+  const toolsPerPage = 36;
   const totalPages = Math.ceil(filteredTools.length / toolsPerPage);
   // Reset to page 1 when category or search changes
   useEffect(() => { setCurrentPage(1); }, [activeCategory, search]);
@@ -615,16 +615,16 @@ function Index() {
               <option value="rating">Highest Rated</option>
             </select>
             <button
-                      className="ml-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-full font-semibold hover:bg-blue-200 transition"
-                      onClick={() => setShowMainContent(false)}
-                    >
-                      ← Change Category
-              </button>
+              className="ml-4 px-2 py-1 text-sm rounded-md bg-blue-100 text-blue-700 font-semibold hover:bg-blue-200 transition md:px-4 md:py-2 md:text-base md:rounded-full"
+              onClick={() => setShowMainContent(false)}
+            >
+              ← Change Category
+            </button>
           </div>
                   {/* Category Chips Section (single row, below Sort by) - REMOVED */}
           {/* Featured AI Tools Section */}
           <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Featured AI Tools</h2>
+            <h2 className="text-xl font-semibold mb-4">Featured Tools</h2>
             <div className="flex gap-4 overflow-x-auto pb-2">
               {featuredTools
                 .filter(tool => activeCategory === 'all' || tool.category === activeCategory)
@@ -641,7 +641,7 @@ function Index() {
             <div className="col-span-1 md:col-span-3 min-w-0">
               <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)]">
                 <CardHeader>
-                  <CardTitle>Compare AI Tools</CardTitle>
+                  <CardTitle>Compare Tools</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col gap-4">
                   <div className="mb-2">
@@ -779,7 +779,7 @@ function Index() {
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
                   <ScrollArea className="flex-1">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {paginatedTools.map((tool) => (
                         <div
                           key={tool.id}
@@ -1017,7 +1017,7 @@ function Index() {
                           ))}
                           {list.tools && list.tools.length > 3 && (<span className="text-sm text-muted-foreground">+{list.tools.length - 3} more</span>)}
                         </div>
-                        {user && list.creator === user.email && (
+                        {user && (list.creator === user.email || user.isAdmin) && (
                           <div className="flex gap-2 mt-2">
                             <button
                               onClick={(e) => {
