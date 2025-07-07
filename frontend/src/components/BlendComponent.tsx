@@ -7,6 +7,7 @@ const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
 
 const BlendComponent = () => {
   const { user } = useData();
+  console.log('Current user:', user);
 
   const [blendForm, setBlendForm] = useState({
     title: "",
