@@ -17,8 +17,7 @@ public class SiteRatingController {
     @PostMapping
     public void createSiteRating(@RequestBody Map<String, Object> body) {
         jdbcTemplate.update(
-            "INSERT INTO site_ratings (user_id, rating, comment, name, email) VALUES (?, ?, ?, ?, ?)",
-            body.get("userId"),
+            "INSERT INTO site_ratings (rating, comment, name, email) VALUES (?, ?, ?, ?)",
             body.get("rating"),
             body.get("comment"),
             body.getOrDefault("name", null),
