@@ -62,7 +62,6 @@ const Footer: React.FC = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId: user ? user.id : null,
             name: user ? user.username : null,
             email: user ? user.email : null,
             rating,
