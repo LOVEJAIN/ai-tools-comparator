@@ -83,8 +83,8 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
   };
 
   return (
-    <header className="border-b bg-background">
-      <div className="container flex h-16 items-center px-4 justify-between gap-4">
+    <header className="border-b bg-background w-full">
+      <div className="container flex h-16 items-center px-2 sm:px-4 justify-between gap-2 md:flex-nowrap">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => {
           if (setShowMainContent) setShowMainContent(false);
           navigate('/', { replace: true, state: { forceShowMain: true } });
@@ -93,7 +93,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
           <img src={AikinLogo} alt="Aikin Logo" className="h-8 w-8" />
           <span className="font-semibold text-xl">Aikin</span>
         </div>
-        <div className="flex-1 flex justify-center">
+        <div className="hidden md:flex flex-1 justify-center">
           <Input
             type="text"
             placeholder="adding a verified tool every hour.."
@@ -104,223 +104,249 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
           />
         </div>
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-4 relative">
-          <Button asChild variant="outline" className="header-btn-outline">
+        <nav className="hidden md:flex gap-2 items-center flex-shrink-0">
+          <Button asChild variant="ghost" className="header-btn-outline" >
             <Link to="/ai-agents">AI Agents</Link>
           </Button>
-          <Button asChild variant="outline" className="header-btn-outline">
+          <Button asChild variant="ghost" className="header-btn-outline" >
             <Link to="/mcp-servers">MCP Servers</Link>
           </Button>
-          <div
-            className="relative"
-            onMouseEnter={() => setShowFeaturesDropdown(true)}
-            onMouseLeave={() => setShowFeaturesDropdown(false)}
-            style={{ display: 'flex', alignItems: 'center', height: '100%' }}
-          >
-            <Button
-              variant="outline"
-              className="header-btn-outline flex items-center gap-1"
-              type="button"
-            >
+          <Button asChild variant="ghost" className="header-btn-outline px-2" >
+            <Link to="/subscription">Advertise</Link>
+          </Button>
+          {/* More Features Dropdown (remove Advertise from here) */}
+          <div className="relative">
+            <Button variant="ghost" className="header-btn-outline flex items-center gap-1 px-2" onClick={() => setShowFeaturesDropdown(v => !v)}>
               More Features <ChevronDown className="w-4 h-4" />
             </Button>
             {showFeaturesDropdown && (
-              <div className="absolute top-full left-0 mt-0 w-48 bg-white border rounded shadow-lg z-50 flex flex-col"
-                style={{ minWidth: '160px' }}
-              >
-                <Link to="/jobs" className="px-4 py-2 hover:bg-gray-100 text-left" onClick={() => setShowFeaturesDropdown(false)}>Jobs</Link>
-                <Link to="/subscription" className="px-4 py-2 hover:bg-gray-100 text-left" onClick={() => setShowFeaturesDropdown(false)}>Advertise</Link>
-                <button className="px-4 py-2 hover:bg-gray-100 text-left" onClick={() => { submitModalRef.current?.open("submit"); setShowFeaturesDropdown(false); }}>Submit AI Tool</button>
-                {(currentUser && (currentUser.isAdmin ? location !== "/" : (user && user.isVerified))) && (
-                  <button className="px-4 py-2 hover:bg-gray-100 text-left" onClick={() => { setShowJobDialog(true); setShowFeaturesDropdown(false); }}>Submit Job</button>
-                )}
+              <div className="absolute top-full left-0 bg-white border rounded shadow-lg mt-2 z-50 min-w-[180px]">
+                <Button asChild variant="ghost" className="w-full justify-start px-2 py-2" onClick={() => setShowFeaturesDropdown(false)}>
+                  <Link to="/jobs">Jobs</Link>
+                </Button>
+                <Button asChild variant="ghost" className="w-full justify-start px-2 py-2" onClick={() => setShowFeaturesDropdown(false)}>
+                  <Link to="/submit-tool">Submit AI Tool</Link>
+                </Button>
               </div>
             )}
           </div>
-          {currentUser && currentUser.isAdmin && (
-            <Button variant="outline" onClick={() => navigate("/admin")}>Dashboard</Button>
-          )}
-          {!currentUser ? (
-            <>
-              <Button
-                className="header-btn"
-                onClick={() => {
-                  setIsDialogOpen(true);
-                  setIsSignUp(false);
-                }}
-              >
-                Log in
+        </nav>
+        {currentUser && currentUser.isAdmin && (
+          <Button variant="outline" className="hidden md:inline-flex" onClick={() => navigate("/admin")}>Dashboard</Button>
+        )}
+        {/* Mobile Nav: only show hamburger and logo on small screens */}
+        <div className="flex md:hidden items-center gap-0">
+          <Button variant="outline" size="sm" className="px-2 py-1" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </Button>
+        </div>
+        {/* Mobile Dropdown Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-b shadow z-50 absolute left-0 right-0 top-16">
+            <div className="flex flex-col gap-2 p-4">
+              {/* Mobile Search Bar inside dropdown */}
+              <Input
+                type="text"
+                placeholder="adding a verified tool every hour.."
+                value={searchValue}
+                onChange={(e) => onSearchChange(e.target.value)}
+                onKeyDown={onSearchKeyDown}
+                className="w-full rounded px-2 py-1 text-sm border shadow-sm focus:outline-none focus:ring-2 focus:ring-primary mb-2"
+              />
+              <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/ai-agents">AI Agents</Link>
               </Button>
-              <Button
-                variant="outline"
-                className="header-btn-outline"
-                onClick={() => {
-                  setIsDialogOpen(true);
-                  setIsSignUp(true);
-                }}
-              >
-                Sign up
+              <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/mcp-servers">MCP Servers</Link>
               </Button>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[400px]">
-                  <DialogHeader>
-                    <DialogTitle>{isSignUp ? "Sign Up" : "Log In"}</DialogTitle>
-                  </DialogHeader>
-                  <form
-                    onSubmit={isSignUp ? handleSignUp : handleLogin}
-                    className="space-y-4 pt-2"
-                  >
-                    {isSignUp && (
-                      <Input
-                        name="username"
-                        placeholder="Username"
-                        value={form.username}
-                        onChange={handleChange}
-                        required
-                      />
-                    )}
-                    <Input
-                      name="email"
-                      type="email"
-                      placeholder="Email"
-                      value={form.email}
-                      onChange={handleChange}
-                      required
-                    />
-                    <Input
-                      name="password"
-                      type="password"
-                      placeholder="Password"
-                      value={form.password}
-                      onChange={handleChange}
-                      required
-                    />
-                    <Button
-                      type="submit"
-                      className="w-full bg-primary text-white hover:bg-primary/90 transition"
-                    >
-                      {isSignUp ? "Sign Up" : "Log In"}
-                    </Button>
-                    
-                    <div className="relative my-4">
-                      <div className="absolute inset-0 flex items-center">
-                        <Separator className="w-full" />
-                      </div>
-                      <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-background px-2 text-muted-foreground">
-                          Or continue with
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-center mt-4">
-                      <div className="w-full max-w-[280px] mx-auto">
-                        <GoogleLogin
-                          onSuccess={handleGoogleSuccess}
-                          onError={handleGoogleError}
-                          useOneTap
-                          width="280"
-                          theme="filled_blue"
-                          size="large"
-                          text="continue_with"
-                          shape="rectangular"
-                          logo_alignment="left"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="text-xs text-center mt-4">
-                      {isSignUp ? (
-                        <span>
-                          Already have an account?{" "}
-                          <button
-                            type="button"
-                            className="underline"
-                            onClick={() => setIsSignUp(false)}
-                          >
-                            Log in
-                          </button>
-                        </span>
-                      ) : (
-                        <span>
-                          Don&apos;t have an account?{" "}
-                          <button
-                            type="button"
-                            className="underline"
-                            onClick={() => setIsSignUp(true)}
-                          >
-                            Sign up
-                          </button>
-                        </span>
-                      )}
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            </>
-          ) : (
-            <div className="flex items-center gap-2">
-              {googleUser && (
-                <img
-                  src={googleUser.picture}
-                  alt={googleUser.name}
-                  className="w-8 h-8 rounded-full"
-                />
+              <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/subscription">Advertise</Link>
+              </Button>
+              <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/jobs">Jobs</Link>
+              </Button>
+              <Button variant="outline" onClick={() => { submitModalRef.current?.open("submit"); setMobileMenuOpen(false); }} className="header-btn-outline w-full">
+                Submit AI Tool
+              </Button>
+              {currentUser && currentUser.isAdmin && (
+                <Button variant="outline" onClick={() => { navigate("/admin"); setMobileMenuOpen(false); }} className="w-full">Dashboard</Button>
               )}
-              <span className="text-sm font-medium">
-                {googleUser ? googleUser.name : (user?.username || user?.email)}
-              </span>
-              <Button
-                variant="outline"
-                className="header-btn-outline"
-                onClick={handleLogout}
-              >
-                Sign out
-              </Button>
+              {!currentUser ? (
+                <>
+                  <Button
+                    className="header-btn"
+                    onClick={() => {
+                      setIsDialogOpen(true);
+                      setIsSignUp(false);
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    Log in
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="header-btn-outline"
+                    onClick={() => {
+                      setIsDialogOpen(true);
+                      setIsSignUp(true);
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    Sign up
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="header-btn-outline"
+                  onClick={handleLogout}
+                >
+                  Sign out
+                </Button>
+              )}
             </div>
-          )}
-        </div>
-        {/* Mobile Hamburger */}
-        <button className="md:hidden flex items-center justify-center p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
-      {/* Mobile Dropdown Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b shadow z-50 absolute left-0 right-0 top-16">
-          <div className="flex flex-col gap-2 p-4">
-            <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
-              <Link to="/ai-agents">AI Agents</Link>
-            </Button>
-            <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
-              <Link to="/mcp-servers">MCP Servers</Link>
-            </Button>
-            <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
-              <Link to="/jobs">Jobs</Link>
-            </Button>
-            <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
-              <Link to="/subscription">Advertise</Link>
-            </Button>
-            <Button variant="outline" onClick={() => { submitModalRef.current?.open("submit"); setMobileMenuOpen(false); }} className="header-btn-outline w-full">
-              Submit AI Tool
-            </Button>
-            {currentUser && currentUser.isAdmin && (
-              <Button variant="outline" onClick={() => { navigate("/admin"); setMobileMenuOpen(false); }} className="w-full">Dashboard</Button>
-            )}
-            {(currentUser && (currentUser.isAdmin ? location !== "/" : (user && user.isVerified))) && (
-              <Button variant="outline" onClick={() => { setShowJobDialog(true); setMobileMenuOpen(false); }} className="w-full">Submit Job</Button>
-            )}
-            {!currentUser ? (
-              <>
-                <Button className="header-btn w-full" onClick={() => { setIsDialogOpen(true); setIsSignUp(false); setMobileMenuOpen(false); }}>Log in</Button>
-                <Button variant="outline" className="header-btn-outline w-full" onClick={() => { setIsDialogOpen(true); setIsSignUp(true); setMobileMenuOpen(false); }}>Sign up</Button>
-              </>
-            ) : (
-              <Button className="header-btn w-full" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>Sign out</Button>
-            )}
           </div>
-        </div>
-      )}
+        )}
+        {!currentUser ? (
+          <>
+            <Button
+              className="header-btn"
+              onClick={() => {
+                setIsDialogOpen(true);
+                setIsSignUp(false);
+              }}
+            >
+              Log in
+            </Button>
+            <Button
+              variant="outline"
+              className="header-btn-outline"
+              onClick={() => {
+                setIsDialogOpen(true);
+                setIsSignUp(true);
+              }}
+            >
+              Sign up
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogContent className="sm:max-w-[400px]">
+                <DialogHeader>
+                  <DialogTitle>{isSignUp ? "Sign Up" : "Log In"}</DialogTitle>
+                </DialogHeader>
+                <form
+                  onSubmit={isSignUp ? handleSignUp : handleLogin}
+                  className="space-y-4 pt-2"
+                >
+                  {isSignUp && (
+                    <Input
+                      name="username"
+                      placeholder="Username"
+                      value={form.username}
+                      onChange={handleChange}
+                      required
+                    />
+                  )}
+                  <Input
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    value={form.email}
+                    onChange={handleChange}
+                    required
+                  />
+                  <Input
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    value={form.password}
+                    onChange={handleChange}
+                    required
+                  />
+                  <Button
+                    type="submit"
+                    className="w-full bg-primary text-white hover:bg-primary/90 transition"
+                  >
+                    {isSignUp ? "Sign Up" : "Log In"}
+                  </Button>
+                  
+                  <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <Separator className="w-full" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">
+                        Or continue with
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center mt-4">
+                    <div className="w-full max-w-[280px] mx-auto">
+                      <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={handleGoogleError}
+                        useOneTap
+                        width="280"
+                        theme="filled_blue"
+                        size="large"
+                        text="continue_with"
+                        shape="rectangular"
+                        logo_alignment="left"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-center mt-4">
+                    {isSignUp ? (
+                      <span>
+                        Already have an account?{" "}
+                        <button
+                          type="button"
+                          className="underline"
+                          onClick={() => setIsSignUp(false)}
+                        >
+                          Log in
+                        </button>
+                      </span>
+                    ) : (
+                      <span>
+                        Don&apos;t have an account?{" "}
+                        <button
+                          type="button"
+                          className="underline"
+                          onClick={() => setIsSignUp(true)}
+                        >
+                          Sign up
+                        </button>
+                      </span>
+                    )}
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </>
+        ) : (
+          <div className="flex items-center gap-2">
+            {googleUser && (
+              <img
+                src={googleUser.picture}
+                alt={googleUser.name}
+                className="w-8 h-8 rounded-full"
+              />
+            )}
+            <span className="text-sm font-medium">
+              {googleUser ? googleUser.name : (user?.username || user?.email)}
+            </span>
+            <Button
+              variant="outline"
+              className="header-btn-outline"
+              onClick={handleLogout}
+            >
+              Sign out
+            </Button>
+          </div>
+        )}
+      </div>
       <SubmitToolModal ref={submitModalRef} />
       <Dialog open={showJobDialog} onOpenChange={setShowJobDialog}>
         <DialogContent className="sm:max-w-[500px]">

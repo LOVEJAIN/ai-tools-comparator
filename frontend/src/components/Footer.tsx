@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useData } from "@/contexts/DataContext";
 
-const userReviews = [
-  { name: "Naman Goyal", review: "An excellent directory of AI tools—truly helped accelerate my startup's growth." },
-  { name: "Shubhangi Tyagi", review: "Impressed by the clean interface and the wide range of AI tools available." },
-  { name: "P Utkarsh", review: "Found the ideal AI solution for my business thanks to this platform." },
-  { name: "Iti Jain", review: "User reviews and ratings made it easy to choose the right tool with confidence." },
-];
-
 const faqs = [
   { q: "How do I submit my AI tool?", a: "Simply click the \"Submit AI Tool\" button at the top of the page and complete the submission form." },
   { q: "Is listing free?", a: "Yes, a basic listing is free. For added visibility, we offer paid options like featured and verified listings." },
@@ -40,9 +33,19 @@ const Footer: React.FC = () => {
   // Version
   const version = "1.5.0";
 
+  const [userReviews, setUserReviews] = useState([]);
+
   useEffect(() => {
     setSubmitted(!!localStorage.getItem('siteRating'));
   }, [user]);
+
+  // Fetch real user reviews from backend
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/site-ratings`)
+      .then(res => res.json())
+      .then(data => setUserReviews(data))
+      .catch(() => setUserReviews([]));
+  }, []);
 
   // Handle rating submit
   const handleRateSubmit = async (e: React.FormEvent) => {
@@ -78,6 +81,24 @@ const Footer: React.FC = () => {
     } catch (err) {
       setContactError("Failed to send message. Please try again later.");
     }
+  };
+
+  // Helper to get display name for a review
+  const getReviewerName = (review) => {
+    if (review.email) return review.email;
+    if (review.name) return review.name;
+    if (review.userId) return `User ${review.userId}`;
+    return "Anonymous";
+  };
+
+  // Helper to trim long reviews and show '...more'
+  const getTrimmedReview = (review) => {
+    const maxLen = 50;
+    if (!review?.comment) return '';
+    if (review.comment.length > maxLen) {
+      return review.comment.slice(0, maxLen) + '...more';
+    }
+    return review.comment;
   };
 
   return (
@@ -145,7 +166,7 @@ const Footer: React.FC = () => {
             <div className="text-sm text-gray-700 mb-2">At Aikin, we make it easy to find the right AI solution. As a leading directory of top-rated AI tools, we help individuals and businesses discover, compare, and review the latest technologies—all in one place. From automation and analytics to creative AI, Aikin guides you to the best fit for your needs.</div>
           </div>
           <div className="text-xs text-gray-500 mt-2">
-            <div>Version: <span className="font-mono">1.5.0</span></div>
+            <div>Version: <span className="font-mono">2.5.0</span></div>
             <div>Made in India 🇮🇳</div>
           </div>
         </div>
@@ -183,26 +204,36 @@ const Footer: React.FC = () => {
               <path d="M100.28 448H7.4V148.9h92.88zm-46.44-340.7C24.09 107.3 0 83.2 0 53.6A53.6 53.6 0 0 1 53.6 0c29.6 0 53.6 24.09 53.6 53.6 0 29.6-24.09 53.7-53.6 53.7zM447.8 448h-92.4V302.4c0-34.7-12.4-58.4-43.3-58.4-23.6 0-37.6 15.9-43.7 31.3-2.3 5.6-2.8 13.4-2.8 21.2V448h-92.4s1.2-242.1 0-267.1h92.4v37.9c12.3-19 34.3-46.1 83.5-46.1 60.9 0 106.6 39.8 106.6 125.4V448z" fill="#0077B5"/>
             </svg>
           </a>
-          <a href="https://github.com/aikin-in" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-            </svg>
-          </a>
         </div>
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-2 mb-2">
             <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
             <h3 className="font-bold text-lg">User Reviews</h3>
           </div>
-          <div className="mb-2 text-sm italic">"{userReviews[reviewIdx].review}"</div>
-          <div className="mb-2 text-xs text-muted-foreground">- {userReviews[reviewIdx].name}</div>
-          <div className="flex gap-2 justify-center">
-            <button className="text-xs px-2 py-1 border rounded hover:bg-gray-100" onClick={() => setReviewIdx((reviewIdx - 1 + userReviews.length) % userReviews.length)}>&lt;</button>
-            <button className="text-xs px-2 py-1 border rounded hover:bg-gray-100" onClick={() => setReviewIdx((reviewIdx + 1) % userReviews.length)}>&gt;</button>
-          </div>
+          {userReviews.length > 0 ? (
+            <>
+              <div className="mb-2 text-base italic text-center max-w-xl mx-auto" title={userReviews[reviewIdx]?.comment || ''}>
+                "{getTrimmedReview(userReviews[reviewIdx]) || "No comment provided."}"
+              </div>
+              <div className="mb-3 text-xs text-muted-foreground text-center">- {getReviewerName(userReviews[reviewIdx])}</div>
+              <div className="flex gap-4 justify-center mt-2">
+                <button className="text-lg px-3 py-1 border rounded-full hover:bg-gray-100 transition" onClick={() => setReviewIdx((reviewIdx - 1 + userReviews.length) % userReviews.length)}>&lt;</button>
+                <button className="text-lg px-3 py-1 border rounded-full hover:bg-gray-100 transition" onClick={() => setReviewIdx((reviewIdx + 1) % userReviews.length)}>&gt;</button>
+              </div>
+            </>
+          ) : (
+            <div className="mb-2 text-sm italic text-gray-500 text-center">No user reviews yet. Be the first to rate us!</div>
+          )}
         </div>
       </div>
-      <div className="text-center text-xs text-gray-400 py-2 border-t mt-2">&copy; {new Date().getFullYear()} Aikin. All rights reserved.</div>
+      <div className="flex items-center justify-between text-xs text-gray-400 py-2 border-t mt-2">
+        <div className="flex gap-4 ml-2">
+          <a href="https://twitter.com/aikin_ai" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500"><span style={{fontWeight:'bold',fontSize:'18px'}}>𝕏</span></a>
+          <a href="https://www.linkedin.com/company/aikin-ai/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-700"><svg className="inline w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.28c-.97 0-1.75-.79-1.75-1.75s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.75-1.75 1.75zm15.5 11.28h-3v-5.6c0-1.34-.03-3.07-1.87-3.07-1.87 0-2.16 1.46-2.16 2.97v5.7h-3v-10h2.89v1.36h.04c.4-.75 1.37-1.54 2.82-1.54 3.01 0 3.57 1.98 3.57 4.56v5.62z"/></svg></a>
+        </div>
+        <div className="text-center flex-1">&copy; {new Date().getFullYear()} Aikin. All rights reserved.</div>
+        <div style={{width:'60px'}}></div>
+      </div>
     </footer>
   );
 };
