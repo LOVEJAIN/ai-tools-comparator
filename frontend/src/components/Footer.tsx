@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useData } from "@/contexts/DataContext";
+import { Mail, Star, Info, HelpCircle, MessageCircle, Twitter, Linkedin, Github } from "lucide-react";
 
 const userReviews = [
   { name: "Naman Goyal", review: "An excellent directory of AI tools—truly helped accelerate my startup's growth." },
@@ -81,128 +82,174 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-gradient-to-br from-[#f8fafc] via-[#e0e7ef] to-[#f1f5f9] border-t mt-8 pt-6">
-      <div className="container mx-auto px-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pb-4">
-        {/* Contact Us */}
-        <div className="rounded-xl shadow bg-white/80 p-4 border border-gray-100 mb-2">
-          <div className="flex items-center gap-2 mb-2">
-            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 10.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"/><path d="M21 10.5V17a2 2 0 0 1-2 2h-7"/><path d="M21 10.5l-9 6.5-9-6.5"/></svg>
-            <h3 className="font-bold text-lg">Contact Us</h3>
-          </div>
-          {contactSent ? (
-            <div className="text-green-600 text-sm mb-4">Thank you! We'll get back to you soon.</div>
-          ) : (
-            <form className="mb-2" onSubmit={handleContactSubmit}>
-              <input className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="text" placeholder="Your Name" value={contact.name} onChange={e => setContact({ ...contact, name: e.target.value })} required />
-              <input className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="email" placeholder="Your Email" value={contact.email} onChange={e => setContact({ ...contact, email: e.target.value })} required />
-              <textarea className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" placeholder="Message" value={contact.message} onChange={e => setContact({ ...contact, message: e.target.value })} required />
-              {contactError && <div className="text-red-500 text-xs mb-2">{contactError}</div>}
-              <button className="bg-primary text-white px-4 py-1 rounded w-full hover:bg-primary/90 transition" type="submit">Send</button>
-            </form>
-          )}
-        </div>
-        {/* Rate Us */}
-        <div className="rounded-xl shadow bg-white/80 p-4 border border-gray-100 mb-2">
-          <div className="flex items-center gap-2 mb-2">
-            <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-            <h3 className="font-bold text-lg">Rate Us</h3>
-          </div>
-          {submitted ? (
-            <div className="text-green-600 text-sm">Thank you for rating us!</div>
-          ) : (
-            <form onSubmit={e => {
-              e.preventDefault();
-              if (!user) {
-                setRateError("Please log in to submit a rating.");
-                return;
-              }
-              handleRateSubmit(e);
-            }} className="flex flex-col gap-2">
-              <div className="flex gap-1 mb-1">
-                {[1,2,3,4,5].map(star => (
-                  <span
-                    key={star}
-                    className={`cursor-pointer text-3xl transition ${star <= (hover || rating) ? 'text-yellow-400 scale-110' : 'text-gray-300'}`}
-                    onClick={() => setRating(star)}
-                    onMouseEnter={() => setHover(star)}
-                    onMouseLeave={() => setHover(0)}
-                  >★</span>
-                ))}
+    <footer className="relative bg-gradient-to-br from-emerald-900 via-teal-800 to-cyan-900 overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-emerald-400/20 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-teal-400/30 rounded-full blur-lg animate-bounce"></div>
+        <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-cyan-400/15 rounded-full blur-2xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 right-1/3 w-20 h-20 bg-emerald-300/25 rounded-full blur-md animate-bounce delay-500"></div>
+        <div className="absolute top-20 left-1/3 w-8 h-8 bg-gradient-to-r from-emerald-400 to-teal-400 transform rotate-45 animate-spin" style={{ animationDuration: '8s' }}></div>
+        <div className="absolute bottom-40 right-1/4 w-6 h-6 bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full animate-ping"></div>
+        <div className="absolute top-1/3 left-20 w-4 h-16 bg-gradient-to-b from-emerald-300 to-transparent transform rotate-12 animate-pulse"></div>
+      </div>
+      <div className="relative z-10 max-w-7xl mx-auto py-20 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          {/* Contact Us Card */}
+          <div className="group perspective-1000">
+            <div className="relative preserve-3d transition-all duration-500 hover:rotate-y-12 hover:rotate-x-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded-2xl blur-xl transform translate-z-4"></div>
+              <div className="relative bg-gradient-to-br from-white/95 to-emerald-50/90 backdrop-blur-lg rounded-2xl p-6 border border-emerald-200/50 shadow-2xl transform-gpu">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center shadow-lg">
+                    <Mail className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="font-bold text-slate-800 text-lg">Contact Us</h3>
+                </div>
+                {contactSent ? (
+                  <div className="text-green-600 text-sm mb-4">Thank you! We'll get back to you soon.</div>
+                ) : (
+                  <form className="mb-2" onSubmit={handleContactSubmit}>
+                    <input className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="text" placeholder="Your Name" value={contact.name} onChange={e => setContact({ ...contact, name: e.target.value })} required />
+                    <input className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="email" placeholder="Your Email" value={contact.email} onChange={e => setContact({ ...contact, email: e.target.value })} required />
+                    <textarea className="w-full mb-2 px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" placeholder="Message" value={contact.message} onChange={e => setContact({ ...contact, message: e.target.value })} required />
+                    {contactError && <div className="text-red-500 text-xs mb-2">{contactError}</div>}
+                    <button className="bg-primary text-white px-4 py-1 rounded w-full hover:bg-primary/90 transition" type="submit">Send</button>
+                  </form>
+                )}
               </div>
-              <input className="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="text" placeholder="Leave a comment (optional)" value={comment} onChange={e => setComment(e.target.value)} />
-              {rateError && <div className="text-red-500 text-xs mb-2">{rateError}</div>}
-              <button className="bg-primary text-white px-4 py-1 rounded w-full hover:bg-primary/90 transition" type="submit">Submit</button>
-            </form>
-          )}
-        </div>
-        {/* About Us */}
-        <div className="rounded-xl shadow bg-white/80 p-4 border border-gray-100 mb-2 flex flex-col justify-between min-h-[220px]">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
-              <h3 className="font-bold text-lg">About Us</h3>
             </div>
-            <div className="text-sm text-gray-700 mb-2">At Aikin, we make it easy to find the right AI solution. As a leading directory of top-rated AI tools, we help individuals and businesses discover, compare, and review the latest technologies—all in one place. From automation and analytics to creative AI, Aikin guides you to the best fit for your needs.</div>
           </div>
-          <div className="text-xs text-gray-500 mt-2">
-            <div>Version: <span className="font-mono">1.5.0</span></div>
-            <div>Made in India 🇮🇳</div>
-          </div>
-        </div>
-        {/* FAQ */}
-        <div className="rounded-xl shadow bg-white/80 p-4 border border-gray-100 mb-2">
-          <div className="flex items-center gap-2 mb-2">
-            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-            <h3 className="font-bold text-lg">FAQ</h3>
-          </div>
-          <div className="divide-y divide-gray-200">
-            {faqs.map((faq, i) => (
-              <div key={i} className="py-2">
-                <button className="font-semibold text-left w-full flex items-center gap-2" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                  <span>{faq.q}</span>
-                  <svg className={`w-4 h-4 ml-auto transition-transform ${openFaq === i ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-                </button>
-                {openFaq === i && <div className="text-sm text-muted-foreground mt-1 pl-2">{faq.a}</div>}
+          {/* Rate Us Card */}
+          <div className="group">
+            <div className="relative transform transition-all duration-500 hover:scale-105 hover:-translate-y-4">
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-500/30 rounded-2xl blur-xl"></div>
+              <div className="relative bg-gradient-to-br from-white/95 to-yellow-50/90 backdrop-blur-lg rounded-2xl p-6 border border-yellow-200/50 shadow-2xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
+                    <Star className="w-5 h-5 text-white fill-white" />
+                  </div>
+                  <h3 className="font-bold text-slate-800 text-lg">Rate Us</h3>
+                </div>
+                {submitted ? (
+                  <div className="text-green-600 text-sm">Thank you for rating us!</div>
+                ) : (
+                  <form onSubmit={e => {
+                    e.preventDefault();
+                    if (!user) {
+                      setRateError("Please log in to submit a rating.");
+                      return;
+                    }
+                    handleRateSubmit(e);
+                  }} className="flex flex-col gap-2">
+                    <div className="flex gap-1 mb-1">
+                      {[1,2,3,4,5].map(star => (
+                        <span
+                          key={star}
+                          className={`cursor-pointer text-3xl transition ${star <= (hover || rating) ? 'text-yellow-400 scale-110' : 'text-gray-300'}`}
+                          onClick={() => setRating(star)}
+                          onMouseEnter={() => setHover(star)}
+                          onMouseLeave={() => setHover(0)}
+                        >★</span>
+                      ))}
+                    </div>
+                    <input className="w-full px-2 py-1 border rounded focus:ring-2 focus:ring-primary/30" type="text" placeholder="Leave a comment (optional)" value={comment} onChange={e => setComment(e.target.value)} />
+                    {rateError && <div className="text-red-500 text-xs mb-2">{rateError}</div>}
+                    <button className="bg-primary text-white px-4 py-1 rounded w-full hover:bg-primary/90 transition" type="submit">Submit</button>
+                  </form>
+                )}
               </div>
-            ))}
+            </div>
+          </div>
+          {/* About Us Card */}
+          <div className="group">
+            <div className="relative transform transition-all duration-700 hover:scale-105 hover:rotate-1">
+              <div className="absolute inset-0 bg-gradient-to-br from-teal-400/30 to-cyan-500/30 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-700"></div>
+              <div className="relative bg-gradient-to-br from-white/95 to-teal-50/90 backdrop-blur-lg rounded-2xl p-6 border border-teal-200/50 shadow-2xl overflow-hidden">
+                <div className="flex items-center gap-3 mb-6 relative z-10">
+                  <div className="w-8 h-8 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg">
+                    <Info className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="font-bold text-slate-800 text-lg">About Us</h3>
+                </div>
+                <div className="text-sm text-gray-700 mb-2">At Aikin, we make it easy to find the right AI solution. As a leading directory of top-rated AI tools, we help individuals and businesses discover, compare, and review the latest technologies—all in one place. From automation and analytics to creative AI, Aikin guides you to the best fit for your needs.</div>
+              </div>
+            </div>
+          </div>
+          {/* FAQ Card */}
+          <div className="group">
+            <div className="relative transform transition-all duration-500 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-400/30 to-pink-500/30 rounded-2xl blur-xl"></div>
+              <div className="relative bg-gradient-to-br from-white/95 to-purple-50/90 backdrop-blur-lg rounded-2xl p-6 border border-purple-200/50 shadow-2xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-lg">
+                    <HelpCircle className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="font-bold text-slate-800 text-lg">FAQ</h3>
+                </div>
+                <div className="divide-y divide-gray-200">
+                  {faqs.map((faq, i) => (
+                    <div key={i} className="py-2">
+                      <button className="font-semibold text-left w-full flex items-center gap-2" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                        <span>{faq.q}</span>
+                        <svg className={`w-4 h-4 ml-auto transition-transform ${openFaq === i ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                      </button>
+                      {openFaq === i && <div className="text-sm text-muted-foreground mt-1 pl-2">{faq.a}</div>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* User Reviews Section */}
+        <div className="relative mb-12 flex justify-center">
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 via-purple-400/20 to-blue-400/20 rounded-3xl blur-2xl"></div>
+          <div className="relative bg-gradient-to-r from-white/90 to-pink-50/80 backdrop-blur-xl rounded-3xl p-8 border border-pink-200/50 shadow-2xl w-full max-w-3xl mx-auto flex flex-col items-center">
+            <div className="flex items-center gap-3 mb-6 justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                <MessageCircle className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-bold text-slate-800 text-xl">User Reviews</h3>
+            </div>
+            <div className="mb-2 text-sm italic text-center">"{userReviews[reviewIdx].review}"</div>
+            <div className="mb-2 text-xs text-muted-foreground text-center">- {userReviews[reviewIdx].name}</div>
+            <div className="flex gap-2 justify-center">
+              <button className="text-xs px-2 py-1 border rounded hover:bg-gray-100" onClick={() => setReviewIdx((reviewIdx - 1 + userReviews.length) % userReviews.length)}>&lt;</button>
+              <button className="text-xs px-2 py-1 border rounded hover:bg-gray-100" onClick={() => setReviewIdx((reviewIdx + 1) % userReviews.length)}>&gt;</button>
+            </div>
+          </div>
+        </div>
+        {/* Social Links and Copyright */}
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/10 via-teal-400/10 to-cyan-400/10 rounded-2xl blur-xl"></div>
+          <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
+            <div className="flex flex-col items-center space-y-6">
+              <div className="flex items-center gap-8">
+                <a href="https://x.com/aikin_in" target="_blank" rel="noopener noreferrer" className="group relative">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 group-hover:shadow-2xl">
+                    <Twitter className="w-6 h-6 text-white" />
+                  </div>
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="group relative">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 group-hover:shadow-2xl">
+                    <Linkedin className="w-6 h-6 text-white" />
+                  </div>
+                </a>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="group relative">
+                  <div className="w-12 h-12 bg-gradient-to-r from-gray-600 to-gray-800 rounded-xl flex items-center justify-center shadow-lg transform transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-2 group-hover:shadow-2xl">
+                    <Github className="w-6 h-6 text-white" />
+                  </div>
+                </a>
+              </div>
+              <div className="text-center">
+                <p className="text-white/80 text-sm font-medium">© 2025 Aikin. All rights reserved.</p>
+                <div className="w-16 h-1 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full mx-auto mt-2"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      {/* Socials and User Reviews */}
-      <div className="container mx-auto px-2 md:px-0 max-w-4xl pb-2 flex flex-col md:flex-row gap-2 items-center justify-between">
-        <div className="flex gap-4 mb-2">
-          <a href="https://x.com/aikin_in" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition" aria-label="X (Twitter)">
-            {/* X (Twitter) SVG */}
-            <svg width="20" height="20" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M1142.5 0H892.5L600 410.5L307.5 0H57.5L500 617.5L57.5 1227H307.5L600 816.5L892.5 1227H1142.5L700 617.5L1142.5 0Z" fill="currentColor"/>
-            </svg>
-          </a>
-          <a href="https://www.linkedin.com/company/aikin-in/about" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition" aria-label="LinkedIn">
-            {/* LinkedIn SVG - standard, not cut off */}
-            <svg width="24" height="24" viewBox="0 0 448 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M100.28 448H7.4V148.9h92.88zm-46.44-340.7C24.09 107.3 0 83.2 0 53.6A53.6 53.6 0 0 1 53.6 0c29.6 0 53.6 24.09 53.6 53.6 0 29.6-24.09 53.7-53.6 53.7zM447.8 448h-92.4V302.4c0-34.7-12.4-58.4-43.3-58.4-23.6 0-37.6 15.9-43.7 31.3-2.3 5.6-2.8 13.4-2.8 21.2V448h-92.4s1.2-242.1 0-267.1h92.4v37.9c12.3-19 34.3-46.1 83.5-46.1 60.9 0 106.6 39.8 106.6 125.4V448z" fill="#0077B5"/>
-            </svg>
-          </a>
-          <a href="https://github.com/aikin-in" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-            </svg>
-          </a>
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="flex items-center gap-2 mb-2">
-            <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>
-            <h3 className="font-bold text-lg">User Reviews</h3>
-          </div>
-          <div className="mb-2 text-sm italic">"{userReviews[reviewIdx].review}"</div>
-          <div className="mb-2 text-xs text-muted-foreground">- {userReviews[reviewIdx].name}</div>
-          <div className="flex gap-2 justify-center">
-            <button className="text-xs px-2 py-1 border rounded hover:bg-gray-100" onClick={() => setReviewIdx((reviewIdx - 1 + userReviews.length) % userReviews.length)}>&lt;</button>
-            <button className="text-xs px-2 py-1 border rounded hover:bg-gray-100" onClick={() => setReviewIdx((reviewIdx + 1) % userReviews.length)}>&gt;</button>
-          </div>
-        </div>
-      </div>
-      <div className="text-center text-xs text-gray-400 py-2 border-t mt-2">&copy; {new Date().getFullYear()} Aikin. All rights reserved.</div>
     </footer>
   );
 };
