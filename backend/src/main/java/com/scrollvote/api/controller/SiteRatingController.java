@@ -26,6 +26,8 @@ public class SiteRatingController {
 
     @GetMapping
     public List<Map<String, Object>> getAllSiteRatings() {
-        return jdbcTemplate.queryForList("SELECT * FROM site_ratings");
+        return jdbcTemplate.queryForList(
+            "SELECT s.*, u.name, u.email FROM site_ratings s LEFT JOIN users u ON s.user_id = u.id"
+        );
     }
 } 
