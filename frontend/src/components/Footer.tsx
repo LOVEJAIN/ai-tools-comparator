@@ -43,7 +43,12 @@ const Footer: React.FC = () => {
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/site-ratings`)
       .then(res => res.json())
-      .then(data => setUserReviews(data))
+      .then(data => {
+        // Filter out reviews without a comment, sort by id descending, then take latest 10
+        const filtered = data.filter(r => r.comment && r.comment.trim().length > 0);
+        const sorted = filtered.sort((a, b) => (b.id || 0) - (a.id || 0));
+        setUserReviews(sorted.slice(0, 10));
+      })
       .catch(() => setUserReviews([]));
   }, []);
 
@@ -56,7 +61,13 @@ const Footer: React.FC = () => {
         await fetch(`${API_BASE_URL}/api/site-ratings`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: null, rating, comment })
+          body: JSON.stringify({
+            userId: user ? user.id : null,
+            name: user ? user.username : null,
+            email: user ? user.email : null,
+            rating,
+            comment
+          })
         });
         localStorage.setItem('siteRating', String(rating));
         setSubmitted(true);
