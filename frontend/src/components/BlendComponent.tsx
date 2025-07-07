@@ -67,6 +67,24 @@ const BlendComponent = () => {
     }
   };
 
+  const handleDeleteBlend = async (blendId) => {
+    if (!window.confirm("Are you sure you want to delete this blend? This action cannot be undone.")) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/blends/${blendId}?${user?.isAdmin ? 'admin=true' : 'verified=true'}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setBlends(prev => prev.filter(b => b.id !== blendId));
+        toast.success("Blend deleted successfully!");
+      } else {
+        toast.error("Failed to delete blend.");
+      }
+    } catch (error) {
+      console.error("Error deleting blend:", error);
+      toast.error("An error occurred while deleting the blend.");
+    }
+  };
+
   return (
     <section className="max-w-5xl mx-auto mb-12">
       <h2 className="text-2xl font-bold mb-6 text-center">Blends: Combine Tools for Powerful Workflows</h2>
@@ -77,6 +95,15 @@ const BlendComponent = () => {
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-lg font-bold text-blue-700">{blend.title}</span>
                 <span className="ml-auto text-xs bg-blue-200 text-blue-800 px-3 py-1 rounded-full">{blend.useCaseTag}</span>
+                {isVerified && (
+                  <button
+                    className="ml-2 text-red-600 hover:text-red-800 text-lg font-bold bg-transparent border-none cursor-pointer"
+                    title="Delete Blend"
+                    onClick={() => handleDeleteBlend(blend.id)}
+                  >
+                    🗑️
+                  </button>
+                )}
               </div>
               <div className="flex gap-2 items-center mb-2 flex-wrap">
                 {blend.tools.split(',').map((tool, i) => (
