@@ -16,4 +16,6 @@ public class SiteRating {
     private int rating;
     private String comment;
     private Timestamp createdAt;
+    private String name;
+    private String email;
 } 

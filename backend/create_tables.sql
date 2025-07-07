@@ -3,7 +3,9 @@ CREATE TABLE site_ratings (
     user_id BIGINT,
     rating INT NOT NULL,
     comment VARCHAR(1000),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    name VARCHAR(255),
+    email VARCHAR(255)
 );
 
 CREATE TABLE contact_messages (
