@@ -13,14 +13,17 @@ export type SubmitToolModalHandle = {
 
 const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'submit' | 'advertise'>('submit');
+  const [mode, setMode] = useState<'submit' | 'advertise'>('submit');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     mobile: '',
     itemName: '',
     itemUrl: '',
-    description: ''
+    description: '',
+    submitterName: '',
+    submitterEmail: '',
+    submitterMobile: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,8 +32,8 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
   const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
 
   useImperativeHandle(ref, () => ({
-    open: (tab = 'submit') => {
-      setActiveTab(tab);
+    open: (newMode = 'submit') => {
+      setMode(newMode);
       setIsDialogOpen(true);
       setSuccess(false);
       setError('');
@@ -49,8 +52,7 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
     setError('');
     setSuccess(false);
     try {
-      if (activeTab === 'advertise') {
-        // Join waitlist/contact from subscription page
+      if (mode === 'advertise') {
         await fetch(`${API_BASE_URL}/api/contact-messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -62,10 +64,7 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
             source: 'subscription'
           })
         });
-        setSuccess(true);
-        setFormData({ name: '', email: '', mobile: '', itemName: '', itemUrl: '', description: '' });
       } else {
-        // Tool submission
         await fetch(`${API_BASE_URL}/api/tool-submissions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -73,12 +72,15 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
             userId: null,
             toolName: formData.itemName,
             toolUrl: formData.itemUrl,
+            submitterName: formData.submitterName,
+            submitterEmail: formData.submitterEmail,
+            submitterMobile: formData.submitterMobile,
             description: formData.description
           })
         });
-        setSuccess(true);
-        setFormData({ name: '', email: '', mobile: '', itemName: '', itemUrl: '', description: '' });
       }
+      setSuccess(true);
+      setFormData({ name: '', email: '', mobile: '', itemName: '', itemUrl: '', description: '', submitterName: '', submitterEmail: '', submitterMobile: '' });
     } catch (err) {
       setError('Failed to submit. Please try again later.');
     } finally {
@@ -90,17 +92,13 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{activeTab === 'advertise' ? 'Advertise Your Tool' : 'Submit an item for listing'}</DialogTitle>
+          <DialogTitle>{mode === 'advertise' ? 'Advertise Your Tool' : 'Submit an item for listing'}</DialogTitle>
         </DialogHeader>
-        <div className="flex gap-4 mb-4">
-          <Button variant={activeTab === 'submit' ? 'default' : 'outline'} onClick={() => setActiveTab('submit')}>Submit Tool</Button>
-          <Button variant={activeTab === 'advertise' ? 'default' : 'outline'} onClick={() => setActiveTab('advertise')}>Advertise</Button>
-        </div>
         {success ? (
           <div className="text-green-600 text-center py-8">Thank you! Your submission has been received.</div>
         ) : (
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-          {activeTab === 'advertise' ? (
+          {mode === 'advertise' ? (
             <>
               <div className="space-y-2">
                 <Label htmlFor="name">Your Name</Label>
@@ -115,11 +113,23 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
                 <Input id="mobile" name="mobile" type="tel" value={formData.mobile} onChange={handleChange} placeholder="Your mobile number" required />
               </div>
               <div className="text-xs text-gray-500">
-                Join the waitlist and be the first to know when we launch!
+                Join the waitlist and be the first to know when we launch our payment gateway!
               </div>
             </>
           ) : (
             <>
+              <div className="space-y-2">
+                <Label htmlFor="submitterName">Your Name</Label>
+                <Input id="submitterName" name="submitterName" value={formData.submitterName} onChange={handleChange} placeholder="John Doe" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="submitterEmail">Your Email</Label>
+                <Input id="submitterEmail" name="submitterEmail" type="email" value={formData.submitterEmail} onChange={handleChange} placeholder="you@example.com" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="submitterMobile">Mobile Number</Label>
+                <Input id="submitterMobile" name="submitterMobile" type="tel" value={formData.submitterMobile} onChange={handleChange} placeholder="Your mobile number" required />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="itemName">Tool Name</Label>
                 <Input id="itemName" name="itemName" value={formData.itemName} onChange={handleChange} placeholder="Your awesome product" required />
@@ -137,7 +147,7 @@ const SubmitToolModal = forwardRef<SubmitToolModalHandle, {}>((props, ref) => {
           {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
           <div className="flex justify-end">
             <Button type="submit" className="bg-brand-purple hover:bg-brand-purple/90" disabled={loading}>
-              {loading ? 'Submitting...' : (activeTab === 'advertise' ? 'Join Waitlist' : 'Submit for Review')}
+              {loading ? 'Submitting...' : (mode === 'advertise' ? 'Join Waitlist' : 'Submit for Review')}
             </Button>
           </div>
         </form>
