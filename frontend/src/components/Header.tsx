@@ -83,49 +83,57 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
   };
 
   return (
-    <header className="border-b bg-background w-full">
-      <div className="container flex h-16 items-center px-2 sm:px-4 justify-between gap-2 md:flex-nowrap">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => {
+    <header className="w-full bg-[#10182a]">
+      <div className="container flex h-16 items-center px-0 sm:px-0 gap-2 md:flex-nowrap">
+        <div className="flex items-center gap-2 cursor-pointer flex-shrink-0 -ml-8" onClick={() => {
           if (setShowMainContent) setShowMainContent(false);
           navigate('/', { replace: true, state: { forceShowMain: true } });
           window.scrollTo(0, 0);
         }}>
-          <img src={AikinLogo} alt="Aikin Logo" className="h-8 w-8" />
-          <span className="font-semibold text-xl">Aikin</span>
+          <img src={AikinLogo} alt="Aikin Logo" className="h-8 w-8 rounded-full" />
+          <span className="font-semibold text-xl text-white">Aikin</span>
         </div>
-        <div className="hidden md:flex flex-1 justify-center">
-          <Input
-            type="text"
-            placeholder="adding a verified tool every hour.."
-            value={searchValue}
-            onChange={(e) => onSearchChange(e.target.value)}
-            onKeyDown={onSearchKeyDown}
-            className="max-w-lg w-full rounded-lg border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          />
+        <div className="hidden md:flex flex-1 justify-start">
+          <div className="relative w-full max-w-lg flex items-center">
+            <span className="absolute left-3 text-gray-400">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <Input
+              type="text"
+              placeholder="adding a verified tool every hour.."
+              value={searchValue}
+              onChange={(e) => onSearchChange(e.target.value)}
+              onKeyDown={onSearchKeyDown}
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary text-white placeholder:text-gray-400 bg-[#19213a]"
+            />
+          </div>
         </div>
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-2 items-center flex-shrink-0">
-          <Button asChild variant="ghost" className="header-btn-outline" >
-            <Link to="/ai-agents">AI Agents</Link>
+        {/* Navigation and buttons remain on the right */}
+        <nav className="hidden md:flex gap-2 items-center flex-shrink-0 ml-auto">
+          <Button asChild variant="ghost" className="header-btn-outline bg-[#10182a] hover:bg-[#10182a] hover:text-white">
+            <Link to="/ai-agents"><span className="text-white">AI Agents</span></Link>
           </Button>
-          <Button asChild variant="ghost" className="header-btn-outline" >
-            <Link to="/mcp-servers">MCP Servers</Link>
+          <Button asChild variant="ghost" className="header-btn-outline bg-[#10182a] hover:bg-[#10182a] hover:text-white">
+            <Link to="/mcp-servers"><span className="text-white">MCP Servers</span></Link>
           </Button>
-          <Button asChild variant="ghost" className="header-btn-outline px-2" >
-            <Link to="/subscription">Advertise</Link>
+          <Button asChild variant="ghost" className="header-btn-outline bg-[#10182a] hover:bg-[#10182a] hover:text-white">
+            <Link to="/subscription"><span className="text-white">Advertise</span></Link>
           </Button>
           {/* More Features Dropdown (remove Advertise from here) */}
           <div className="relative">
-            <Button variant="ghost" className="header-btn-outline flex items-center gap-1 px-2" onClick={() => setShowFeaturesDropdown(v => !v)}>
-              More Features <ChevronDown className="w-4 h-4" />
+            <Button variant="ghost" className="header-btn-outline flex items-center gap-1 px-2 bg-[#10182a] hover:bg-[#10182a] hover:text-white" onClick={() => setShowFeaturesDropdown(v => !v)}>
+              <span className="text-white">More Features</span> <ChevronDown className="w-4 h-4 text-gray-300" />
             </Button>
             {showFeaturesDropdown && (
-              <div className="absolute top-full left-0 bg-white border rounded shadow-lg mt-2 z-50 min-w-[180px]">
-                <Button asChild variant="ghost" className="w-full justify-start px-2 py-2" onClick={() => setShowFeaturesDropdown(false)}>
-                  <Link to="/jobs">Jobs</Link>
+              <div
+                className="absolute top-full left-0 bg-[#10182a] border rounded shadow-lg mt-2 z-50 min-w-[180px]"
+                onMouseLeave={() => setShowFeaturesDropdown(false)}
+              >
+                <Button asChild variant="ghost" className="w-full justify-start px-2 py-2 bg-[#10182a] hover:bg-[#10182a]" onClick={() => setShowFeaturesDropdown(false)}>
+                  <Link to="/jobs"><span className="text-white">Jobs</span></Link>
                 </Button>
-                <Button asChild variant="ghost" className="w-full justify-start px-2 py-2" onClick={() => setShowFeaturesDropdown(false)}>
-                  <Link to="/submit-tool">Submit AI Tool</Link>
+                <Button asChild variant="ghost" className="w-full justify-start px-2 py-2 bg-[#10182a] hover:bg-[#10182a]" onClick={() => setShowFeaturesDropdown(false)}>
+                  <Link to="/submit-tool"><span className="text-white">Submit AI Tool</span></Link>
                 </Button>
               </div>
             )}
@@ -151,22 +159,22 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
                 value={searchValue}
                 onChange={(e) => onSearchChange(e.target.value)}
                 onKeyDown={onSearchKeyDown}
-                className="w-full rounded px-2 py-1 text-sm border shadow-sm focus:outline-none focus:ring-2 focus:ring-primary mb-2"
+                className="w-full rounded px-2 py-1 text-sm border shadow-sm focus:outline-none focus:ring-2 focus:ring-primary mb-2 text-white placeholder:text-gray-400 bg-[#19213a] border-none"
               />
               <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
-                <Link to="/ai-agents">AI Agents</Link>
+                <Link to="/ai-agents" className="text-white">AI Agents</Link>
               </Button>
               <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
-                <Link to="/mcp-servers">MCP Servers</Link>
+                <Link to="/mcp-servers" className="text-white">MCP Servers</Link>
               </Button>
               <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
-                <Link to="/subscription">Advertise</Link>
+                <Link to="/subscription" className="text-white">Advertise</Link>
               </Button>
               <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
-                <Link to="/jobs">Jobs</Link>
+                <Link to="/jobs" className="text-white">Jobs</Link>
               </Button>
               <Button variant="outline" onClick={() => { submitModalRef.current?.open("submit"); setMobileMenuOpen(false); }} className="header-btn-outline w-full">
-                Submit AI Tool
+                <Link to="/submit-tool" className="text-white">Submit AI Tool</Link>
               </Button>
               {currentUser && currentUser.isAdmin && (
                 <Button variant="outline" onClick={() => { navigate("/admin"); setMobileMenuOpen(false); }} className="w-full">Dashboard</Button>
@@ -174,7 +182,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
               {!currentUser ? (
                 <>
                   <Button
-                    className="header-btn"
+                    className="header-btn text-white"
                     onClick={() => {
                       setIsDialogOpen(true);
                       setIsSignUp(false);
@@ -185,14 +193,14 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
                   </Button>
                   <Button
                     variant="outline"
-                    className="header-btn-outline"
+                    className="header-btn-outline bg-[#3A63F1] hover:bg-[#2d4db3] text-white border-none"
                     onClick={() => {
                       setIsDialogOpen(true);
                       setIsSignUp(true);
                       setMobileMenuOpen(false);
                     }}
                   >
-                    Sign up
+                    <span className="text-white">Sign up</span>
                   </Button>
                 </>
               ) : (
@@ -210,7 +218,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
         {!currentUser ? (
           <>
             <Button
-              className="header-btn"
+              className="header-btn text-white"
               onClick={() => {
                 setIsDialogOpen(true);
                 setIsSignUp(false);
@@ -220,13 +228,13 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
             </Button>
             <Button
               variant="outline"
-              className="header-btn-outline"
+              className="header-btn-outline bg-[#3A63F1] hover:bg-[#2d4db3] text-white border-none"
               onClick={() => {
                 setIsDialogOpen(true);
                 setIsSignUp(true);
               }}
             >
-              Sign up
+              <span className="text-white">Sign up</span>
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogContent className="sm:max-w-[400px]">
@@ -363,11 +371,11 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
               setShowJobDialog(false);
               setJobForm({ title: '', company: '', location: '', description: '', link: '' });
             }}>
-              <input className="border rounded px-3 py-2" placeholder="Job Title" value={jobForm.title} onChange={e => setJobForm({ ...jobForm, title: e.target.value })} required />
-              <input className="border rounded px-3 py-2" placeholder="Company Name" value={jobForm.company} onChange={e => setJobForm({ ...jobForm, company: e.target.value })} required />
-              <input className="border rounded px-3 py-2" placeholder="Location" value={jobForm.location} onChange={e => setJobForm({ ...jobForm, location: e.target.value })} required />
-              <input className="border rounded px-3 py-2" placeholder="Job Posting Link" type="url" value={jobForm.link} onChange={e => setJobForm({ ...jobForm, link: e.target.value })} required />
-              <textarea className="border rounded px-3 py-2" placeholder="Job Description" value={jobForm.description} onChange={e => setJobForm({ ...jobForm, description: e.target.value })} required />
+              <input className="border rounded px-3 py-2 text-white placeholder:text-gray-400 bg-[#19213a] border-none" placeholder="Job Title" value={jobForm.title} onChange={e => setJobForm({ ...jobForm, title: e.target.value })} required />
+              <input className="border rounded px-3 py-2 text-white placeholder:text-gray-400 bg-[#19213a] border-none" placeholder="Company Name" value={jobForm.company} onChange={e => setJobForm({ ...jobForm, company: e.target.value })} required />
+              <input className="border rounded px-3 py-2 text-white placeholder:text-gray-400 bg-[#19213a] border-none" placeholder="Location" value={jobForm.location} onChange={e => setJobForm({ ...jobForm, location: e.target.value })} required />
+              <input className="border rounded px-3 py-2 text-white placeholder:text-gray-400 bg-[#19213a] border-none" placeholder="Job Posting Link" type="url" value={jobForm.link} onChange={e => setJobForm({ ...jobForm, link: e.target.value })} required />
+              <textarea className="border rounded px-3 py-2 text-white placeholder:text-gray-400 bg-[#19213a] border-none" placeholder="Job Description" value={jobForm.description} onChange={e => setJobForm({ ...jobForm, description: e.target.value })} required />
               <Button type="submit" className="bg-primary text-white w-full mt-2">Submit Job</Button>
             </form>
           )}
