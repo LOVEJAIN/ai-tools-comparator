@@ -124,8 +124,8 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
                 <Button asChild variant="ghost" className="w-full justify-start px-2 py-2" onClick={() => setShowFeaturesDropdown(false)}>
                   <Link to="/jobs">Jobs</Link>
                 </Button>
-                <Button asChild variant="ghost" className="w-full justify-start px-2 py-2" onClick={() => setShowFeaturesDropdown(false)}>
-                  <Link to="/submit-tool">Submit AI Tool</Link>
+                <Button variant="ghost" className="w-full justify-start px-2 py-2" onClick={() => { submitModalRef.current?.open('submit'); setShowFeaturesDropdown(false); }}>
+                  Submit AI Tool
                 </Button>
               </div>
             )}

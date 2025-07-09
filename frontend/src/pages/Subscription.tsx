@@ -11,7 +11,7 @@ const plans = [
     features: [
       "Published within 3 days",
       "Listed in 'Featured Tools' on home page + Full Tools List",
-      "30 days in 'Aikin Selection' on Homepage",
+      "Lifetime free",
       "Description of up to 165 characters",
       "An extra link to your product page",
       "Indexed on Google"
@@ -28,7 +28,6 @@ const plans = [
       "3 extra links to your product page",
       "You can write a text of up to 1000 words",
       "Add media: videos, audio and images",
-      "60 days in 'Aikin Selection' on Homepage"
     ],
     cta: "Submit your website",
     popular: true
