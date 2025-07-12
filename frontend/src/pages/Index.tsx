@@ -532,76 +532,141 @@ function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header 
-        searchValue={search} 
-        onSearchChange={handleSearchChange} 
-        onSearchKeyDown={handleSearchKeyDown}
-        showMainContent={showMainContent}
-        setShowMainContent={setShowMainContent}
-      />
-      <div className="flex-1 flex flex-col">
-        <AnimatePresence>
-          {!showMainContent && (
-            <>
-              <motion.div
-                key="bubble-landing"
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -40 }}
-                transition={{ duration: 0.6 }}
-                className="flex flex-col items-center justify-center min-h-[60vh]"
-              >
-                <h1 className="text-3xl font-bold mb-6 text-center">What are you interested in exploring today?</h1>
-                <div className="flex flex-col items-center gap-6 w-full px-2 sm:px-4">
-                  {bubbleRows.map((row, rowIdx) => (
-                    <div key={rowIdx} className="flex flex-row flex-wrap justify-center gap-4 sm:gap-8 w-full">
-                      {row.map((cat, i) => (
-                        <motion.button
-                          key={cat.id}
-                          className="rounded-full shadow-lg flex items-center justify-center text-xl font-semibold text-white focus:outline-none"
-                          style={{
-                            width: `${cat.size}px`,
-                            height: `${cat.size}px`,
-                            minWidth: 90,
-                            minHeight: 90,
-                            maxWidth: 180,
-                            maxHeight: 180,
-                            background: "linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%)",
-                            whiteSpace: 'normal',
-                            textAlign: 'center',
-                            padding: '0 10px',
-                            lineHeight: 1.2,
-                            fontSize: cat.fontSize
-                          }}
-                          whileHover={{ scale: 1.08 }}
-                          whileTap={{ scale: 0.97 }}
-                          transition={{ duration: 0.25, ease: 'easeOut' }}
-                          onClick={() => handleBubbleSelect(cat.id)}
-                        >
-                          {cat.name}
-                        </motion.button>
-                      ))}
+    <>
+      {/* Animated Background - Adjusted to match reference image */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-[#0A0F2D] via-[#1A1F40] to-[#0A0F2D]">
+        {/* Subtle radial gradient to mimic light source from reference */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center_bottom,rgba(59,130,246,0.08),transparent_70%)]"></div>
+      </div>
+      <div className="min-h-screen bg-transparent flex flex-col">
+        <Header 
+          searchValue={search} 
+          onSearchChange={handleSearchChange} 
+          onSearchKeyDown={handleSearchKeyDown}
+          showMainContent={showMainContent}
+          setShowMainContent={setShowMainContent}
+        />
+        <div className="flex-1 flex flex-col">
+          <AnimatePresence>
+            {!showMainContent && (
+              <>
+                <motion.div
+                  key="bubble-landing"
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -40 }}
+                  transition={{ duration: 0.6 }}
+                  className="flex flex-col items-center justify-center min-h-[60vh] pt-16 md:pt-24"
+                >
+                  {/* Large heading and subtext, styled to match reference */}
+                  <h1 className="text-4xl md:text-6xl font-extrabold text-center mb-1 text-[#4FC3FF] tracking-tight" style={{ lineHeight: 1.1 }}>
+                    What are you interested in exploring today?
+                  </h1>
+                  <div className="flex flex-col items-center pt-10" style={{ paddingBottom: '2%' }}>
+                    <div className="text-base md:text-xl font-medium text-center text-white mb-2" style={{ marginBottom: '2%' }}>Explore, connect, and create in one place</div>
+                    <div className="text-sm md:text-base text-center text-gray-300 max-w-2xl">
+                      Select a category bubble to see the best AI tools for that area. This helps you focus and not get overwhelmed by all the options!
                     </div>
-                  ))}
-                </div>
-                <p className="mt-8 text-gray-500 text-center max-w-xl">Select a category bubble to see the best AI tools for that area. This helps you focus and not get overwhelmed by all the options!</p>
-              </motion.div>
-              <FeaturedCarousel />
-            </>
-          )}
-        </AnimatePresence>
-        <AnimatePresence>
-          {showMainContent && (
-            <motion.div
-              key="main-content"
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-              transition={{ duration: 0.7 }}
-            >
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-        <main className="container p-4 overflow-x-hidden">
+                  </div>
+                  <div className="flex flex-col items-center gap-6 w-full px-2 sm:px-4 pt-12">
+                    {/* Use a local categories array with icons for the landing bubbles */}
+                    {(() => {
+                      const categoriesWithIcons = [
+                        { name: "Models", icon: "🤖" },
+                        { name: "Chatbots", icon: "💬" },
+                        { name: "Search engines", icon: "🔍" },
+                        { name: "Writing assistants", icon: "✍️" },
+                        { name: "Productivity", icon: "⚡" },
+                        { name: "Meeting assistants", icon: "📅" },
+                        { name: "Academia", icon: "🎓" },
+                        { name: "Customer Support", icon: "🎧" },
+                        { name: "Video Generation", icon: "🎬" },
+                        { name: "Speech", icon: "🎤" },
+                        { name: "Code", icon: "💻" },
+                        { name: "Image", icon: "🎨" },
+                        { name: "Miscellaneous", icon: "🔧" },
+                      ];
+                      const blueShades = [
+                        "from-blue-500 to-blue-600",
+                        "from-cyan-500 to-blue-600",
+                        "from-indigo-500 to-blue-600",
+                        "from-sky-500 to-blue-600",
+                        "from-teal-500 to-cyan-600",
+                      ];
+                      // Use the same bubbleLayout logic for rows
+                      let idx = 0;
+                      return bubbleRows.map((row, rowIdx) => (
+                        <div key={rowIdx} className="flex flex-row flex-wrap justify-center gap-4 sm:gap-8 w-full">
+                          {row.map((cat, i) => {
+                            const catWithIcon = categoriesWithIcons[idx] || { name: cat.name, icon: "" };
+                            const shade = blueShades[idx % blueShades.length];
+                            idx++;
+                            // Categories that need extra width
+                            const extraWideCategories = [
+                              'Miscellaneous',
+                              'Meeting assistants',
+                              'Video Generation',
+                              'Customer Support',
+                              'Writing assistants',
+                              'Search engines',
+                            ];
+                            const isExtraWide = extraWideCategories.includes(catWithIcon.name);
+                            return (
+                              <motion.button
+                                key={cat.id}
+                                className={`rounded-[2.5rem] shadow-lg flex items-center justify-center text-lg md:text-xl font-semibold text-white focus:outline-none transition-all duration-200 bg-gradient-to-r ${shade}`}
+                                style={{
+                                  width: `${cat.size}px`,
+                                  height: '56px',
+                                  minWidth: isExtraWide ? 170 : 140,
+                                  minHeight: 44,
+                                  maxWidth: isExtraWide ? 320 : 260,
+                                  maxHeight: 80,
+                                  whiteSpace: 'normal',
+                                  textAlign: 'center',
+                                  padding: '0 14px',
+                                  lineHeight: 1.1,
+                                  fontSize: 'inherit',
+                                  boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)',
+                                  border: 'none',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.5em',
+                                }}
+                                whileHover={{ scale: 1.08 }}
+                                whileTap={{ scale: 0.97 }}
+                                transition={{ duration: 0.25, ease: 'easeOut' }}
+                                onClick={() => handleBubbleSelect(cat.id)}
+                              >
+                                <span className="mr-2 text-base md:text-lg flex-shrink-0">{catWithIcon.icon}</span>
+                                <span className="text-sm md:text-base font-semibold">{catWithIcon.name}</span>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                  {/* Inserted Featured Tools heading and underline below category bubbles */}
+                  <div className="text-center pt-20">
+                    <h2 className="text-4xl font-bold text-white">Featured Tools</h2>
+                    <div className="w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mt-4 rounded-full animate-expand"></div>
+                  </div>
+                  <FeaturedCarousel />
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {showMainContent && (
+              <motion.div
+                key="main-content"
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
+                transition={{ duration: 0.7 }}
+              >
+                <main className="container p-4 overflow-x-hidden">
                   {/* Sort by Dropdown and Change Category Button */}
           <div className="flex items-center gap-4 mb-4">
             <label className="text-base font-medium">Sort by:</label>
@@ -622,19 +687,6 @@ function Index() {
             </button>
           </div>
                   {/* Category Chips Section (single row, below Sort by) - REMOVED */}
-          {/* Featured AI Tools Section */}
-          <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Featured Tools</h2>
-            <div className="flex gap-4 overflow-x-auto pb-2">
-              {featuredTools
-                .filter(tool => activeCategory === 'all' || tool.category === activeCategory)
-                .map(tool => (
-                  <div key={tool.id} className="w-[260px] flex-shrink-0">
-                    <ItemCard item={tool} />
-                  </div>
-                ))}
-            </div>
-          </section>
           {/* Main 3-column layout */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4" style={{ minHeight: '70vh' }}>
             {/* Left Column - Comparator */}
@@ -1188,65 +1240,65 @@ function Index() {
             </div>
           </div>
         </section>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-        <Footer />
-        {/* List Dialog/Modal */}
-        {listDialog.open && listDialog.list && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative">
-              <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-black"
-                onClick={() => setListDialog({ open: false, list: null })}
-              >✕</button>
-              <h3 className="text-lg font-semibold mb-2">{listDialog.list.title}</h3>
-              <div className="text-xs text-muted-foreground mb-4">by {listDialog.list.creator}</div>
-              <div className="space-y-2">
-                {listDialog.list.tools && listDialog.list.tools.map(tool => {
-                  const fullTool = aiTools.find(t => t.id === tool.id);
-                  return fullTool ? (
-                    <div key={tool.id} className="border rounded p-2 flex items-center gap-2">
-                      {fullTool.imageUrl && <img src={fullTool.imageUrl} alt={fullTool.name} className="w-8 h-8 rounded" />}
-                      <div>
-                        <div className="font-medium">{fullTool.name}</div>
-                        <div className="text-xs text-muted-foreground">{fullTool.description}</div>
-                      </div>
+      <Footer />
+      <Modal open={showCreateListModal} onClose={() => {
+        setShowCreateListModal(false);
+        setEditingList(null);
+        setEditingPrivateList(null);
+      }}>
+        <CreateListForm 
+          onSubmit={editingList ? handleUpdateList : editingPrivateList ? handleUpdatePrivateList : handleAddList} 
+          onCancel={() => {
+            setShowCreateListModal(false);
+            setEditingList(null);
+            setEditingPrivateList(null);
+          }}
+          initialValues={editingList ? {
+            id: editingList.id,
+            title: editingList.title,
+            selected: editingList.tools.map(t => t.id),
+            isPublic: true
+          } : editingPrivateList ? {
+            id: editingPrivateList.id,
+            title: editingPrivateList.title,
+            selected: (editingPrivateList as any).toolIds || [],
+            isPublic: false
+          } : undefined}
+        />
+      </Modal>
+      {/* List Dialog/Modal */}
+      {listDialog.open && listDialog.list && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative">
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+              onClick={() => setListDialog({ open: false, list: null })}
+            >✕</button>
+            <h3 className="text-lg font-semibold mb-2">{listDialog.list.title}</h3>
+            <div className="text-xs text-muted-foreground mb-4">by {listDialog.list.creator}</div>
+            <div className="space-y-2">
+              {listDialog.list.tools && listDialog.list.tools.map(tool => {
+                const fullTool = aiTools.find(t => t.id === tool.id);
+                return fullTool ? (
+                  <div key={tool.id} className="border rounded p-2 flex items-center gap-2">
+                    {fullTool.imageUrl && <img src={fullTool.imageUrl} alt={fullTool.name} className="w-8 h-8 rounded" />}
+                    <div>
+                      <div className="font-medium">{fullTool.name}</div>
+                      <div className="text-xs text-muted-foreground">{fullTool.description}</div>
                     </div>
-                  ) : null;
-                })}
-              </div>
+                  </div>
+                ) : null;
+              })}
             </div>
           </div>
-        )}
-        <Modal open={showCreateListModal} onClose={() => {
-          setShowCreateListModal(false);
-          setEditingList(null);
-          setEditingPrivateList(null);
-        }}>
-          <CreateListForm 
-            onSubmit={editingList ? handleUpdateList : editingPrivateList ? handleUpdatePrivateList : handleAddList} 
-            onCancel={() => {
-              setShowCreateListModal(false);
-              setEditingList(null);
-              setEditingPrivateList(null);
-            }}
-            initialValues={editingList ? {
-              id: editingList.id,
-              title: editingList.title,
-              selected: editingList.tools.map(t => t.id),
-              isPublic: true
-            } : editingPrivateList ? {
-              id: editingPrivateList.id,
-              title: editingPrivateList.title,
-              selected: (editingPrivateList as any).toolIds || [],
-              isPublic: false
-            } : undefined}
-          />
-        </Modal>
-    </div>
+        </div>
+      )}
+    </>
   );
 }
 
