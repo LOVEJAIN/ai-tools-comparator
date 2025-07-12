@@ -23,6 +23,9 @@ CREATE TABLE tool_submissions (
     user_id BIGINT,
     tool_name VARCHAR(255) NOT NULL,
     tool_url VARCHAR(500) NOT NULL,
+    submitter_name VARCHAR(255),
+    submitter_email VARCHAR(255),
+    submitter_mobile VARCHAR(50),
     description TEXT,
     status VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

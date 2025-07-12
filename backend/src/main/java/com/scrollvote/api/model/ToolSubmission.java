@@ -15,6 +15,9 @@ public class ToolSubmission {
     private Long userId;
     private String toolName;
     private String toolUrl;
+    private String submitterName;
+    private String submitterEmail;
+    private String submitterMobile;
     private String description;
     private String status;
     private Timestamp createdAt;

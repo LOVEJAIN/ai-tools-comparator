@@ -131,10 +131,9 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
               >
                 <Button asChild variant="ghost" className="w-full justify-start px-2 py-2 bg-[#10182a] hover:bg-[#10182a]" onClick={() => setShowFeaturesDropdown(false)}>
                   <Link to="/jobs"><span className="text-white">Jobs</span></Link>
-                </Button>
                 <Button asChild variant="ghost" className="w-full justify-start px-2 py-2 bg-[#10182a] hover:bg-[#10182a]" onClick={() => setShowFeaturesDropdown(false)}>
-                  <Link to="/submit-tool"><span className="text-white">Submit AI Tool</span></Link>
-                </Button>
+  <Link to="/submit-tool"><span className="text-white">Submit AI Tool</span></Link>
+                  </Button>
               </div>
             )}
           </div>
