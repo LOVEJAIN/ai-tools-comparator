@@ -559,16 +559,16 @@ function Index() {
                   className="flex flex-col items-center justify-center min-h-[60vh] pt-16 md:pt-24"
                 >
                   {/* Large heading and subtext, styled to match reference */}
-                  <h1 className="text-4xl md:text-6xl font-extrabold text-center mb-1 text-[#4FC3FF] tracking-tight" style={{ lineHeight: 1.1 }}>
+                  <h1 className="text-4xl md:text-6xl font-extrabold text-center text-[#4FC3FF] tracking-tight pt-20" style={{ lineHeight: 1.1 }}>
                     What are you interested in exploring today?
                   </h1>
                   <div className="flex flex-col items-center pt-10" style={{ paddingBottom: '2%' }}>
-                    <div className="text-base md:text-xl font-medium text-center text-white mb-2" style={{ marginBottom: '2%' }}>Explore, connect, and create in one place</div>
-                    <div className="text-sm md:text-base text-center text-gray-300 max-w-2xl">
+                    <div className="text-base md:text-xl font-medium text-center text-white" style={{ marginBottom: '2%' }}>Explore, connect, and create in one place</div>
+                    <div className="text-sm md:text-base text-center text-gray-300 max-w-2xl pb-26">
                       Select a category bubble to see the best AI tools for that area. This helps you focus and not get overwhelmed by all the options!
                     </div>
                   </div>
-                  <div className="flex flex-col items-center gap-6 w-full px-2 sm:px-4 pt-12">
+                  <div className="flex flex-col items-center gap-6 w-full px-2 sm:px-4 pt-24 pb-20">
                     {/* Use a local categories array with icons for the landing bubbles */}
                     {(() => {
                       const categoriesWithIcons = [

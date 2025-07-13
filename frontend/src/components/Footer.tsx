@@ -238,23 +238,25 @@ const Footer: React.FC = () => {
         </div>
         {/* Socials and User Reviews */}
         <div className="flex justify-center mb-8">
-  <div className="bg-gray-800/90 backdrop-blur-sm border border-gray-700 shadow-xl w-full max-w-2xl rounded-xl p-6 flex flex-col items-center">
-    <div className="flex items-center justify-center gap-2 mb-4">
-      <div className="p-2 bg-pink-500/20 rounded-lg">
-        <svg className="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 21C12 21 4 13.5 4 8.5C4 5.42 6.42 3 9.5 3C11.24 3 12.91 3.81 14 5.08C15.09 3.81 16.76 3 18.5 3C21.58 3 24 5.42 24 8.5C24 13.5 16 21 16 21H12Z"/></svg>
+  <div className="bg-gray-800/90 backdrop-blur-sm border border-gray-700 shadow-xl w-full max-w-[72rem] rounded-xl p-4 flex flex-col items-center h-auto min-h-[280px]">
+    <div className="flex items-center justify-center gap-2 mb-3">
+      <div className="p-1 bg-pink-500/20 rounded-lg">
+        <svg className="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path d="M12 21C12 21 4 13.5 4 8.5C4 5.42 6.42 3 9.5 3C11.24 3 12.91 3.81 14 5.08C15.09 3.81 16.76 3 18.5 3C21.58 3 24 5.42 24 8.5C24 13.5 16 21 16 21H12Z"/>
+        </svg>
       </div>
-      <h2 className="text-2xl font-bold text-pink-400">User Reviews</h2>
+      <h2 className="text-xl font-bold text-pink-400">User Reviews</h2>
     </div>
-    <div className="text-6xl text-pink-300 mb-4">“</div>
-    <p className="text-gray-300 italic text-lg mb-4 max-w-xl mx-auto text-center line-clamp-2 min-h-[56px]">
+    <div className="text-4xl text-pink-300 mb-2">“</div>
+    <p className="text-gray-300 italic text-base mb-3 max-w-xl mx-auto text-center line-clamp-2 min-h-[48px]">
       {userReviews[reviewIdx]?.comment || "No comment provided."}
     </p>
-    <p className="text-gray-400 text-sm mb-6">
+    <p className="text-gray-400 text-sm mb-4">
       - {userReviews[reviewIdx] ? getReviewerName(userReviews[reviewIdx]) : ""}
     </p>
     <div className="flex items-center justify-center gap-4">
       <button className="text-gray-400 hover:text-gray-200" onClick={() => setReviewIdx((reviewIdx - 1 + userReviews.length) % userReviews.length)}>
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
       </button>
       <div className="flex gap-2">
         {userReviews.map((_, idx) => (
@@ -266,7 +268,7 @@ const Footer: React.FC = () => {
         ))}
       </div>
       <button className="text-gray-400 hover:text-gray-200" onClick={() => setReviewIdx((reviewIdx + 1) % userReviews.length)}>
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
       </button>
     </div>
   </div>

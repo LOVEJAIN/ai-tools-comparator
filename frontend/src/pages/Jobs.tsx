@@ -86,93 +86,93 @@ export default function Jobs() {
   );
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-[#151c28] flex flex-col">
       <div className="container py-8 flex-1">
         <Button
           variant="outline"
-          className="mb-6"
+          className="mb-6 bg-transparent text-gray-300 border-none hover:bg-[#232b3b] hover:text-white"
           onClick={() => navigate('/', { replace: true, state: { forceShowMain: true } })}
         >
           ← Back to Home
         </Button>
-        <h1 className="text-3xl font-bold mb-6">AI Job Offers</h1>
+        <h1 className="text-4xl font-extrabold mb-6 text-white">AI Job Offers</h1>
         {isVerified && (
-          <Button className="mb-6" onClick={() => setShowJobDialog(true)}>
+          <Button className="mb-6 bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setShowJobDialog(true)}>
             Submit Job
           </Button>
         )}
         <Dialog open={showJobDialog} onOpenChange={setShowJobDialog}>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-[500px] bg-[#232b3b] text-white">
             <DialogHeader>
-              <DialogTitle>Submit a Job Opportunity</DialogTitle>
+              <DialogTitle className="text-white">Submit a Job Opportunity</DialogTitle>
             </DialogHeader>
             {jobSuccess ? (
-              <div className="text-green-600 text-center py-4">Job posted successfully!</div>
+              <div className="text-green-400 text-center py-4">Job posted successfully!</div>
             ) : (
               <form className="flex flex-col gap-3" onSubmit={handleJobSubmit}>
-                <input className="border rounded px-3 py-2" placeholder="Job Title" value={jobForm.title} onChange={e => setJobForm({ ...jobForm, title: e.target.value })} required />
-                <input className="border rounded px-3 py-2" placeholder="Company Name" value={jobForm.company} onChange={e => setJobForm({ ...jobForm, company: e.target.value })} required />
-                <input className="border rounded px-3 py-2" placeholder="Location" value={jobForm.location} onChange={e => setJobForm({ ...jobForm, location: e.target.value })} required />
-                <select className="border rounded px-3 py-2" value={jobForm.level} onChange={e => setJobForm({ ...jobForm, level: e.target.value })} required>
+                <input className="bg-[#151c28] border-none rounded px-3 py-2 text-white placeholder-gray-400" placeholder="Job Title" value={jobForm.title} onChange={e => setJobForm({ ...jobForm, title: e.target.value })} required />
+                <input className="bg-[#151c28] border-none rounded px-3 py-2 text-white placeholder-gray-400" placeholder="Company Name" value={jobForm.company} onChange={e => setJobForm({ ...jobForm, company: e.target.value })} required />
+                <input className="bg-[#151c28] border-none rounded px-3 py-2 text-white placeholder-gray-400" placeholder="Location" value={jobForm.location} onChange={e => setJobForm({ ...jobForm, location: e.target.value })} required />
+                <select className="bg-[#151c28] border-none rounded px-3 py-2 text-white" value={jobForm.level} onChange={e => setJobForm({ ...jobForm, level: e.target.value })} required>
                   <option value="">Select Level</option>
                   {levels.map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
-                <select className="border rounded px-3 py-2" value={jobForm.sector} onChange={e => setJobForm({ ...jobForm, sector: e.target.value })} required>
+                <select className="bg-[#151c28] border-none rounded px-3 py-2 text-white" value={jobForm.sector} onChange={e => setJobForm({ ...jobForm, sector: e.target.value })} required>
                   <option value="">Select Sector</option>
                   {sectors.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
-                <input className="border rounded px-3 py-2" placeholder="Job Posting Link" type="url" value={jobForm.link} onChange={e => setJobForm({ ...jobForm, link: e.target.value })} required />
-                <textarea className="border rounded px-3 py-2" placeholder="Job Description" value={jobForm.description} onChange={e => setJobForm({ ...jobForm, description: e.target.value })} required />
-                <Button type="submit" className="bg-primary text-white w-full mt-2">Submit Job</Button>
+                <input className="bg-[#151c28] border-none rounded px-3 py-2 text-white placeholder-gray-400" placeholder="Job Posting Link" type="url" value={jobForm.link} onChange={e => setJobForm({ ...jobForm, link: e.target.value })} required />
+                <textarea className="bg-[#151c28] border-none rounded px-3 py-2 text-white placeholder-gray-400" placeholder="Job Description" value={jobForm.description} onChange={e => setJobForm({ ...jobForm, description: e.target.value })} required />
+                <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white w-full mt-2">Submit Job</Button>
               </form>
             )}
           </DialogContent>
         </Dialog>
         <div className="flex gap-4 mb-6 flex-wrap">
-          <select value={level} onChange={e => setLevel(e.target.value)} className="border rounded px-3 py-2">
+          <select value={level} onChange={e => setLevel(e.target.value)} className="bg-[#232b3b] text-gray-200 border-none rounded px-3 py-2 focus:ring-2 focus:ring-blue-500">
             <option value="">All Levels</option>
             {levels.map(l => <option key={l} value={l}>{l}</option>)}
           </select>
-          <select value={sector} onChange={e => setSector(e.target.value)} className="border rounded px-3 py-2">
+          <select value={sector} onChange={e => setSector(e.target.value)} className="bg-[#232b3b] text-gray-200 border-none rounded px-3 py-2 focus:ring-2 focus:ring-blue-500">
             <option value="">All Sectors</option>
             {sectors.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
-          <select value={location} onChange={e => setLocation(e.target.value)} className="border rounded px-3 py-2">
+          <select value={location} onChange={e => setLocation(e.target.value)} className="bg-[#232b3b] text-gray-200 border-none rounded px-3 py-2 focus:ring-2 focus:ring-blue-500">
             <option value="">All Locations</option>
             {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
           </select>
         </div>
         <div className="overflow-y-auto" style={{ maxHeight: 600 }}>
           {loading ? (
-            <div className="text-center text-gray-500">Loading jobs...</div>
+            <div className="text-center text-gray-400">Loading jobs...</div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredJobs.filter(job => job.id).map((job, idx) => (
-                <div key={job.id} className="bg-white rounded-lg shadow p-6 flex flex-col gap-2 border">
+                <div key={job.id} className="bg-[#232b3b] rounded-lg shadow-lg p-6 flex flex-col gap-2 border border-[#232b3b] hover:border-blue-600 transition">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold">{job.title}</h2>
+                    <h2 className="text-xl font-bold text-white">{job.title}</h2>
                     {isAdmin && (
                       <button
-                        className="ml-2 px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition text-xs font-semibold"
+                        className="ml-2 px-3 py-1 bg-red-900 text-red-300 rounded hover:bg-red-700 transition text-xs font-semibold"
                         onClick={() => handleDeleteJob(job.id)}
                       >
                         Delete
                       </button>
                     )}
                   </div>
-                  <div className="text-gray-600 text-sm">{job.company} &bull; {job.location} &bull; {job.level} &bull; {job.sector}</div>
-                  <p className="text-gray-700 mt-2">{job.description}</p>
+                  <div className="text-gray-400 text-sm">{job.company} &bull; {job.location} &bull; {job.level} &bull; {job.sector}</div>
+                  <p className="text-gray-200 mt-2">{job.description}</p>
                   {job.link && (
                     <a
                       href={job.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-2 inline-block text-blue-600 hover:underline text-sm font-medium"
+                      className="mt-2 inline-block text-blue-400 hover:underline text-sm font-medium"
                     >
                       View Job Posting
                     </a>
                   )}
-                  {job.postedBy && <div className="text-xs text-gray-400 mt-2">Posted by: {job.postedBy}</div>}
+                  {job.postedBy && <div className="text-xs text-gray-500 mt-2">Posted by: {job.postedBy}</div>}
                 </div>
               ))}
               {filteredJobs.length === 0 && <div className="col-span-3 text-center text-gray-500">No jobs found for selected filters.</div>}
