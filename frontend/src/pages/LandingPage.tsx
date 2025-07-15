@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AikinLogo from "../assets/aikin-logo.png";
 import { GoogleLogin } from '@react-oauth/google';
@@ -13,6 +13,7 @@ const LandingPage: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const uspRef = useRef<HTMLDivElement | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -195,32 +196,41 @@ const LandingPage: React.FC = () => {
               size="lg"
               variant="outline"
               className="border-slate-700 text-white hover:bg-slate-800 px-8 py-3 bg-transparent transition-all duration-300 hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20"
-              onClick={() => navigate("/home")}
+              onClick={() => {
+                const uspSection = document.getElementById('usp-section');
+                if (uspSection) {
+                  uspSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
             >
               Explore Features
             </Button>
           </div>
         </main>
-        {/* Call to Action Section */}
-        <section className="w-full bg-[#3a236e] py-24 flex flex-col items-center justify-center">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6 text-center">Ready to start innovating?</h2>
-          <p className="text-xl text-gray-200 mb-10 text-center max-w-2xl">Join thousands of creators and teams who are already building the future with our platform.</p>
-          <form className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full max-w-xl">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              className="w-[260px] sm:w-[320px] px-4 py-3 rounded-lg bg-[#2a2047] text-white border border-transparent focus:border-purple-400 focus:ring-2 focus:ring-purple-500/30 placeholder:text-gray-400 text-lg"
-              required
-            />
-            <Button
-              type="submit"
-              size="lg"
-              className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-8 py-3 rounded-lg font-semibold text-lg border-2 border-transparent hover:border-purple-400 shadow hover:shadow-purple-500/20 transition-all duration-300"
-            >
-              Get Started
-            </Button>
-          </form>
-        </section>
+        {/* USP Section - replaces Call to Action Section */}
+        <section id="usp-section" ref={uspRef} className="w-full flex flex-col items-center justify-center">
+            {/* All sections use the same bg color for theme consistency */}
+            {/* USP 1: Blends */}
+            <div className="w-full py-24 flex flex-col items-center justify-center bg-[#2a2047]">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center">Blends</h2>
+              <p className="text-xl text-gray-200 mb-6 text-center max-w-2xl">Combine multiple AI tools into powerful workflows. Create, share, and discover unique blends tailored to your needs.</p>
+            </div>
+            {/* USP 2: Lists */}
+            <div className="w-full py-24 flex flex-col items-center justify-center bg-[#2a2047]">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center">Lists</h2>
+              <p className="text-xl text-gray-200 mb-6 text-center max-w-2xl">Curate and organize your favorite tools into lists. Share them with the community or keep them private for your team.</p>
+            </div>
+            {/* USP 3: Directories */}
+            <div className="w-full py-24 flex flex-col items-center justify-center bg-[#2a2047]">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center">Directories</h2>
+              <p className="text-xl text-gray-200 mb-6 text-center max-w-2xl">Explore comprehensive directories of AI tools, categorized for easy discovery. Find the right tool for any task.</p>
+            </div>
+            {/* USP 4: Submit & Advertise */}
+            <div className="w-full py-24 flex flex-col items-center justify-center bg-[#2a2047]">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center">Submit & Advertise</h2>
+              <p className="text-xl text-gray-200 mb-6 text-center max-w-2xl">Submit your own AI tool or advertise to reach thousands of innovators. Get discovered and grow your audience.</p>
+            </div>
+          </section>
       </div>
     </div>
   );

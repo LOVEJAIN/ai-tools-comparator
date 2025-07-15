@@ -106,8 +106,8 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
 
   return (
     <>
-      <Card className="h-full flex flex-col overflow-hidden min-h-[210px]">
-        <CardContent className="flex-1 flex flex-col items-center justify-center p-2 pb-1">
+      <Card className="h-full flex flex-col overflow-hidden min-h-[210px] w-full">
+        <CardContent className="flex-1 flex flex-col items-center justify-center p-2 pb-1 h-full w-full">
           <div className="w-full flex flex-col items-center">
             <img
               src={imageSrc}
