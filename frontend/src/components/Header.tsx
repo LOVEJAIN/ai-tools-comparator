@@ -84,16 +84,16 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
 
   return (
     <header className="w-full bg-[#10182a]">
-      <div className="container flex h-16 items-center px-0 sm:px-0 gap-2 md:flex-nowrap">
-        <div className="flex items-center gap-2 cursor-pointer flex-shrink-0 -ml-8" onClick={() => {
+      <div className="container flex h-16 items-center px-2 sm:px-4 md:px-8 gap-2 flex-wrap justify-between min-w-0">
+        <div className="flex items-center gap-2 cursor-pointer flex-shrink-0 min-w-0" onClick={() => {
           if (setShowMainContent) setShowMainContent(false);
           navigate('/', { replace: true, state: { forceShowMain: true } });
           window.scrollTo(0, 0);
         }}>
-          <img src={AikinLogo} alt="Aikin Logo" className="h-8 w-8 rounded-full" />
-          <span className="font-semibold text-xl text-white">Aikin</span>
+          <img src={AikinLogo} alt="Aikin Logo" className="h-8 w-8 md:h-10 md:w-10 rounded-full" />
+          <span className="font-semibold text-lg md:text-xl text-white ml-1">Aikin</span>
         </div>
-        <div className="hidden md:flex flex-1 justify-start ml-6">
+        <div className="hidden md:flex flex-1 justify-start ml-2">
           <div className="relative w-full max-w-lg flex items-center">
             <span className="absolute left-3 text-gray-400">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -129,11 +129,14 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
                 className="absolute top-full left-0 bg-[#10182a] border rounded shadow-lg mt-2 z-50 min-w-[180px]"
                 onMouseLeave={() => setShowFeaturesDropdown(false)}
               >
-                <Button asChild variant="ghost" className="w-full justify-start px-2 py-2 bg-[#10182a] hover:bg-[#10182a]" onClick={() => setShowFeaturesDropdown(false)}>
-                  <Link to="/jobs"><span className="text-white">Jobs</span></Link>
+                <Button asChild variant="ghost" className="w-full justify-start px-2 py-2 bg-[#10182a] hover:bg-[#10182a]" onClick={() => {
+                  submitModalRef.current?.open("submit");
+                  setShowFeaturesDropdown(false);
+                }}>
+                  <span className="text-white">Submit AI Tool</span>
                 </Button>
                 <Button asChild variant="ghost" className="w-full justify-start px-2 py-2 bg-[#10182a] hover:bg-[#10182a]" onClick={() => setShowFeaturesDropdown(false)}>
-                  <Link to="/submit-tool"><span className="text-white">Submit AI Tool</span></Link>
+                  <Link to="/jobs"><span className="text-white">Jobs</span></Link>
                 </Button>
               </div>
             )}
@@ -143,7 +146,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
           <Button variant="outline" className="hidden md:inline-flex" onClick={() => navigate("/admin")}>Dashboard</Button>
         )}
         {/* Mobile Nav: only show hamburger and logo on small screens */}
-        <div className="flex md:hidden items-center gap-0">
+        <div className="flex md:hidden items-center gap-2 flex-wrap justify-end flex-1">
           <Button variant="outline" size="sm" className="px-2 py-1" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
@@ -174,15 +177,13 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
                 <Link to="/jobs" className="text-white">Jobs</Link>
               </Button>
               <Button variant="outline" onClick={() => { submitModalRef.current?.open("submit"); setMobileMenuOpen(false); }} className="header-btn-outline w-full">
-                <Link to="/submit-tool" className="text-white">Submit AI Tool</Link>
+                <span className="text-white">Submit AI Tool</span>
               </Button>
-              {currentUser && currentUser.isAdmin && (
-                <Button variant="outline" onClick={() => { navigate("/admin"); setMobileMenuOpen(false); }} className="w-full">Dashboard</Button>
-              )}
+              {/* Only show Log in and Sign up once in the mobile dropdown if not logged in */}
               {!currentUser ? (
                 <>
                   <Button
-                    className="header-btn text-white"
+                    className="header-btn text-white w-full"
                     onClick={() => {
                       setIsDialogOpen(true);
                       setIsSignUp(false);
@@ -193,20 +194,20 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
                   </Button>
                   <Button
                     variant="outline"
-                    className="header-btn-outline bg-[#3A63F1] hover:bg-[#2d4db3] text-white border-none"
+                    className="header-btn-outline bg-[#3A63F1] hover:bg-[#2d4db3] text-white border-none w-full"
                     onClick={() => {
                       setIsDialogOpen(true);
                       setIsSignUp(true);
                       setMobileMenuOpen(false);
                     }}
                   >
-                    <span className="text-white">Sign up</span>
+                    Sign up
                   </Button>
                 </>
               ) : (
                 <Button
                   variant="outline"
-                  className="header-btn-outline"
+                  className="header-btn-outline w-full"
                   onClick={handleLogout}
                 >
                   Sign out
@@ -215,6 +216,9 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
             </div>
           </div>
         )}
+        {/* REMOVE Log in and Sign up buttons from the header bar (outside mobile dropdown) */}
+        {/* The following block is removed: */}
+        {/*
         {!currentUser ? (
           <>
             <Button
@@ -354,6 +358,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
             </Button>
           </div>
         )}
+        */}
       </div>
       <SubmitToolModal ref={submitModalRef} />
       <Dialog open={showJobDialog} onOpenChange={setShowJobDialog}>

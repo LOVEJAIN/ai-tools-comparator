@@ -28,11 +28,12 @@ const FeaturedItems: React.FC = () => {
         <h2 className="text-2xl font-bold mb-4">Featured Picks</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredItems.map((item) => (
-            <FeaturedItemCard 
-              key={item.id} 
-              item={item} 
-              onClick={() => handleItemClick(item.id, item.url)} 
-            />
+            <div key={item.id} className="w-full min-h-[260px] h-[260px] flex">
+              <FeaturedItemCard 
+                item={item} 
+                onClick={() => handleItemClick(item.id, item.url)} 
+              />
+            </div>
           ))}
         </div>
       </div>
