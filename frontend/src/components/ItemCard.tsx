@@ -106,7 +106,10 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
 
   return (
     <>
-      <Card className="h-full flex flex-col overflow-hidden min-h-[210px]">
+      <Card 
+        className="h-full flex flex-col overflow-hidden min-h-[210px] cursor-pointer hover:shadow-md transition-shadow duration-200"
+        onClick={handleItemClick}
+      >
         <CardContent className="flex-1 flex flex-col items-center justify-center p-2 pb-1">
           <div className="w-full flex flex-col items-center">
             <img
