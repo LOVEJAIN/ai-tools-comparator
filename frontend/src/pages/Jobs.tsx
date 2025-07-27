@@ -90,7 +90,7 @@ export default function Jobs() {
       <div className="container py-8 flex-1">
         <Button
           variant="outline"
-          className="mb-6 bg-transparent text-gray-300 border-none hover:bg-[#232b3b] hover:text-white"
+          className="mb-6 bg-transparent text-gray-300 border-none hover:bg-[#232b3b] hover:text-white focus:outline-none focus:ring-0 focus:bg-transparent"
           onClick={() => navigate('/', { replace: true, state: { forceShowMain: true } })}
         >
           ← Back to Home

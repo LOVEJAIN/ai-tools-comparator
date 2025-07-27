@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useData } from "@/contexts/DataContext";
 import Modal from "./Modal";
 import { toast } from "react-hot-toast";
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Plus, ChevronRight } from 'lucide-react';
 
 const API_BASE_URL = "https://backend-service-production-3bc1.up.railway.app";
 
@@ -88,34 +91,74 @@ const BlendComponent = () => {
 
   return (
     <section className="max-w-5xl mx-auto mb-12">
-      <h2 className="text-2xl font-bold mb-6 text-center">Blends: Combine Tools for Powerful Workflows</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center text-white">
+        Blends: Combine Tools for Powerful Workflows
+      </h2>
       <div className="overflow-x-auto pb-2">
         <div className="flex flex-col md:flex-row gap-8 w-full md:min-w-[700px]">
           {blends.map((blend, index) => (
-            <div key={blend.id || index} className="bg-gradient-to-br from-blue-50 to-purple-100 rounded-2xl shadow-lg p-4 md:p-6 flex flex-col gap-3 w-full md:min-w-[350px] md:max-w-[400px]">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-lg font-bold text-blue-700">{blend.title}</span>
-                <span className="ml-auto text-xs bg-blue-200 text-blue-800 px-3 py-1 rounded-full">{blend.useCaseTag}</span>
+            <Card
+              key={blend.id || index}
+              className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-xl border-0 hover:shadow-2xl transition-all duration-300 group w-full md:min-w-[350px] md:max-w-[400px]"
+            >
+              <CardHeader className="pb-4 bg-gradient-to-r from-purple-50/50 to-pink-50/30 rounded-t-3xl">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
+                      <span className="text-white font-bold text-lg">🎬</span>
+                    </div>
+                    <div>
+                      <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 group-hover:from-purple-700 group-hover:to-pink-700 transition-all">
+                        {blend.title}
+                      </CardTitle>
+                      <Badge className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border border-purple-200 rounded-full px-3 py-1">
+                        {blend.useCaseTag}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <div className="flex -space-x-2">
+                      <div className="w-6 h-6 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
+                      <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-sm"></div>
+                      <div className="w-6 h-6 bg-purple-500 rounded-full border-2 border-white shadow-sm"></div>
+                    </div>
+                    <span>{blend.tools.split(',').length} tools</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0 px-8 pb-8">
+                {/* Tools List */}
+                <div className="flex flex-wrap gap-3 mb-6">
+                  {blend.tools.split(',').map((tool, i) => (
+                    <div
+                      key={tool.trim()}
+                      className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-all duration-200 cursor-pointer bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300`}
+                    >
+                      <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+                      <span className="font-medium">{tool.trim()}</span>
+                      <Plus className="w-4 h-4 text-gray-400" />
+                    </div>
+                  ))}
+                </div>
+                {/* Description */}
+                <div className="bg-gradient-to-r from-gray-50 to-blue-50/30 rounded-xl p-4 border border-gray-100">
+                  <p className="text-gray-700 font-medium flex items-center gap-2">
+                    <span className="text-purple-500">✨</span>
+                    {blend.description}
+                    <ChevronRight className="w-4 h-4 text-gray-400 ml-auto group-hover:text-purple-500 group-hover:translate-x-1 transition-all duration-200" />
+                  </p>
+                </div>
                 {isVerified && (
                   <button
-                    className="ml-2 text-red-600 hover:text-red-800 text-lg font-bold bg-transparent border-none cursor-pointer"
+                    className="mt-2 text-red-600 hover:text-red-800 text-lg font-bold bg-transparent border-none cursor-pointer"
                     title="Delete Blend"
                     onClick={() => handleDeleteBlend(blend.id)}
                   >
                     🗑️
                   </button>
                 )}
-              </div>
-              <div className="flex gap-2 items-center mb-2 flex-wrap">
-                {blend.tools.split(',').map((tool, i) => (
-                  <React.Fragment key={i}>
-                    <span className="bg-white rounded-full px-3 py-1 font-semibold text-gray-700 shadow">{tool.trim()}</span>
-                    {i < blend.tools.split(',').length - 1 && <span className="text-xl font-bold text-gray-400">+</span>}
-                  </React.Fragment>
-                ))}
-              </div>
-              <p className="text-gray-700 text-sm">{blend.description}</p>
-            </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </div>

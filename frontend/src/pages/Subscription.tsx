@@ -58,7 +58,7 @@ export default function Subscription() {
     <div className="min-h-screen bg-slate-900 text-white flex flex-col">
       {/* Back to Home */}
       <div className="absolute top-6 left-6 z-20">
-        <Button variant="ghost" className="text-gray-400 hover:text-white p-0 h-auto" onClick={() => navigate('/', { replace: true, state: { forceShowMain: true } })}>
+        <Button variant="ghost" className="text-gray-400 hover:text-white p-0 h-auto focus:outline-none focus:ring-0 focus:bg-transparent hover:bg-transparent active:bg-transparent" onClick={() => navigate('/', { replace: true, state: { forceShowMain: true } })}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Button>

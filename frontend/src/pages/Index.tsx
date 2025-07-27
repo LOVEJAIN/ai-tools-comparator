@@ -109,7 +109,7 @@ function Index() {
 
   const filteredTools = useMemo(() => {
     return aiTools.filter(tool => {
-      const matchesSearch = tool.name.toLowerCase().includes(search.toLowerCase());
+      const matchesSearch = tool.name.toLowerCase().includes(search.trim().toLowerCase());
       const matchesCategory = activeCategory === 'all' 
         ? true 
         : activeCategory === 'miscellaneous' 
@@ -669,7 +669,7 @@ function Index() {
                 <main className="container p-4 overflow-x-hidden">
                   {/* Sort by Dropdown and Change Category Button */}
           <div className="flex items-center gap-4 mb-4">
-            <label className="text-base font-medium">Sort by:</label>
+            <label className="text-base font-medium text-white">Sort by:</label>
             <select
               value={sortOrder}
               onChange={e => setSortOrder(e.target.value as any)}
@@ -691,98 +691,103 @@ function Index() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4" style={{ minHeight: '70vh' }}>
             {/* Left Column - Comparator */}
             <div className="col-span-1 md:col-span-3 min-w-0">
-              <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)]">
-                <CardHeader>
-                  <CardTitle>Compare Tools</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col gap-4">
-                  <div className="mb-2">
-                    <label className="block text-sm font-medium mb-1">Category</label>
-                    <select
-                      value={activeCategory}
-                      onChange={e => {
-                        setActiveCategory(e.target.value);
-                        setTool1("");
-                        setTool2("");
-                      }}
-                      className="border rounded px-2 py-1 w-full"
-                    >
-                      <option value="">Select Category</option>
-                      {uniqueCategories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
+              <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 p-1 rounded-xl shadow-2xl">
+                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-6 h-full">
+                  <div className="flex items-center gap-2 mb-6">
+                    {/* Replace with <Zap className="w-6 h-6 text-yellow-400" /> if Lucide is available */}
+                    <span className="w-6 h-6 text-yellow-400">⚡</span>
+                    <h2 className="text-xl font-bold text-white">Compare Tools</h2>
                   </div>
-                  <div className="mb-2">
-                    <label className="block text-sm font-medium mb-1">Tool 1</label>
-                    <div
-                      onDragOver={e => e.preventDefault()}
-                      onDrop={() => {
-                        if (draggedToolId) setTool1(draggedToolId);
-                        setDraggedToolId(null);
-                      }}
-                    >
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block text-cyan-300">Category</label>
                       <select
-                        value={tool1}
-                        onChange={e => setTool1(e.target.value)}
-                        className="border rounded px-2 py-1 w-full"
-                        disabled={!activeCategory}
+                        value={activeCategory}
+                        onChange={e => {
+                          setActiveCategory(e.target.value);
+                          setTool1("");
+                          setTool2("");
+                        }}
+                        className="bg-slate-700 border-slate-600 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-cyan-500"
                       >
-                        <option value="">Select Tool 1</option>
-                        {toolsInCategory.map(tool => (
-                          <option key={tool.id} value={tool.id}>{tool.name}</option>
+                        <option value="">Select Category</option>
+                        {uniqueCategories.map(cat => (
+                          <option key={cat.id} value={cat.id}>{cat.name}</option>
                         ))}
                       </select>
                     </div>
-                  </div>
-                  <div className="mb-2">
-                    <label className="block text-sm font-medium mb-1">Tool 2</label>
-                    <div
-                      onDragOver={e => e.preventDefault()}
-                      onDrop={() => {
-                        if (draggedToolId) setTool2(draggedToolId);
-                        setDraggedToolId(null);
-                      }}
-                    >
-                      <select
-                        value={tool2}
-                        onChange={e => setTool2(e.target.value)}
-                        className="border rounded px-2 py-1 w-full"
-                        disabled={!activeCategory}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block text-cyan-300">Tool 1</label>
+                      <div
+                        onDragOver={e => e.preventDefault()}
+                        onDrop={() => {
+                          if (draggedToolId) setTool1(draggedToolId);
+                          setDraggedToolId(null);
+                        }}
                       >
-                        <option value="">Select Tool 2</option>
-                        {toolsInCategory.map(tool => (
-                          <option key={tool.id} value={tool.id}>{tool.name}</option>
-                        ))}
-                      </select>
+                        <select
+                          value={tool1}
+                          onChange={e => setTool1(e.target.value)}
+                          className="bg-slate-700 border-slate-600 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                          disabled={!activeCategory}
+                        >
+                          <option value="">Select Tool 1</option>
+                          {toolsInCategory.map(tool => (
+                            <option key={tool.id} value={tool.id}>{tool.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block text-cyan-300">Tool 2</label>
+                      <div
+                        onDragOver={e => e.preventDefault()}
+                        onDrop={() => {
+                          if (draggedToolId) setTool2(draggedToolId);
+                          setDraggedToolId(null);
+                        }}
+                      >
+                        <select
+                          value={tool2}
+                          onChange={e => setTool2(e.target.value)}
+                          className="bg-slate-700 border-slate-600 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                          disabled={!activeCategory}
+                        >
+                          <option value="">Select Tool 2</option>
+                          {toolsInCategory.map(tool => (
+                            <option key={tool.id} value={tool.id}>{tool.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    {(activeCategory !== 'all' || tool1 || tool2) && (
+                      <button
+                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 rounded-lg py-2 font-semibold flex items-center justify-center transition"
+                        onClick={() => {
+                          setActiveCategory('all');
+                          setTool1("");
+                          setTool2("");
+                        }}
+                        type="button"
+                      >
+                        {/* Replace with <Sparkles className="w-4 h-4 mr-2" /> if Lucide is available */}
+                        <span className="w-4 h-4 mr-2">✨</span>
+                        Clear Selection
+                      </button>
+                    )}
+                    <div className="pt-4 border-t border-slate-600">
+                      <div className="flex gap-2 text-sm text-cyan-300">
+                        <span>Filters:</span>
+                        <span className="px-2 py-0.5 border border-cyan-300 rounded-full text-cyan-300">Rating</span>
+                        <span className="px-2 py-0.5 border border-cyan-300 rounded-full text-cyan-300">Reviews</span>
+                      </div>
                     </div>
                   </div>
-                  {/* Clear/Reset button */}
-                  {(activeCategory !== 'all' || tool1 || tool2) && (
-                    <button
-                      className="border rounded px-2 py-1 w-full mb-2 bg-gray-100 hover:bg-gray-200 transition"
-                      onClick={() => {
-                        setActiveCategory('all');
-                        setTool1("");
-                        setTool2("");
-                      }}
-                      type="button"
-                    >
-                      Clear Selection
-                    </button>
-                  )}
-                  {/* Filters (rating, review count, etc.) */}
-                  <div className="flex gap-2 mb-2">
-                    <span className="text-xs">Filters:</span>
-                    <span className="text-xs">Rating</span>
-                    <span className="text-xs">Reviews</span>
-                    {/* Add more filters as needed */}
-                  </div>
-                  {/* Side-by-side comparison */}
+                  {/* Side-by-side comparison (leave as is, below the new UI) */}
                   {toolObj1 && toolObj2 && (
                     <div className="mt-2 border-t pt-2">
-                      <div className="font-semibold mb-2">Comparison</div>
-                      <table className="w-full text-xs">
+                      <div className="font-semibold mb-2 text-white">Comparison</div>
+                      <table className="w-full text-xs text-white">
                         <thead>
                           <tr>
                             <th className="text-left">Feature</th>
@@ -813,169 +818,215 @@ function Index() {
                           </tr>
                           <tr>
                             <td className="font-medium">URL</td>
-                            <td className="text-center"><a href={toolObj1.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Visit</a></td>
-                            <td className="text-center"><a href={toolObj2.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Visit</a></td>
+                            <td className="text-center"><a href={toolObj1.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">Visit</a></td>
+                            <td className="text-center"><a href={toolObj2.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">Visit</a></td>
                           </tr>
                         </tbody>
                       </table>
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
             {/* Middle Column - AI Tools Grid with Search/Filter */}
             <div className="col-span-1 md:col-span-6 min-w-0">
-              <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)]">
-                <CardHeader>
-                  <CardTitle>AI Tools</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <ScrollArea className="flex-1">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {paginatedTools.map((tool) => (
-                        <div
-                          key={tool.id}
-                          className=""
-                          draggable
-                          onDragStart={() => setDraggedToolId(tool.id)}
-                          onDragEnd={() => setDraggedToolId(null)}
-                        >
-                          <ItemCard
-                            item={{
-                              ...tool,
-                              title: tool.name,
-                              votes: 0,
-                              reviewsCount: tool.reviewCount,
-                              createdAt: '2024-01-01T00:00:00.000Z',
-                              imageUrl: tool.imageUrl || '',
-                            }}
-                          />
+              <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 p-1 rounded-xl shadow-2xl h-full">
+                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-6 h-full">
+                  <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)] bg-transparent shadow-none border-none">
+                  <CardHeader>
+                    <CardTitle className="text-white">AI Tools</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-1 flex flex-col">
+                    <ScrollArea className="flex-1">
+                      {paginatedTools.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-60 text-center pt-20">
+                          <p className="text-lg text-gray-600 mb-2">No matches found.</p>
+                          <p className="text-sm text-gray-500">You can try another search or explore trending tools.</p>
                         </div>
-                      ))}
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {paginatedTools.map((tool) => (
+                            <div
+                              key={tool.id}
+                              className=""
+                              draggable
+                              onDragStart={() => setDraggedToolId(tool.id)}
+                              onDragEnd={() => setDraggedToolId(null)}
+                            >
+                              <ItemCard
+                                item={{
+                                  ...tool,
+                                  title: tool.name,
+                                  votes: 0,
+                                  reviewsCount: tool.reviewCount,
+                                  createdAt: '2024-01-01T00:00:00.000Z',
+                                  imageUrl: tool.imageUrl || '',
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </ScrollArea>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Showing {paginatedTools.length > 50 ? 50 : paginatedTools.length} of {filteredTools.length} tools
                     </div>
-                  </ScrollArea>
-                  <div className="text-xs text-muted-foreground mt-2">
-                    Showing {paginatedTools.length > 50 ? 50 : paginatedTools.length} of {filteredTools.length} tools
-                  </div>
-                  {totalPages > 1 && (
-                    <Pagination className="mt-6">
-                      <PaginationContent>
-                        {/* Previous Arrow */}
-                        <PaginationItem>
-                          <PaginationPrevious
-                            onClick={e => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}
-                            href="#"
-                            className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
-                          />
-                        </PaginationItem>
+                    {totalPages > 1 && (
+                      <Pagination className="mt-6">
+                        <PaginationContent>
+                          {/* Previous Arrow */}
+                          <PaginationItem>
+                            <PaginationPrevious
+                              onClick={e => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}
+                              href="#"
+                              className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                            />
+                          </PaginationItem>
 
-                        {/* First Page */}
-                        {currentPage > 2 && (
-                          <>
+                          {/* First Page */}
+                          {currentPage > 2 && (
+                            <>
+                              <PaginationItem>
+                                <PaginationLink
+                                  isActive={currentPage === 1}
+                                  href="#"
+                                  onClick={e => { e.preventDefault(); setCurrentPage(1); }}
+                                >
+                                  1
+                                </PaginationLink>
+                              </PaginationItem>
+                              {currentPage > 3 && (
+                                <PaginationItem>
+                                  <span className="px-2">...</span>
+                                </PaginationItem>
+                              )}
+                            </>
+                          )}
+
+                          {/* Previous Page */}
+                          {currentPage > 1 && (
                             <PaginationItem>
                               <PaginationLink
-                                isActive={currentPage === 1}
+                                isActive={false}
                                 href="#"
-                                onClick={e => { e.preventDefault(); setCurrentPage(1); }}
+                                onClick={e => { e.preventDefault(); setCurrentPage(currentPage - 1); }}
                               >
-                                1
+                                {currentPage - 1}
                               </PaginationLink>
                             </PaginationItem>
-                            {currentPage > 3 && (
-                              <PaginationItem>
-                                <span className="px-2">...</span>
-                              </PaginationItem>
-                            )}
-                          </>
-                        )}
+                          )}
 
-                        {/* Previous Page */}
-                        {currentPage > 1 && (
+                          {/* Current Page */}
                           <PaginationItem>
                             <PaginationLink
-                              isActive={false}
+                              isActive={true}
                               href="#"
-                              onClick={e => { e.preventDefault(); setCurrentPage(currentPage - 1); }}
+                              onClick={e => e.preventDefault()}
                             >
-                              {currentPage - 1}
+                              {currentPage}
                             </PaginationLink>
                           </PaginationItem>
-                        )}
 
-                        {/* Current Page */}
-                        <PaginationItem>
-                          <PaginationLink
-                            isActive={true}
-                            href="#"
-                            onClick={e => e.preventDefault()}
-                          >
-                            {currentPage}
-                          </PaginationLink>
-                        </PaginationItem>
-
-                        {/* Next Page */}
-                        {currentPage < totalPages && (
-                          <PaginationItem>
-                            <PaginationLink
-                              isActive={false}
-                              href="#"
-                              onClick={e => { e.preventDefault(); setCurrentPage(currentPage + 1); }}
-                            >
-                              {currentPage + 1}
-                            </PaginationLink>
-                          </PaginationItem>
-                        )}
-
-                        {/* Last Page */}
-                        {currentPage < totalPages - 1 && (
-                          <>
-                            {currentPage < totalPages - 2 && (
-                              <PaginationItem>
-                                <span className="px-2">...</span>
-                              </PaginationItem>
-                            )}
+                          {/* Next Page */}
+                          {currentPage < totalPages && (
                             <PaginationItem>
                               <PaginationLink
-                                isActive={currentPage === totalPages}
+                                isActive={false}
                                 href="#"
-                                onClick={e => { e.preventDefault(); setCurrentPage(totalPages); }}
+                                onClick={e => { e.preventDefault(); setCurrentPage(currentPage + 1); }}
                               >
-                                {totalPages}
+                                {currentPage + 1}
                               </PaginationLink>
                             </PaginationItem>
-                          </>
-                        )}
+                          )}
 
-                        {/* Next Arrow */}
-                        <PaginationItem>
-                          <PaginationNext
-                            onClick={e => { e.preventDefault(); if (currentPage < totalPages) setCurrentPage(currentPage + 1); }}
-                            href="#"
-                            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
-                  )}
-                </CardContent>
-              </Card>
+                          {/* Last Page */}
+                          {currentPage < totalPages - 1 && (
+                            <>
+                              {currentPage < totalPages - 2 && (
+                                <PaginationItem>
+                                  <span className="px-2">...</span>
+                                </PaginationItem>
+                              )}
+                              <PaginationItem>
+                                <PaginationLink
+                                  isActive={currentPage === totalPages}
+                                  href="#"
+                                  onClick={e => { e.preventDefault(); setCurrentPage(totalPages); }}
+                                >
+                                  {totalPages}
+                                </PaginationLink>
+                              </PaginationItem>
+                            </>
+                          )}
+
+                          {/* Next Arrow */}
+                          <PaginationItem>
+                            <PaginationNext
+                              onClick={e => { e.preventDefault(); if (currentPage < totalPages) setCurrentPage(currentPage + 1); }}
+                              href="#"
+                              className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    )}
+                  </CardContent>
+                </Card>
+                </div>
+              </div>
             </div>
             {/* Right Column - News Section */}
             <div className="col-span-1 md:col-span-3 min-w-0">
-              <Card className="h-full overflow-y-auto max-h-[calc(100vh-12rem)]">
-                <CardHeader>
-                  <CardTitle>Headlines</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-[calc(100vh-12rem)]">
-                    <div className="space-y-4">
-                      {newsData.map((news) => (
-                        <NewsCard key={news.url} news={news} />
-                      ))}
+              {/* Headlines Section - UI Update */}
+              <div className="bg-gradient-to-br from-orange-500 via-pink-500 to-red-500 p-1 rounded-xl shadow-2xl">
+                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-6 h-full">
+                  <div className="flex items-center gap-2 mb-6">
+                    {/* Replace with <TrendingUp className="w-6 h-6 text-orange-400" /> if Lucide is available */}
+                    <span className="w-6 h-6 text-orange-400">📈</span>
+                    <h2 className="text-xl font-bold text-white">Headlines</h2>
+                    <div className="ml-auto">
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                     </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+                  </div>
+                  {/* Headlines list with scrollable area */}
+                  <div className="overflow-y-auto max-h-[650px] space-y-6 pr-1">
+                    {newsData.map((news, index) => (
+                      <div key={index} className="group cursor-pointer">
+                        <div className="relative overflow-hidden rounded-lg mb-3">
+                          {/* Replace with <Image ... /> if using Next.js or similar, else use <img> */}
+                          <img
+                            src={news.urlToImage || "/placeholder.svg"}
+                            alt={news.title}
+                            width={300}
+                            height={200}
+                            className="w-full h-32 object-cover transition-transform duration-300 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                          {/* No trending badge, as property does not exist */}
+                        </div>
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="font-medium text-sm leading-tight flex-1 text-white group-hover:text-cyan-300 transition-colors">
+                            {news.title}
+                          </h4>
+                          {/* Replace with <ChevronDown className="w-4 h-4 ..." /> if Lucide is available */}
+                          <span className="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 group-hover:text-cyan-300 transition-colors">⌄</span>
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          <span className="text-orange-300">{news.source?.name}</span>
+                          <span className="mx-2">•</span>
+                          <span>{news.author}</span>
+                          <span className="mx-2">•</span>
+                          <span>{news.publishedAt}</span>
+                        </div>
+                        {index < newsData.length - 1 && (
+                          <div className="mt-4 h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           {/* Lists Side-by-Side */}
@@ -1151,7 +1202,7 @@ function Index() {
         <BlendComponent />
         <section className="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 min-w-0">
-            <h2 className="text-2xl font-bold mb-4 text-center">Mark Your Calendar</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center text-white">Mark Your Calendar</h2>
             <div className="relative w-full">
               {/* Responsive: vertical on mobile, horizontal on desktop */}
               <div className="flex flex-col sm:hidden gap-4 max-h-[400px] overflow-y-auto px-2">
@@ -1216,8 +1267,8 @@ function Index() {
               </Carousel>
             </div>
           </div>
-          {/* Newsletter Box (no map, not overlapping) */}
-          <div className="w-full md:w-[340px] md:min-w-[260px] md:max-w-[360px] flex flex-col items-center justify-center mt-8 md:mt-12 md:ml-4 px-4 md:px-0">
+          {/* Newsletter Box (shifted right on desktop) */}
+          <div className="w-full md:w-[340px] md:min-w-[260px] md:max-w-[360px] flex flex-col items-center justify-center md:mt-12 md:ml-12 px-4 md:px-0">
             <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 flex flex-col items-center w-full">
               <div className="font-bold text-lg mb-2 text-center">Join our newsletter to get latest knowledge of AI events happening around you</div>
               <form className="flex flex-col gap-2 w-full items-center" onSubmit={handleNewsletterSubmit}>

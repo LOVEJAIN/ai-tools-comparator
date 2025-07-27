@@ -1,6 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { mcpTools } from '../data/mcpTools';
 import { useNavigate } from 'react-router-dom';
+import { Home, ExternalLink } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
 
 const TOOLS_PER_PAGE = 28;
 
@@ -45,90 +48,125 @@ const McpServers: React.FC = () => {
   const pagination = getPagination(page, totalPages);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-2 text-center">MCP Servers Directory</h1>
-      <p className="text-lg text-gray-400 mb-8 text-center">
-        Discover Model Context Protocol servers to enhance your AI applications with seamless integrations and powerful capabilities.
-      </p>
-      <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6 justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-zinc-400">Showing {(page-1)*TOOLS_PER_PAGE+1}-{Math.min(page*TOOLS_PER_PAGE, filteredTools.length)} of {filteredTools.length} servers</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-zinc-800 border border-zinc-300 shadow-sm hover:bg-zinc-100 hover:shadow-md transition font-medium"
-            onClick={() => navigate('/')}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l9-9 9 9" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 10.5v9a1.5 1.5 0 001.5 1.5h3.75a.75.75 0 00.75-.75V15a.75.75 0 01.75-.75h1.5A.75.75 0 0114.25 15v5.25c0 .414.336.75.75.75h3.75a1.5 1.5 0 001.5-1.5v-9" />
-            </svg>
-            Home
-          </button>
-          <select
-            className="border border-zinc-300 bg-white text-zinc-800 rounded-full px-4 py-2 shadow-sm hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-            value={category}
-            onChange={handleCategoryChange}
-          >
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {paginatedTools.map((tool: any) => (
-          <a
-            key={tool.id}
-            href={tool.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-zinc-800 border border-zinc-200 rounded-xl p-5 flex flex-col gap-3 hover:shadow-lg transition-shadow duration-200 h-full text-zinc-100"
-            style={{ position: 'relative' }}
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <img src={tool.logoUrl || tool.imageUrl} alt={tool.name} className="w-10 h-10 rounded bg-white object-contain" />
-              <div className="font-semibold text-lg text-zinc-100">{tool.name}</div>
-            </div>
-            <div className="text-zinc-300 text-sm mb-2 line-clamp-3">{tool.description}</div>
-            <div className="flex justify-end mt-2">
-              <span className="text-blue-400 text-xs underline">Visit &rarr;</span>
-            </div>
-            <div className="absolute left-5 bottom-5">
-              <span className="bg-zinc-700 text-xs px-2 py-1 rounded text-zinc-200">{tool.category}</span>
-            </div>
-          </a>
-        ))}
-      </div>
-      {/* Pagination Controls */}
-      <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
-        <button
-          className="flex items-center gap-1 px-3 py-1 rounded text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 disabled:opacity-50 border-none bg-transparent"
-          onClick={() => setPage(page - 1)}
-          disabled={page === 1}
-        >
-          <span className="text-lg">&lt;</span> Previous
-        </button>
-        {pagination.map((num, idx) =>
-          num === '...'
-            ? <span key={`ellipsis-${idx}`} className="px-2 text-zinc-400">...</span>
-            : <button
-                key={`page-${num}`}
-                className={`px-3 py-1 rounded-lg mx-1 min-w-[36px] text-base transition border border-transparent ${num === page ? 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 shadow text-zinc-900 dark:text-white font-semibold' : 'bg-transparent text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-                style={{ boxShadow: num === page ? '0 0 0 2px #e5e7eb' : undefined }}
-                onClick={() => setPage(Number(num))}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+            MCP Servers{" "}
+            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Directory</span>
+          </h1>
+          <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+            Discover Model Context Protocol servers to enhance your AI applications with seamless integrations and powerful capabilities.
+          </p>
+
+          <div className="flex items-center justify-between mb-8">
+            <p className="text-gray-400">
+              Showing {(page-1)*TOOLS_PER_PAGE+1}-{Math.min(page*TOOLS_PER_PAGE, filteredTools.length)} of {filteredTools.length} servers
+            </p>
+            <div className="flex items-center gap-3">
+              <button 
+                className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-white transition-colors bg-transparent border-none outline-none"
+                onClick={() => navigate('/')}
               >
-                {num}
+                <Home className="h-4 w-4" />
+                Home
               </button>
-        )}
-        <button
-          className="flex items-center gap-1 px-3 py-1 rounded text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 disabled:opacity-50 border-none bg-transparent"
-          onClick={() => setPage(page + 1)}
-          disabled={page === totalPages}
-        >
-          Next <span className="text-lg">&gt;</span>
-        </button>
-      </div>
+              <select
+                className="bg-white/10 border border-white/20 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 backdrop-blur-sm"
+                value={category}
+                onChange={handleCategoryChange}
+              >
+                {categories.map(cat => (
+                  <option key={cat} value={cat} className="bg-slate-800 text-white">{cat}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Servers Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {paginatedTools.map((tool: any) => (
+            <Card
+              key={tool.id}
+              className="bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300 group"
+            >
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <img 
+                    src={tool.logoUrl || tool.imageUrl} 
+                    alt={tool.name} 
+                    className="w-12 h-12 rounded-xl bg-white/10 object-contain flex-shrink-0" 
+                  />
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-blue-400 hover:text-blue-300 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => window.open(tool.url, '_blank')}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <h3 className="text-xl font-semibold text-white mb-2">{tool.name}</h3>
+                <p className="text-gray-300 text-sm mb-4 line-clamp-2">{tool.description}</p>
+
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full">{tool.category}</span>
+                </div>
+
+                <div className="flex items-center justify-end">
+                  <Button 
+                    size="sm" 
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={() => window.open(tool.url, '_blank')}
+                  >
+                    Visit →
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-center items-center gap-2 mt-12 flex-wrap">
+          <Button
+            variant="outline"
+            className="bg-white/5 border-white/10 text-white hover:bg-white/10 backdrop-blur-sm"
+            onClick={() => setPage(page - 1)}
+            disabled={page === 1}
+          >
+            <span className="text-lg">&lt;</span> Previous
+          </Button>
+          {pagination.map((num, idx) =>
+            num === '...'
+              ? <span key={idx} className="px-3 text-white">...</span>
+              : <Button
+                  key={num}
+                  variant={num === page ? "default" : "outline"}
+                  className={`mx-1 min-w-[44px] ${
+                    num === page 
+                      ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white' 
+                      : 'bg-white/5 border-white/10 text-white hover:bg-white/10 backdrop-blur-sm'
+                  }`}
+                  onClick={() => setPage(Number(num))}
+                >
+                  {num}
+                </Button>
+          )}
+          <Button
+            variant="outline"
+            className="bg-white/5 border-white/10 text-white hover:bg-white/10 backdrop-blur-sm"
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages}
+          >
+            Next <span className="text-lg">&gt;</span>
+          </Button>
+        </div>
+      </main>
     </div>
   );
 };
