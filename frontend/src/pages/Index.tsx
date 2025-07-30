@@ -457,14 +457,22 @@ function Index() {
 
   useEffect(() => {
     // Show main content with all tools when navigating to home or when forceShowMain is set
-    if (location.pathname === '/' && (location.state?.forceShowMain || location.state === undefined)) {
+    if (location.pathname === '/' && location.state?.forceShowMain) {
       setShowMainContent(true);
       setActiveCategory('all');
-      if (location.state?.forceShowMain) {
-        navigate('/', { replace: true, state: {} });
-      }
+      navigate('/', { replace: true, state: {} });
     }
   }, [location.pathname, location.state, setActiveCategory, navigate]);
+
+  // Listen for custom event from landing page Explore Directory button
+  useEffect(() => {
+    const handler = () => {
+      setShowMainContent(true);
+      setActiveCategory('all');
+    };
+    window.addEventListener('explore-directory', handler);
+    return () => window.removeEventListener('explore-directory', handler);
+  }, [setShowMainContent, setActiveCategory]);
 
   // All bubbles same size and font size
   const BUBBLE_SIZE = 130;
@@ -569,6 +577,14 @@ function Index() {
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-6 w-full px-2 sm:px-4 pt-24 pb-20">
+                    {/* Explore Directory Button */}
+                    <button
+                      className="mb-8 px-8 py-4 rounded-xl bg-gradient-to-r from-green-600 to-blue-600 text-white text-2xl font-bold shadow-lg hover:from-green-700 hover:to-blue-700 transition-all flex items-center gap-3"
+                      onClick={() => { setActiveCategory('all'); setShowMainContent(true); }}
+                    >
+                      Explore Directory
+                      <svg className="w-7 h-7 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </button>
                     {/* Use a local categories array with icons for the landing bubbles */}
                     {(() => {
                       const categoriesWithIcons = [
@@ -593,7 +609,6 @@ function Index() {
                         "from-sky-500 to-blue-600",
                         "from-teal-500 to-cyan-600",
                       ];
-                      // Use the same bubbleLayout logic for rows
                       let idx = 0;
                       return bubbleRows.map((row, rowIdx) => (
                         <div key={rowIdx} className="flex flex-row flex-wrap justify-center gap-4 sm:gap-8 w-full">

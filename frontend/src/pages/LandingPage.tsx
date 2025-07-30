@@ -248,7 +248,15 @@ const LandingPage: React.FC = () => {
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white border-0 px-8 py-6 text-lg group"
-                  onClick={() => navigate("/home")}
+                  onClick={() => {
+                    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+                      // If already on homepage, try to trigger the homepage Explore Directory logic
+                      const event = new CustomEvent('explore-directory');
+                      window.dispatchEvent(event);
+                    } else {
+                      navigate('/', { replace: true, state: { forceShowMain: true } });
+                    }
+                  }}
                 >
                   <motion.span whileHover={{ x: -5 }} transition={{ type: "spring", stiffness: 300 }}>
                     Explore Directory
