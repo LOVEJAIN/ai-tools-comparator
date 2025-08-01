@@ -41,13 +41,12 @@ const FeaturedCarousel: React.FC = () => {
 
   return (
     <section className="max-w-6xl mx-auto my-12">
-      <h2 className="text-2xl font-bold mb-6 text-center">Featured Tools</h2>
       <div className="relative flex items-center justify-center">
         {/* Responsive: vertical on mobile, horizontal on desktop */}
         <div className="w-full">
           <div className="flex flex-col sm:hidden gap-4 max-h-[400px] overflow-y-auto px-2">
             {topTools.map(tool => (
-              <div key={tool.id} className="w-full max-w-sm mx-auto">
+              <div key={tool.id} className="w-full max-w-md h-[260px] mx-auto flex">
                 <ItemCard item={tool} />
               </div>
             ))}
@@ -63,7 +62,7 @@ const FeaturedCarousel: React.FC = () => {
                 {topTools.map(tool => (
                   <CarouselItem
                     key={tool.id}
-                    className="w-[320px] max-w-[320px] flex-shrink-0"
+                    className="w-[370px] h-[260px] max-w-[370px] flex-shrink-0 flex"
                     style={{ flex: '0 0 24%' }}
                   >
                     <ItemCard item={tool} />

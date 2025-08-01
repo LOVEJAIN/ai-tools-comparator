@@ -16,6 +16,8 @@ import Subscription from "./pages/Subscription";
 import ToolDetail from "./pages/ToolDetail";
 import McpServers from "./pages/McpServers";
 import AiAgents from "./pages/AiAgents";
+import LandingPage from "./pages/LandingPage";
+import SandboxPage from "./pages/Sandbox";
 
 const queryClient = new QueryClient();
 
@@ -31,7 +33,7 @@ const App = () => (
               <Toaster />
               <Sonner />
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<LandingPage />} />
                 <Route path="/home" element={<Index />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/create-list" element={<CreateList />} />
@@ -40,6 +42,7 @@ const App = () => (
                 <Route path="/tools/:id" element={<ToolDetail />} />
                 <Route path="/mcp-servers" element={<McpServers />} />
                 <Route path="/ai-agents" element={<AiAgents />} />
+                <Route path="/sandbox" element={<SandboxPage />} />
                 <Route path="/error" element={<ErrorPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

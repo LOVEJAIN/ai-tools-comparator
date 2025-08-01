@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -36,6 +36,7 @@ import NewsCard from "@/components/NewsCard";
 import { toast } from "react-hot-toast";
 import { useGoogleAuth } from "@/contexts/GoogleAuthContext";
 import BlendComponent from '../components/BlendComponent';
+import { Button } from "@/components/ui/button";
 
 type PublicList = {
   id: string;
@@ -70,6 +71,19 @@ function StarRating({ value, onChange, readOnly = false }: { value: number; onCh
   );
 }
 
+function getPagination(current: number, total: number) {
+  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+  const range = [];
+  range.push(1);
+  if (current > 3) range.push('...');
+  for (let i = Math.max(2, current - 2); i <= Math.min(total - 1, current + 2); i++) {
+    if (i !== 1 && i !== total) range.push(i);
+  }
+  if (current < total - 2) range.push('...');
+  if (total > 1) range.push(total);
+  return range;
+}
+
 function Index() {
   const { user, items, categories, voteItem, sortOrder, setSortOrder, activeCategory, setActiveCategory, addReview, trackItemClick } = useData();
   const location = useLocation();
@@ -97,6 +111,17 @@ function Index() {
   const [editingPrivateList, setEditingPrivateList] = useState<any | null>(null);
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
+  const featuredCarouselApiRef = useRef<any>(null);
+
+  // Auto-move featured carousel every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (featuredCarouselApiRef.current) {
+        featuredCarouselApiRef.current.scrollNext();
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
@@ -109,7 +134,7 @@ function Index() {
 
   const filteredTools = useMemo(() => {
     return aiTools.filter(tool => {
-      const matchesSearch = tool.name.toLowerCase().includes(search.toLowerCase());
+      const matchesSearch = tool.name.toLowerCase().includes(search.trim().toLowerCase());
       const matchesCategory = activeCategory === 'all' 
         ? true 
         : activeCategory === 'miscellaneous' 
@@ -457,14 +482,27 @@ function Index() {
 
   useEffect(() => {
     // Show main content with all tools when navigating to home or when forceShowMain is set
-    if (location.pathname === '/' && (location.state?.forceShowMain || location.state === undefined)) {
+    if (location.pathname === '/' && location.state?.forceShowMain) {
       setShowMainContent(true);
       setActiveCategory('all');
-      if (location.state?.forceShowMain) {
-        navigate('/', { replace: true, state: {} });
-      }
+      navigate('/', { replace: true, state: {} });
+    }
+    // Show main content when navigating to /home (from Directories page)
+    if (location.pathname === '/home') {
+      setShowMainContent(true);
+      setActiveCategory('all');
     }
   }, [location.pathname, location.state, setActiveCategory, navigate]);
+
+  // Listen for custom event from landing page Explore Directory button
+  useEffect(() => {
+    const handler = () => {
+      setShowMainContent(true);
+      setActiveCategory('all');
+    };
+    window.addEventListener('explore-directory', handler);
+    return () => window.removeEventListener('explore-directory', handler);
+  }, [setShowMainContent, setActiveCategory]);
 
   // All bubbles same size and font size
   const BUBBLE_SIZE = 130;
@@ -532,205 +570,312 @@ function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header 
-        searchValue={search} 
-        onSearchChange={handleSearchChange} 
-        onSearchKeyDown={handleSearchKeyDown}
-        showMainContent={showMainContent}
-        setShowMainContent={setShowMainContent}
-      />
-      <div className="flex-1 flex flex-col">
-        <AnimatePresence>
-          {!showMainContent && (
-            <>
-              <motion.div
-                key="bubble-landing"
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -40 }}
-                transition={{ duration: 0.6 }}
-                className="flex flex-col items-center justify-center min-h-[60vh]"
-              >
-                <h1 className="text-3xl font-bold mb-6 text-center">What are you interested in exploring today?</h1>
-                <div className="flex flex-col items-center gap-6 w-full px-2 sm:px-4">
-                  {bubbleRows.map((row, rowIdx) => (
-                    <div key={rowIdx} className="flex flex-row flex-wrap justify-center gap-4 sm:gap-8 w-full">
-                      {row.map((cat, i) => (
-                        <motion.button
-                          key={cat.id}
-                          className="rounded-full shadow-lg flex items-center justify-center text-xl font-semibold text-white focus:outline-none"
-                          style={{
-                            width: `${cat.size}px`,
-                            height: `${cat.size}px`,
-                            minWidth: 90,
-                            minHeight: 90,
-                            maxWidth: 180,
-                            maxHeight: 180,
-                            background: "linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%)",
-                            whiteSpace: 'normal',
-                            textAlign: 'center',
-                            padding: '0 10px',
-                            lineHeight: 1.2,
-                            fontSize: cat.fontSize
-                          }}
-                          whileHover={{ scale: 1.08 }}
-                          whileTap={{ scale: 0.97 }}
-                          transition={{ duration: 0.25, ease: 'easeOut' }}
-                          onClick={() => handleBubbleSelect(cat.id)}
-                        >
-                          {cat.name}
-                        </motion.button>
-                      ))}
+    <>
+      {/* Animated Background - Adjusted to match reference image */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-[#0A0F2D] via-[#1A1F40] to-[#0A0F2D]">
+        {/* Subtle radial gradient to mimic light source from reference */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center_bottom,rgba(59,130,246,0.08),transparent_70%)]"></div>
+      </div>
+      <div className="min-h-screen bg-transparent flex flex-col">
+        <Header 
+          searchValue={search} 
+          onSearchChange={handleSearchChange} 
+          onSearchKeyDown={handleSearchKeyDown}
+          showMainContent={showMainContent}
+          setShowMainContent={setShowMainContent}
+        />
+        <div className="flex-1 flex flex-col">
+          <AnimatePresence>
+            {!showMainContent && (
+              <>
+                <motion.div
+                  key="bubble-landing"
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -40 }}
+                  transition={{ duration: 0.6 }}
+                  className="flex flex-col items-center justify-center min-h-[60vh] pt-8 md:pt-12"
+                >
+                  {/* Large heading and subtext, styled to match reference */}
+                  <h1 className="text-4xl md:text-6xl font-extrabold text-center text-[#4FC3FF] tracking-tight" style={{ lineHeight: 1.1 }}>
+                    What are you interested in exploring today?
+                  </h1>
+                  <div className="flex flex-col items-center pt-6" style={{ paddingBottom: '2%' }}>
+                    <div className="text-base md:text-xl font-medium text-center text-white" style={{ marginBottom: '2%' }}>Explore, connect, and create in one place</div>
+                    <div className="text-sm md:text-base text-center text-gray-300 max-w-2xl pb-26">
+                      Select a category bubble to see the best AI tools for that area. This helps you focus and not get overwhelmed by all the options!
                     </div>
-                  ))}
-                </div>
-                <p className="mt-8 text-gray-500 text-center max-w-xl">Select a category bubble to see the best AI tools for that area. This helps you focus and not get overwhelmed by all the options!</p>
-              </motion.div>
-              <FeaturedCarousel />
-            </>
-          )}
-        </AnimatePresence>
-        <AnimatePresence>
-          {showMainContent && (
-            <motion.div
-              key="main-content"
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-              transition={{ duration: 0.7 }}
-            >
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-        <main className="container p-4 overflow-x-hidden">
-                  {/* Sort by Dropdown and Change Category Button */}
-          <div className="flex items-center gap-4 mb-4">
-            <label className="text-base font-medium">Sort by:</label>
-            <select
-              value={sortOrder}
-              onChange={e => setSortOrder(e.target.value as any)}
-              className="border rounded px-3 py-2"
-            >
-              <option value="popular">Most Votes</option>
-              <option value="latest">Latest</option>
-              <option value="rating">Highest Rated</option>
-            </select>
-            <button
-              className="ml-4 px-2 py-1 text-sm rounded-md bg-blue-100 text-blue-700 font-semibold hover:bg-blue-200 transition md:px-4 md:py-2 md:text-base md:rounded-full"
-              onClick={() => setShowMainContent(false)}
-            >
-              ← Change Category
-            </button>
-          </div>
-                  {/* Category Chips Section (single row, below Sort by) - REMOVED */}
-          {/* Featured AI Tools Section */}
-          <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Featured Tools</h2>
-            <div className="flex gap-4 overflow-x-auto pb-2">
-              {featuredTools
-                .filter(tool => activeCategory === 'all' || tool.category === activeCategory)
-                .map(tool => (
-                  <div key={tool.id} className="w-[260px] flex-shrink-0">
-                    <ItemCard item={tool} />
                   </div>
-                ))}
-            </div>
-          </section>
+                  <div className="flex flex-col items-center gap-6 w-full px-2 sm:px-4 pt-12 pb-20">
+                    {/* Use a local categories array with icons for the landing bubbles */}
+                    {(() => {
+                      const categoriesWithIcons = [
+                        { name: "Models", icon: "🤖" },
+                        { name: "Chatbots", icon: "💬" },
+                        { name: "Search engines", icon: "🔍" },
+                        { name: "Writing assistants", icon: "✍️" },
+                        { name: "Productivity", icon: "⚡" },
+                        { name: "Meeting assistants", icon: "📅" },
+                        { name: "Academia", icon: "🎓" },
+                        { name: "Customer Support", icon: "🎧" },
+                        { name: "Video Generation", icon: "🎬" },
+                        { name: "Speech", icon: "🎤" },
+                        { name: "Code", icon: "💻" },
+                        { name: "Image", icon: "🎨" },
+                        { name: "Miscellaneous", icon: "🔧" },
+                      ];
+                      const blueShades = [
+                        "from-blue-500 to-blue-600",
+                        "from-cyan-500 to-blue-600",
+                        "from-indigo-500 to-blue-600",
+                        "from-sky-500 to-blue-600",
+                        "from-teal-500 to-cyan-600",
+                      ];
+                      let idx = 0;
+                      return bubbleRows.map((row, rowIdx) => (
+                        <div key={rowIdx} className="flex flex-row flex-wrap justify-center gap-4 sm:gap-8 w-full">
+                          {row.map((cat, i) => {
+                            const catWithIcon = categoriesWithIcons[idx] || { name: cat.name, icon: "" };
+                            const shade = blueShades[idx % blueShades.length];
+                            idx++;
+                            // Categories that need extra width
+                            const extraWideCategories = [
+                              'Miscellaneous',
+                              'Meeting assistants',
+                              'Video Generation',
+                              'Customer Support',
+                              'Writing assistants',
+                              'Search engines',
+                            ];
+                            const isExtraWide = extraWideCategories.includes(catWithIcon.name);
+                            return (
+                              <motion.button
+                                key={cat.id}
+                                className={`rounded-[2.5rem] shadow-lg flex items-center justify-center text-lg md:text-xl font-semibold text-white focus:outline-none transition-all duration-200 bg-gradient-to-r ${shade}`}
+                                style={{
+                                  width: `${cat.size}px`,
+                                  height: '56px',
+                                  minWidth: isExtraWide ? 170 : 140,
+                                  minHeight: 44,
+                                  maxWidth: isExtraWide ? 320 : 260,
+                                  maxHeight: 80,
+                                  whiteSpace: 'normal',
+                                  textAlign: 'center',
+                                  padding: '0 14px',
+                                  lineHeight: 1.1,
+                                  fontSize: 'inherit',
+                                  boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)',
+                                  border: 'none',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.5em',
+                                }}
+                                whileHover={{ scale: 1.08 }}
+                                whileTap={{ scale: 0.97 }}
+                                transition={{ duration: 0.25, ease: 'easeOut' }}
+                                onClick={() => handleBubbleSelect(cat.id)}
+                              >
+                                <span className="mr-2 text-base md:text-lg flex-shrink-0">{catWithIcon.icon}</span>
+                                <span className="text-sm md:text-base font-semibold">{catWithIcon.name}</span>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                  {/* Inserted Featured Tools heading and underline below category bubbles */}
+                  <div className="text-center pt-20">
+                    <h2 className="text-4xl font-bold text-white">Featured Tools</h2>
+                    <div className="w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mt-4 rounded-full animate-expand"></div>
+                  </div>
+                  <FeaturedCarousel />
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {showMainContent && (
+              <motion.div
+                key="main-content"
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
+                transition={{ duration: 0.7 }}
+              >
+                <main className="container p-4 overflow-x-hidden">
+                  {/* Featured Tools Carousel - Above all columns */}
+                  {(() => {
+                    // Get tools based on selected category
+                    let categoryTools;
+                    if (activeCategory === 'all') {
+                      // Show all tools (like homepage)
+                      categoryTools = [...aiTools]
+                        .sort((a, b) => b.rating - a.rating || b.reviewCount - a.reviewCount)
+                        .slice(0, 10);
+                    } else {
+                      // Get category name from activeCategory ID
+                      const categoryName = categories.find(cat => cat.id === activeCategory)?.name;
+                      categoryTools = aiTools
+                        .filter(tool => tool.category === categoryName)
+                        .sort((a, b) => b.rating - a.rating || b.reviewCount - a.reviewCount)
+                        .slice(0, 8);
+                    }
+                    
+                    const featuredTools = categoryTools.map(tool => ({
+                      id: tool.id,
+                      title: tool.name,
+                      description: tool.description,
+                      category: tool.category,
+                      imageUrl: (tool.logoUrl && tool.logoUrl.trim() !== '') ? tool.logoUrl : (tool.imageUrl || ''),
+                      url: tool.url,
+                      votes: 0,
+                      reviewsCount: tool.reviewCount,
+                      rating: tool.rating,
+                      createdAt: '',
+                      featured: false,
+                    }));
+                    
+                    if (featuredTools.length > 0) {
+                      return (
+                        <div className="mb-6">
+                          <div className="text-center mb-8">
+                            <h3 className="text-3xl font-bold text-white mb-2">Featured Tools</h3>
+                            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto"></div>
+                          </div>
+                          <div className="px-6">
+                            <div className="relative">
+                              {(() => {
+                                
+                                return (
+                                <Carousel
+                                  opts={{ align: 'start', loop: true }}
+                                  setApi={api => (featuredCarouselApiRef.current = api)}
+                                  className="w-full"
+                                >
+                                  <CarouselContent className="flex gap-6">
+                                    {featuredTools.map(tool => (
+                                      <CarouselItem
+                                        key={tool.id}
+                                        className="w-[200px] h-[220px] max-w-[200px] flex-shrink-0 flex"
+                                        style={{ flex: '0 0 20%' }}
+                                      >
+                                        <ItemCard item={tool} />
+                                      </CarouselItem>
+                                    ))}
+                                  </CarouselContent>
+                                </Carousel>
+                                );
+                              })()}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+                  {/* Sort by Dropdown and Change Category Button */}
           {/* Main 3-column layout */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4" style={{ minHeight: '70vh' }}>
             {/* Left Column - Comparator */}
             <div className="col-span-1 md:col-span-3 min-w-0">
-              <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)]">
-                <CardHeader>
-                  <CardTitle>Compare Tools</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col gap-4">
-                  <div className="mb-2">
-                    <label className="block text-sm font-medium mb-1">Category</label>
-                    <select
-                      value={activeCategory}
-                      onChange={e => {
-                        setActiveCategory(e.target.value);
-                        setTool1("");
-                        setTool2("");
-                      }}
-                      className="border rounded px-2 py-1 w-full"
-                    >
-                      <option value="">Select Category</option>
-                      {uniqueCategories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
+              <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 p-1 rounded-xl shadow-2xl">
+                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-6 h-full">
+                  <div className="flex items-center gap-2 mb-6">
+                    {/* Replace with <Zap className="w-6 h-6 text-yellow-400" /> if Lucide is available */}
+                    <span className="w-6 h-6 text-yellow-400">⚡</span>
+                    <h2 className="text-xl font-bold text-white">Compare Tools</h2>
                   </div>
-                  <div className="mb-2">
-                    <label className="block text-sm font-medium mb-1">Tool 1</label>
-                    <div
-                      onDragOver={e => e.preventDefault()}
-                      onDrop={() => {
-                        if (draggedToolId) setTool1(draggedToolId);
-                        setDraggedToolId(null);
-                      }}
-                    >
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block text-cyan-300">Category</label>
                       <select
-                        value={tool1}
-                        onChange={e => setTool1(e.target.value)}
-                        className="border rounded px-2 py-1 w-full"
-                        disabled={!activeCategory}
+                        value={activeCategory}
+                        onChange={e => {
+                          setActiveCategory(e.target.value);
+                          setTool1("");
+                          setTool2("");
+                        }}
+                        className="bg-slate-700 border-slate-600 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-cyan-500"
                       >
-                        <option value="">Select Tool 1</option>
-                        {toolsInCategory.map(tool => (
-                          <option key={tool.id} value={tool.id}>{tool.name}</option>
+                        <option value="">Select Category</option>
+                        {uniqueCategories.map(cat => (
+                          <option key={cat.id} value={cat.id}>{cat.name}</option>
                         ))}
                       </select>
                     </div>
-                  </div>
-                  <div className="mb-2">
-                    <label className="block text-sm font-medium mb-1">Tool 2</label>
-                    <div
-                      onDragOver={e => e.preventDefault()}
-                      onDrop={() => {
-                        if (draggedToolId) setTool2(draggedToolId);
-                        setDraggedToolId(null);
-                      }}
-                    >
-                      <select
-                        value={tool2}
-                        onChange={e => setTool2(e.target.value)}
-                        className="border rounded px-2 py-1 w-full"
-                        disabled={!activeCategory}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block text-cyan-300">Tool 1</label>
+                      <div
+                        onDragOver={e => e.preventDefault()}
+                        onDrop={() => {
+                          if (draggedToolId) setTool1(draggedToolId);
+                          setDraggedToolId(null);
+                        }}
                       >
-                        <option value="">Select Tool 2</option>
-                        {toolsInCategory.map(tool => (
-                          <option key={tool.id} value={tool.id}>{tool.name}</option>
-                        ))}
-                      </select>
+                        <select
+                          value={tool1}
+                          onChange={e => setTool1(e.target.value)}
+                          className="bg-slate-700 border-slate-600 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                          disabled={!activeCategory}
+                        >
+                          <option value="">Select Tool 1</option>
+                          {toolsInCategory.map(tool => (
+                            <option key={tool.id} value={tool.id}>{tool.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block text-cyan-300">Tool 2</label>
+                      <div
+                        onDragOver={e => e.preventDefault()}
+                        onDrop={() => {
+                          if (draggedToolId) setTool2(draggedToolId);
+                          setDraggedToolId(null);
+                        }}
+                      >
+                        <select
+                          value={tool2}
+                          onChange={e => setTool2(e.target.value)}
+                          className="bg-slate-700 border-slate-600 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                          disabled={!activeCategory}
+                        >
+                          <option value="">Select Tool 2</option>
+                          {toolsInCategory.map(tool => (
+                            <option key={tool.id} value={tool.id}>{tool.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    {(activeCategory !== 'all' || tool1 || tool2) && (
+                      <button
+                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 rounded-lg py-2 font-semibold flex items-center justify-center transition"
+                        onClick={() => {
+                          setActiveCategory('all');
+                          setTool1("");
+                          setTool2("");
+                        }}
+                        type="button"
+                      >
+                        {/* Replace with <Sparkles className="w-4 h-4 mr-2" /> if Lucide is available */}
+                        <span className="w-4 h-4 mr-2">✨</span>
+                        Clear Selection
+                      </button>
+                    )}
+                    <div className="pt-4 border-t border-slate-600">
+                      <div className="flex gap-2 text-sm text-cyan-300">
+                        <span>Filters:</span>
+                        <span className="px-2 py-0.5 border border-cyan-300 rounded-full text-cyan-300">Rating</span>
+                        <span className="px-2 py-0.5 border border-cyan-300 rounded-full text-cyan-300">Reviews</span>
+                      </div>
                     </div>
                   </div>
-                  {/* Clear/Reset button */}
-                  {(activeCategory !== 'all' || tool1 || tool2) && (
-                    <button
-                      className="border rounded px-2 py-1 w-full mb-2 bg-gray-100 hover:bg-gray-200 transition"
-                      onClick={() => {
-                        setActiveCategory('all');
-                        setTool1("");
-                        setTool2("");
-                      }}
-                      type="button"
-                    >
-                      Clear Selection
-                    </button>
-                  )}
-                  {/* Filters (rating, review count, etc.) */}
-                  <div className="flex gap-2 mb-2">
-                    <span className="text-xs">Filters:</span>
-                    <span className="text-xs">Rating</span>
-                    <span className="text-xs">Reviews</span>
-                    {/* Add more filters as needed */}
-                  </div>
-                  {/* Side-by-side comparison */}
+                  {/* Side-by-side comparison (leave as is, below the new UI) */}
                   {toolObj1 && toolObj2 && (
                     <div className="mt-2 border-t pt-2">
-                      <div className="font-semibold mb-2">Comparison</div>
-                      <table className="w-full text-xs">
+                      <div className="font-semibold mb-2 text-white">Comparison</div>
+                      <table className="w-full text-xs text-white">
                         <thead>
                           <tr>
                             <th className="text-left">Feature</th>
@@ -761,169 +906,160 @@ function Index() {
                           </tr>
                           <tr>
                             <td className="font-medium">URL</td>
-                            <td className="text-center"><a href={toolObj1.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Visit</a></td>
-                            <td className="text-center"><a href={toolObj2.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Visit</a></td>
+                            <td className="text-center"><a href={toolObj1.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">Visit</a></td>
+                            <td className="text-center"><a href={toolObj2.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">Visit</a></td>
                           </tr>
                         </tbody>
                       </table>
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
             {/* Middle Column - AI Tools Grid with Search/Filter */}
             <div className="col-span-1 md:col-span-6 min-w-0">
-              <Card className="h-full flex flex-col overflow-y-auto max-h-[calc(100vh-12rem)]">
-                <CardHeader>
-                  <CardTitle>AI Tools</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <ScrollArea className="flex-1">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {paginatedTools.map((tool) => (
-                        <div
-                          key={tool.id}
-                          className=""
-                          draggable
-                          onDragStart={() => setDraggedToolId(tool.id)}
-                          onDragEnd={() => setDraggedToolId(null)}
+              <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 p-1 rounded-xl shadow-2xl h-full">
+                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-2 h-full">
+                  <Card className="flex flex-col overflow-y-auto max-h-[calc(100vh-6rem)] bg-transparent shadow-none border-none min-h-[700px]">
+                    <CardHeader className="sticky top-0 z-10 bg-gradient-to-br from-slate-800 to-slate-900 rounded-t-lg">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-white">AI Tools</CardTitle>
+                        <button
+                          className="px-2 py-1 text-sm rounded-md bg-blue-100 text-blue-700 font-semibold hover:bg-blue-200 transition md:px-4 md:py-2 md:text-base md:rounded-full"
+                          onClick={() => setShowMainContent(false)}
                         >
-                          <ItemCard
-                            item={{
-                              ...tool,
-                              title: tool.name,
-                              votes: 0,
-                              reviewsCount: tool.reviewCount,
-                              createdAt: '2024-01-01T00:00:00.000Z',
-                              imageUrl: tool.imageUrl || '',
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                  <div className="text-xs text-muted-foreground mt-2">
-                    Showing {paginatedTools.length > 50 ? 50 : paginatedTools.length} of {filteredTools.length} tools
-                  </div>
-                  {totalPages > 1 && (
-                    <Pagination className="mt-6">
-                      <PaginationContent>
-                        {/* Previous Arrow */}
-                        <PaginationItem>
-                          <PaginationPrevious
-                            onClick={e => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}
-                            href="#"
-                            className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
-                          />
-                        </PaginationItem>
-
-                        {/* First Page */}
-                        {currentPage > 2 && (
-                          <>
-                            <PaginationItem>
-                              <PaginationLink
-                                isActive={currentPage === 1}
-                                href="#"
-                                onClick={e => { e.preventDefault(); setCurrentPage(1); }}
+                          ← Change Category
+                        </button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="flex flex-col">
+                      <ScrollArea className="flex-1">
+                        {paginatedTools.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center h-60 text-center pt-20">
+                            <p className="text-lg text-gray-600 mb-2">No matches found.</p>
+                            <p className="text-sm text-gray-500">You can try another search or explore trending tools.</p>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {paginatedTools.map((tool) => (
+                              <div
+                                key={tool.id}
+                                className=""
+                                draggable
+                                onDragStart={() => setDraggedToolId(tool.id)}
+                                onDragEnd={() => setDraggedToolId(null)}
                               >
-                                1
-                              </PaginationLink>
-                            </PaginationItem>
-                            {currentPage > 3 && (
-                              <PaginationItem>
-                                <span className="px-2">...</span>
-                              </PaginationItem>
-                            )}
-                          </>
+                                <ItemCard
+                                  item={{
+                                    ...tool,
+                                    title: tool.name,
+                                    votes: 0,
+                                    reviewsCount: tool.reviewCount,
+                                    createdAt: '2024-01-01T00:00:00.000Z',
+                                    imageUrl: tool.imageUrl || '',
+                                  }}
+                                />
+                              </div>
+                            ))}
+                          </div>
                         )}
-
-                        {/* Previous Page */}
-                        {currentPage > 1 && (
-                          <PaginationItem>
-                            <PaginationLink
-                              isActive={false}
-                              href="#"
-                              onClick={e => { e.preventDefault(); setCurrentPage(currentPage - 1); }}
-                            >
-                              {currentPage - 1}
-                            </PaginationLink>
-                          </PaginationItem>
-                        )}
-
-                        {/* Current Page */}
-                        <PaginationItem>
-                          <PaginationLink
-                            isActive={true}
-                            href="#"
-                            onClick={e => e.preventDefault()}
+                      </ScrollArea>
+                      <div className="text-xs text-muted-foreground mt-2">
+                        Showing {paginatedTools.length > 50 ? 50 : paginatedTools.length} of {filteredTools.length} tools
+                      </div>
+                      {/* Custom Pagination Bar (copied from AiAgents) */}
+                      {totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-2 mt-4 flex-wrap">
+                          <Button
+                            variant="outline"
+                            className="bg-white/5 border-white/10 text-white hover:bg-white/10 backdrop-blur-sm"
+                            onClick={() => setCurrentPage(currentPage - 1)}
+                            disabled={currentPage === 1}
                           >
-                            {currentPage}
-                          </PaginationLink>
-                        </PaginationItem>
-
-                        {/* Next Page */}
-                        {currentPage < totalPages && (
-                          <PaginationItem>
-                            <PaginationLink
-                              isActive={false}
-                              href="#"
-                              onClick={e => { e.preventDefault(); setCurrentPage(currentPage + 1); }}
-                            >
-                              {currentPage + 1}
-                            </PaginationLink>
-                          </PaginationItem>
-                        )}
-
-                        {/* Last Page */}
-                        {currentPage < totalPages - 1 && (
-                          <>
-                            {currentPage < totalPages - 2 && (
-                              <PaginationItem>
-                                <span className="px-2">...</span>
-                              </PaginationItem>
-                            )}
-                            <PaginationItem>
-                              <PaginationLink
-                                isActive={currentPage === totalPages}
-                                href="#"
-                                onClick={e => { e.preventDefault(); setCurrentPage(totalPages); }}
-                              >
-                                {totalPages}
-                              </PaginationLink>
-                            </PaginationItem>
-                          </>
-                        )}
-
-                        {/* Next Arrow */}
-                        <PaginationItem>
-                          <PaginationNext
-                            onClick={e => { e.preventDefault(); if (currentPage < totalPages) setCurrentPage(currentPage + 1); }}
-                            href="#"
-                            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
-                  )}
-                </CardContent>
-              </Card>
+                            <span className="text-lg">&lt;</span> Previous
+                          </Button>
+                          {getPagination(currentPage, totalPages).map((num, idx) =>
+                            num === '...'
+                              ? <span key={idx} className="px-3 text-white">...</span>
+                              : <Button
+                                  key={num}
+                                  variant={num === currentPage ? "default" : "outline"}
+                                  className={`mx-1 min-w-[44px] ${
+                                    num === currentPage 
+                                      ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white' 
+                                      : 'bg-white/5 border-white/10 text-white hover:bg-white/10 backdrop-blur-sm'
+                                  }`}
+                                  onClick={() => setCurrentPage(Number(num))}
+                                >
+                                  {num}
+                                </Button>
+                          )}
+                          <Button
+                            variant="outline"
+                            className="bg-white/5 border-white/10 text-white hover:bg-white/10 backdrop-blur-sm"
+                            onClick={() => setCurrentPage(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                          >
+                            Next <span className="text-lg">&gt;</span>
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
             </div>
             {/* Right Column - News Section */}
             <div className="col-span-1 md:col-span-3 min-w-0">
-              <Card className="h-full overflow-y-auto max-h-[calc(100vh-12rem)]">
-                <CardHeader>
-                  <CardTitle>Headlines</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-[calc(100vh-12rem)]">
-                    <div className="space-y-4">
-                      {newsData.map((news) => (
-                        <NewsCard key={news.url} news={news} />
-                      ))}
+              {/* Headlines Section - UI Update */}
+              <div className="bg-gradient-to-br from-orange-500 via-pink-500 to-red-500 p-1 rounded-xl shadow-2xl">
+                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-6 h-full">
+                  <div className="flex items-center gap-2 mb-6">
+                    {/* Replace with <TrendingUp className="w-6 h-6 text-orange-400" /> if Lucide is available */}
+                    <span className="w-6 h-6 text-orange-400">📈</span>
+                    <h2 className="text-xl font-bold text-white">Headlines</h2>
+                    <div className="ml-auto">
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                     </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+                  </div>
+                  {/* Headlines list with scrollable area */}
+                  <div className="overflow-y-auto max-h-[650px] space-y-6 pr-1">
+                    {newsData.map((news, index) => (
+                      <div key={index} className="group cursor-pointer">
+                        <div className="relative overflow-hidden rounded-lg mb-3">
+                          {/* Replace with <Image ... /> if using Next.js or similar, else use <img> */}
+                          <img
+                            src={news.urlToImage || "/placeholder.svg"}
+                            alt={news.title}
+                            width={300}
+                            height={200}
+                            className="w-full h-32 object-cover transition-transform duration-300 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                          {/* No trending badge, as property does not exist */}
+                        </div>
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="font-medium text-sm leading-tight flex-1 text-white group-hover:text-cyan-300 transition-colors">
+                            {news.title}
+                          </h4>
+                          {/* Replace with <ChevronDown className="w-4 h-4 ..." /> if Lucide is available */}
+                          <span className="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 group-hover:text-cyan-300 transition-colors">⌄</span>
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          <span className="text-orange-300">{news.source?.name}</span>
+                          <span className="mx-2">•</span>
+                          <span>{news.author}</span>
+                          <span className="mx-2">•</span>
+                          <span>{news.publishedAt}</span>
+                        </div>
+                        {index < newsData.length - 1 && (
+                          <div className="mt-4 h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           {/* Lists Side-by-Side */}
@@ -1099,7 +1235,7 @@ function Index() {
         <BlendComponent />
         <section className="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 min-w-0">
-            <h2 className="text-2xl font-bold mb-4 text-center">Mark Your Calendar</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center text-white">Mark Your Calendar</h2>
             <div className="relative w-full">
               {/* Responsive: vertical on mobile, horizontal on desktop */}
               <div className="flex flex-col sm:hidden gap-4 max-h-[400px] overflow-y-auto px-2">
@@ -1164,8 +1300,8 @@ function Index() {
               </Carousel>
             </div>
           </div>
-          {/* Newsletter Box (no map, not overlapping) */}
-          <div className="w-full md:w-[340px] md:min-w-[260px] md:max-w-[360px] flex flex-col items-center justify-center mt-8 md:mt-12 md:ml-4 px-4 md:px-0">
+          {/* Newsletter Box (shifted right on desktop) */}
+          <div className="w-full md:w-[340px] md:min-w-[260px] md:max-w-[360px] flex flex-col items-center justify-center md:mt-12 md:ml-12 px-4 md:px-0">
             <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 flex flex-col items-center w-full">
               <div className="font-bold text-lg mb-2 text-center">Join our newsletter to get latest knowledge of AI events happening around you</div>
               <form className="flex flex-col gap-2 w-full items-center" onSubmit={handleNewsletterSubmit}>
@@ -1188,65 +1324,65 @@ function Index() {
             </div>
           </div>
         </section>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-        <Footer />
-        {/* List Dialog/Modal */}
-        {listDialog.open && listDialog.list && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative">
-              <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-black"
-                onClick={() => setListDialog({ open: false, list: null })}
-              >✕</button>
-              <h3 className="text-lg font-semibold mb-2">{listDialog.list.title}</h3>
-              <div className="text-xs text-muted-foreground mb-4">by {listDialog.list.creator}</div>
-              <div className="space-y-2">
-                {listDialog.list.tools && listDialog.list.tools.map(tool => {
-                  const fullTool = aiTools.find(t => t.id === tool.id);
-                  return fullTool ? (
-                    <div key={tool.id} className="border rounded p-2 flex items-center gap-2">
-                      {fullTool.imageUrl && <img src={fullTool.imageUrl} alt={fullTool.name} className="w-8 h-8 rounded" />}
-                      <div>
-                        <div className="font-medium">{fullTool.name}</div>
-                        <div className="text-xs text-muted-foreground">{fullTool.description}</div>
-                      </div>
+      <Footer />
+      <Modal open={showCreateListModal} onClose={() => {
+        setShowCreateListModal(false);
+        setEditingList(null);
+        setEditingPrivateList(null);
+      }}>
+        <CreateListForm 
+          onSubmit={editingList ? handleUpdateList : editingPrivateList ? handleUpdatePrivateList : handleAddList} 
+          onCancel={() => {
+            setShowCreateListModal(false);
+            setEditingList(null);
+            setEditingPrivateList(null);
+          }}
+          initialValues={editingList ? {
+            id: editingList.id,
+            title: editingList.title,
+            selected: editingList.tools.map(t => t.id),
+            isPublic: true
+          } : editingPrivateList ? {
+            id: editingPrivateList.id,
+            title: editingPrivateList.title,
+            selected: (editingPrivateList as any).toolIds || [],
+            isPublic: false
+          } : undefined}
+        />
+      </Modal>
+      {/* List Dialog/Modal */}
+      {listDialog.open && listDialog.list && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative">
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+              onClick={() => setListDialog({ open: false, list: null })}
+            >✕</button>
+            <h3 className="text-lg font-semibold mb-2">{listDialog.list.title}</h3>
+            <div className="text-xs text-muted-foreground mb-4">by {listDialog.list.creator}</div>
+            <div className="space-y-2">
+              {listDialog.list.tools && listDialog.list.tools.map(tool => {
+                const fullTool = aiTools.find(t => t.id === tool.id);
+                return fullTool ? (
+                  <div key={tool.id} className="border rounded p-2 flex items-center gap-2">
+                    {fullTool.imageUrl && <img src={fullTool.imageUrl} alt={fullTool.name} className="w-8 h-8 rounded" />}
+                    <div>
+                      <div className="font-medium">{fullTool.name}</div>
+                      <div className="text-xs text-muted-foreground">{fullTool.description}</div>
                     </div>
-                  ) : null;
-                })}
-              </div>
+                  </div>
+                ) : null;
+              })}
             </div>
           </div>
-        )}
-        <Modal open={showCreateListModal} onClose={() => {
-          setShowCreateListModal(false);
-          setEditingList(null);
-          setEditingPrivateList(null);
-        }}>
-          <CreateListForm 
-            onSubmit={editingList ? handleUpdateList : editingPrivateList ? handleUpdatePrivateList : handleAddList} 
-            onCancel={() => {
-              setShowCreateListModal(false);
-              setEditingList(null);
-              setEditingPrivateList(null);
-            }}
-            initialValues={editingList ? {
-              id: editingList.id,
-              title: editingList.title,
-              selected: editingList.tools.map(t => t.id),
-              isPublic: true
-            } : editingPrivateList ? {
-              id: editingPrivateList.id,
-              title: editingPrivateList.title,
-              selected: (editingPrivateList as any).toolIds || [],
-              isPublic: false
-            } : undefined}
-          />
-        </Modal>
-    </div>
+        </div>
+      )}
+    </>
   );
 }
 

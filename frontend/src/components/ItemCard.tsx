@@ -9,6 +9,7 @@ import ReviewList from './ReviewList';
 import ReviewForm from './ReviewForm';
 import { toast } from '@/components/ui/sonner';
 
+
 // Default fallback image for items
 const FALLBACK_IMAGE = '/placeholder.svg';
 
@@ -133,11 +134,11 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
 
   return (
     <>
-      <Card 
-        className="h-full flex flex-col overflow-hidden min-h-[210px] cursor-pointer hover:shadow-md transition-shadow duration-200"
+      <Card
+        className="h-full flex flex-col overflow-hidden min-h-[210px] w-full cursor-pointer hover:shadow-lg transition-shadow duration-200"
         onClick={handleItemClick}
       >
-        <CardContent className="flex-1 flex flex-col items-center justify-center p-2 pb-1">
+        <CardContent className="flex-1 flex flex-col items-center justify-center p-2 pb-1 h-full w-full">
           <div className="w-full flex flex-col items-center">
             <img
               src={imageSrc}
