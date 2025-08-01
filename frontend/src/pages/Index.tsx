@@ -112,12 +112,23 @@ function Index() {
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
   const featuredCarouselApiRef = useRef<any>(null);
+  const mobileFeaturedCarouselApiRef = useRef<any>(null);
 
-  // Auto-move featured carousel every 4 seconds
+  // Auto-move featured carousel every 1 second for desktop
   useEffect(() => {
     const interval = setInterval(() => {
       if (featuredCarouselApiRef.current) {
         featuredCarouselApiRef.current.scrollNext();
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Auto-move mobile featured carousel every 1 second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (mobileFeaturedCarouselApiRef.current) {
+        mobileFeaturedCarouselApiRef.current.scrollNext();
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -745,9 +756,34 @@ function Index() {
                           </div>
                           <div className="px-6">
                             <div className="relative">
-                              {(() => {
-                                
-                                return (
+                              {/* Mobile Vertical Carousel */}
+                              <div className="block sm:hidden">
+                                <Carousel
+                                  opts={{ 
+                                    align: 'start', 
+                                    loop: true,
+                                    axis: 'y',
+                                    slidesToScroll: 1
+                                  }}
+                                  orientation="vertical"
+                                  setApi={api => (mobileFeaturedCarouselApiRef.current = api)}
+                                  className="w-full max-w-sm mx-auto"
+                                >
+                                  <CarouselContent className="flex flex-col gap-4 h-[280px]">
+                                    {featuredTools.map(tool => (
+                                      <CarouselItem
+                                        key={tool.id}
+                                        className="w-full h-[240px] flex-shrink-0 flex"
+                                      >
+                                        <ItemCard item={tool} />
+                                      </CarouselItem>
+                                    ))}
+                                  </CarouselContent>
+                                </Carousel>
+                              </div>
+
+                              {/* Desktop Horizontal Carousel */}
+                              <div className="hidden sm:block">
                                 <Carousel
                                   opts={{ align: 'start', loop: true }}
                                   setApi={api => (featuredCarouselApiRef.current = api)}
@@ -765,8 +801,7 @@ function Index() {
                                     ))}
                                   </CarouselContent>
                                 </Carousel>
-                                );
-                              })()}
+                              </div>
                             </div>
                           </div>
                         </div>

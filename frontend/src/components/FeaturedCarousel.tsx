@@ -28,36 +28,69 @@ const topTools = [...aiTools]
   }));
 
 const FeaturedCarousel: React.FC = () => {
-  const carouselApiRef = useRef<any>(null);
-  // Auto-move every 3 seconds
+  const desktopCarouselApiRef = useRef<any>(null);
+  const mobileCarouselApiRef = useRef<any>(null);
+  
+  // Auto-move every 3 seconds for desktop
   useEffect(() => {
     const interval = setInterval(() => {
-      if (carouselApiRef.current) {
-        carouselApiRef.current.scrollNext();
+      if (desktopCarouselApiRef.current) {
+        desktopCarouselApiRef.current.scrollNext();
       }
     }, 3000);
     return () => clearInterval(interval);
   }, []);
 
+  // Auto-move every 1 second for mobile
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (mobileCarouselApiRef.current) {
+        mobileCarouselApiRef.current.scrollNext();
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className="max-w-6xl mx-auto my-12">
-      <div className="relative flex items-center justify-center">
-        {/* Responsive: vertical on mobile, horizontal on desktop */}
-        <div className="w-full">
-          <div className="flex flex-col sm:hidden gap-4 max-h-[400px] overflow-y-auto px-2">
-            {topTools.map(tool => (
-              <div key={tool.id} className="w-full max-w-md h-[260px] mx-auto flex">
-                <ItemCard item={tool} />
-              </div>
-            ))}
+    <section className="max-w-6xl mx-auto my-12 px-4">
+      <div className="relative">
+        {/* Mobile Vertical Carousel - Shows one card at a time with auto-scroll */}
+        <div className="block sm:hidden">
+          <div className="relative">
+            <Carousel
+              opts={{ 
+                align: 'start', 
+                loop: true,
+                axis: 'y',
+                slidesToScroll: 1
+              }}
+              orientation="vertical"
+              setApi={api => (mobileCarouselApiRef.current = api)}
+              className="w-full max-w-sm mx-auto"
+            >
+              <CarouselContent className="flex flex-col gap-4 h-[320px]">
+                {topTools.map(tool => (
+                  <CarouselItem
+                    key={tool.id}
+                    className="w-full h-[280px] flex-shrink-0 flex"
+                  >
+                    <ItemCard item={tool} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
           </div>
+        </div>
+
+        {/* Desktop Horizontal Carousel */}
+        <div className="hidden sm:block">
           <Carousel
             opts={{ align: 'start', loop: true }}
-            setApi={api => (carouselApiRef.current = api)}
-            className="w-full hidden sm:block"
+            setApi={api => (desktopCarouselApiRef.current = api)}
+            className="w-full"
           >
             <div className="flex items-center gap-6">
-              <CarouselPrevious className="mr-4" />
+              <CarouselPrevious className="mr-4 bg-white/10 hover:bg-white/20 border-white/20 text-white" />
               <CarouselContent className="flex gap-6">
                 {topTools.map(tool => (
                   <CarouselItem
@@ -69,7 +102,7 @@ const FeaturedCarousel: React.FC = () => {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselNext className="ml-4" />
+              <CarouselNext className="ml-4 bg-white/10 hover:bg-white/20 border-white/20 text-white" />
             </div>
           </Carousel>
         </div>
