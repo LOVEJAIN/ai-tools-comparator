@@ -103,6 +103,9 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
             /* Centered Navigation */
             <nav className="flex gap-2 items-center">
               <Button asChild variant="ghost" className="header-btn-outline bg-[#10182a] hover:bg-[#10182a] hover:text-white">
+                <Link to="/home"><span className="text-white">AI Tools</span></Link>
+              </Button>
+              <Button asChild variant="ghost" className="header-btn-outline bg-[#10182a] hover:bg-[#10182a] hover:text-white">
                 <Link to="/ai-agents"><span className="text-white">AI Agents</span></Link>
               </Button>
               <Button asChild variant="ghost" className="header-btn-outline bg-[#10182a] hover:bg-[#10182a] hover:text-white">
@@ -161,6 +164,9 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
           {!centerNavigation && (
             /* Regular Navigation on the right */
             <>
+              <Button asChild variant="ghost" className="header-btn-outline bg-[#10182a] hover:bg-[#10182a] hover:text-white">
+                <Link to="/home"><span className="text-white">AI Tools</span></Link>
+              </Button>
               <Button asChild variant="ghost" className="header-btn-outline bg-[#10182a] hover:bg-[#10182a] hover:text-white">
                 <Link to="/ai-agents"><span className="text-white">AI Agents</span></Link>
               </Button>
@@ -265,6 +271,9 @@ const Header: React.FC<HeaderProps> = ({ searchValue, onSearchChange, onSearchKe
                   className="w-full rounded px-2 py-1 text-sm border shadow-sm focus:outline-none focus:ring-2 focus:ring-primary mb-2 text-white placeholder:text-gray-400 bg-[#19213a] border-none"
                 />
               )}
+              <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/home" className="text-white">AI Tools</Link>
+              </Button>
               <Button asChild variant="outline" className="header-btn-outline w-full" onClick={() => setMobileMenuOpen(false)}>
                 <Link to="/ai-agents" className="text-white">AI Agents</Link>
               </Button>

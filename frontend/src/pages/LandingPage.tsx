@@ -5,11 +5,13 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import SubmitToolModal, { SubmitToolModalHandle } from "@/components/SubmitBanner";
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const uspRef = useRef<HTMLDivElement | null>(null);
+  const submitModalRef = useRef<SubmitToolModalHandle>(null);
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -158,6 +160,7 @@ const LandingPage: React.FC = () => {
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0 px-8 py-6 text-lg group"
+                  onClick={() => submitModalRef.current?.open("submit")}
                 >
                   <motion.span whileHover={{ x: -5 }} transition={{ type: "spring", stiffness: 300 }}>
                     Submit Tool
@@ -170,6 +173,7 @@ const LandingPage: React.FC = () => {
                   size="lg"
                   variant="outline"
                   className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg group bg-transparent"
+                  onClick={() => navigate("/subscription")}
                 >
                   <motion.span whileHover={{ x: -5 }} transition={{ type: "spring", stiffness: 300 }}>
                     Advertise Here
@@ -305,6 +309,7 @@ const LandingPage: React.FC = () => {
           </motion.div>
         </section>
       </div>
+      <SubmitToolModal ref={submitModalRef} />
     </div>
   );
 };
