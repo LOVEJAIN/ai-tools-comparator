@@ -39,7 +39,34 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
   
   const handleItemClick = () => {
     trackItemClick(item.id);
-    window.open(item.url, "_blank", "noopener noreferrer");
+    
+    // Validate URL format
+    let url = item.url;
+    if (!url) {
+      console.error('No URL provided for item:', item.title);
+      return;
+    }
+    
+    // Ensure URL has protocol
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
+    
+    // Safari-compatible URL opening
+    try {
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error opening URL:', error);
+      // Fallback to window.open
+      window.open(url, '_blank', 'noopener noreferrer');
+    }
   };
   
   const handleUpvote = (e: React.MouseEvent) => {
@@ -107,7 +134,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
 
   return (
     <>
-      <Card 
+      <Card
         className="h-full flex flex-col overflow-hidden min-h-[210px] w-full cursor-pointer hover:shadow-lg transition-shadow duration-200"
         onClick={handleItemClick}
       >
